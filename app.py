@@ -1,15 +1,11 @@
 from __future__ import annotations
 
-import io
 import tempfile
-import zipfile
 from pathlib import Path
 
-import pandas as pd
 import streamlit as st
 
 from timesheet_generator import (
-    Employee,
     employees_from_dataframe,
     generate_many,
     load_key_table,
@@ -19,10 +15,71 @@ from timesheet_generator import (
 )
 
 APP_DIR = Path(__file__).resolve().parent
+UI_LOGO = APP_DIR / "assets" / "logo.png"
 DEFAULT_LOGO = APP_DIR / "assets" / "logo_extracted.jpg"
 DEFAULT_SAMPLE = APP_DIR / "employees_template.csv"
 
 st.set_page_config(page_title="Générateur de feuilles de temps Néré Capital", layout="wide")
+
+
+def load_auth_credentials() -> tuple[str, str] | None:
+    """Return configured credentials, or None when Streamlit secrets are missing."""
+    try:
+        auth_config = st.secrets.get("auth", {})
+        username = str(auth_config.get("username", "")).strip()
+        password = str(auth_config.get("password", ""))
+    except Exception:
+        return None
+
+    if not username or not password:
+        return None
+    return username, password
+
+
+def require_authentication() -> None:
+    if st.session_state.get("authenticated"):
+        return
+
+    st.title("Générateur de feuilles de temps")
+    st.caption("Connexion requise")
+
+    credentials = load_auth_credentials()
+    if credentials is None:
+        st.error(
+            "Les identifiants ne sont pas configurés. Ajoutez une section [auth] "
+            "avec username et password dans les secrets Streamlit de l'application."
+        )
+        st.stop()
+
+    expected_username, expected_password = credentials
+    with st.form("login_form"):
+        username = st.text_input("Nom d'utilisateur")
+        password = st.text_input("Mot de passe", type="password")
+        submitted = st.form_submit_button("Se connecter", type="primary")
+
+    if submitted:
+        if username.strip() == expected_username and password == expected_password:
+            st.session_state["authenticated"] = True
+            st.rerun()
+        else:
+            st.error("Nom d'utilisateur ou mot de passe incorrect.")
+
+    st.stop()
+
+
+def render_sidebar_header() -> None:
+    if UI_LOGO.exists():
+        st.sidebar.image(str(UI_LOGO), width=180)
+    else:
+        st.sidebar.markdown("### Néré Capital")
+
+    if st.sidebar.button("Se déconnecter"):
+        st.session_state["authenticated"] = False
+        st.rerun()
+
+
+require_authentication()
+render_sidebar_header()
 
 st.title("Générateur de feuilles de temps")
 st.caption("Néré Capital · PDF mensuels générés automatiquement à partir d'une clé de répartition")

@@ -1,14 +1,38 @@
 # Générateur de feuilles de temps Néré Capital
 
-Cette application génère automatiquement les feuilles de temps mensuelles en PDF, à partir d'une clé de répartition analytique et d'une période sélectionnée.
+Cette application Streamlit génère automatiquement les feuilles de temps mensuelles en PDF, à partir d'une clé de répartition analytique et d'une période sélectionnée.
 
-## Installation
+## Installation locale
 
 ```bash
 python -m venv .venv
 source .venv/bin/activate  # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 ```
+
+## Configuration des identifiants
+
+L'application est protégée par une authentification simple basée sur les secrets Streamlit. Créez un fichier local `.streamlit/secrets.toml` avec la structure suivante :
+
+```toml
+[auth]
+username = "admin"
+password = "change-me"
+```
+
+Remplacez ces valeurs par vos vrais identifiants locaux. Le fichier `.streamlit/secrets.toml` est ignoré par Git et ne doit pas être commité. Un exemple sans secret réel est disponible dans `.streamlit/secrets.example.toml`.
+
+Sur Streamlit Community Cloud, ajoutez la même section `[auth]` dans les secrets de l'application depuis les paramètres de déploiement.
+
+## Logo de l'interface
+
+Pour afficher le logo Néré/I&P dans l'interface Streamlit, placez le fichier ici :
+
+```text
+assets/logo.png
+```
+
+Si ce fichier est absent, l'application continue de fonctionner et affiche simplement un titre texte. La génération PDF conserve sa logique de logo existante, notamment le logo par défaut `assets/logo_extracted.jpg` lorsqu'il est disponible.
 
 ## Lancement de l'application
 
@@ -21,6 +45,24 @@ Sous Windows, si la commande `streamlit` n'est pas reconnue, utilisez plutôt :
 ```powershell
 py -m streamlit run .\app.py
 ```
+
+Ouvrez ensuite l'URL locale affichée par Streamlit, généralement `http://localhost:8501`, puis connectez-vous avec les identifiants configurés dans `.streamlit/secrets.toml`.
+
+## Déploiement Streamlit Community Cloud
+
+1. Poussez le projet sur GitHub avec `app.py`, `requirements.txt`, `timesheet_generator.py`, `employees_template.csv` et les assets publics nécessaires.
+2. Dans Streamlit Community Cloud, créez ou ouvrez l'application reliée au dépôt GitHub.
+3. Vérifiez que le fichier principal est `app.py`.
+4. Dans les paramètres de l'application, ajoutez les secrets :
+
+```toml
+[auth]
+username = "admin"
+password = "change-me"
+```
+
+5. Remplacez les valeurs d'exemple par les identifiants réels avant de partager l'application.
+6. Redéployez l'application si nécessaire.
 
 ## Logique métier intégrée
 
