@@ -13,6 +13,13 @@ return new class extends Migration
     {
         Schema::create('tools', function (Blueprint $table) {
             $table->id();
+            $table->string('name');
+            $table->string('slug')->unique();
+            $table->text('description')->nullable();
+            $table->string('route');
+            $table->string('status')->default('active'); // active, coming_soon, disabled
+            $table->string('required_role')->nullable();
+            $table->integer('display_order')->default(0);
             $table->timestamps();
         });
     }

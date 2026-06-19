@@ -13,6 +13,17 @@ return new class extends Migration
     {
         Schema::create('employees', function (Blueprint $table) {
             $table->id();
+            $table->string('first_name');
+            $table->string('last_name');
+            $table->string('display_name')->nullable();
+            $table->string('entity');
+            $table->string('location');
+            $table->string('job_title');
+            $table->string('analytic_code');
+            $table->boolean('is_active')->default(true);
+            $table->boolean('requires_other_projects')->default(false);
+            $table->string('signature_title')->nullable();
+            $table->string('signatory_name')->nullable();
             $table->timestamps();
         });
     }
