@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\MicrosoftAuthController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\TimesheetController;
 use App\Models\User;
 use Illuminate\Support\Facades\Route;
 
@@ -21,13 +22,18 @@ Route::post('/logout', [MicrosoftAuthController::class, 'logout'])
 Route::middleware('auth')->group(function (): void {
     Route::get('/', DashboardController::class)->name('dashboard');
 
-    Route::view('/timesheets', 'tools.timesheets')
-        ->middleware('role:'.implode(',', [
-            User::ROLE_ADMIN,
-            User::ROLE_FINANCE,
-            User::ROLE_DIRECTION,
-        ]))
-        ->name('timesheets.index');
+    Route::middleware('role:'.implode(',', [
+        User::ROLE_ADMIN,
+        User::ROLE_FINANCE,
+        User::ROLE_DIRECTION,
+    ]))->group(function (): void {
+        Route::get('/timesheets', [TimesheetController::class, 'index'])->name('timesheets.index');
+        Route::post('/timesheets/generate', [TimesheetController::class, 'generate'])->name('timesheets.generate');
+        Route::get('/timesheets/results/{generation:uuid}', [TimesheetController::class, 'result'])->name('timesheets.result');
+        Route::get('/timesheets/history', [TimesheetController::class, 'history'])->name('timesheets.history');
+        Route::get('/timesheets/download/{file}', [TimesheetController::class, 'downloadFile'])->name('timesheets.download.file');
+        Route::get('/timesheets/download-zip/{generation:uuid}', [TimesheetController::class, 'downloadZip'])->name('timesheets.download.zip');
+    });
 
     Route::view('/admin', 'admin.index')
         ->middleware('role:'.User::ROLE_ADMIN)

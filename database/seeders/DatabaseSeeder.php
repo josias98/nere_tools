@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Employee;
 use App\Models\Tool;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
@@ -62,5 +63,85 @@ class DatabaseSeeder extends Seeder
                 ],
             );
         }
+
+        foreach ($this->employees() as $employee) {
+            Employee::query()->updateOrCreate(
+                ['display_name' => $employee['display_name']],
+                $employee,
+            );
+        }
+    }
+
+    /**
+     * @return array<int, array<string, mixed>>
+     */
+    private function employees(): array
+    {
+        return [
+            [
+                'first_name' => 'Josias',
+                'last_name' => 'DIAMITANI',
+                'display_name' => 'Josias Mansour DIAMITANI',
+                'entity' => 'NERE CAPITAL PARTNERS',
+                'location' => 'Ouagadougou',
+                'job_title' => 'Charge de projet amorcage',
+                'analytic_code' => '1.1.1 Personnel technique',
+                'ipas_rate' => 0,
+                'catal_rate' => 100,
+                'ipde_rate' => 0,
+                'requires_other_projects' => false,
+                'signature_title' => 'Signature du responsable hierarchique',
+                'signatory_name' => 'Alida OUEDRAOGO',
+                'is_active' => true,
+            ],
+            [
+                'first_name' => 'Alida',
+                'last_name' => 'OUEDRAOGO',
+                'display_name' => 'Alida OUEDRAOGO',
+                'entity' => 'NERE CAPITAL PARTNERS',
+                'location' => 'Ouagadougou',
+                'job_title' => 'Responsable de projet amorcage',
+                'analytic_code' => '1.1.1 Personnel technique',
+                'ipas_rate' => 0,
+                'catal_rate' => 96,
+                'ipde_rate' => 4,
+                'requires_other_projects' => false,
+                'signature_title' => 'Signature du responsable hierarchique',
+                'signatory_name' => 'ZONGO P. Job',
+                'is_active' => true,
+            ],
+            [
+                'first_name' => 'Job',
+                'last_name' => 'ZONGO',
+                'display_name' => 'Job ZONGO',
+                'entity' => 'NERE CAPITAL PARTNERS',
+                'location' => 'Ouagadougou',
+                'job_title' => 'DG Fonds',
+                'analytic_code' => '1.1.1 Personnel technique',
+                'ipas_rate' => 0,
+                'catal_rate' => 12,
+                'ipde_rate' => 0,
+                'requires_other_projects' => true,
+                'signature_title' => 'Signature du DAF',
+                'signatory_name' => 'BAKO/NAGALO A Germaine',
+                'is_active' => true,
+            ],
+            [
+                'first_name' => 'Germaine',
+                'last_name' => 'BAKO/NAGALO',
+                'display_name' => 'Germaine BAKO/NAGALO',
+                'entity' => 'NERE CAPITAL PARTNERS',
+                'location' => 'Ouagadougou',
+                'job_title' => 'DAF',
+                'analytic_code' => '1.1.1 Personnel technique',
+                'ipas_rate' => 0,
+                'catal_rate' => 20,
+                'ipde_rate' => 0,
+                'requires_other_projects' => true,
+                'signature_title' => 'Signature du responsable hierarchique',
+                'signatory_name' => 'ZONGO P. Job',
+                'is_active' => true,
+            ],
+        ];
     }
 }
