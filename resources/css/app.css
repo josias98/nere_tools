@@ -1,9 +1,393 @@
+/* Hallmark · macrostructure: Workbench · tone: institutional · anchor hue: brown
+ * ponytail: one CSS file owns this UI; split only when real components appear.
+ */
 @import 'tailwindcss';
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
 
 @theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-sans: 'Work Sans', Calibri, Arial, sans-serif;
+}
+
+:root {
+    --ip-brown: #532609;
+    --ip-brown-dark: #341604;
+    --ip-rust: #8f342a;
+    --ip-ochre: #a98c4e;
+    --ip-grey: #5f5249;
+    --ip-light-grey: #cdc6c0;
+    --ip-orange: #e1580a;
+    --ip-white: #ffffff;
+    --ip-ivory: #f7f4f1;
+    --ip-panel: #eeeae7;
+    --ip-line: #ded7d1;
+    --font-title: 'Le Monde Livre', Cambria, Georgia, serif;
+    --font-body: 'Work Sans', Calibri, Arial, sans-serif;
+    --radius: 6px;
+}
+
+html,
+body {
+    overflow-x: clip;
+}
+
+body {
+    margin: 0;
+    background: var(--ip-ivory);
+    color: var(--ip-brown-dark);
+    font-family: var(--font-body);
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+:focus-visible {
+    outline: 3px solid var(--ip-orange);
+    outline-offset: 3px;
+}
+
+.nc-shell {
+    min-height: 100vh;
+}
+
+.nc-header {
+    background: var(--ip-white);
+    border-bottom: 1px solid var(--ip-line);
+}
+
+.nc-header-inner,
+.nc-page,
+.nc-auth-inner {
+    width: min(1120px, calc(100% - 32px));
+    margin: 0 auto;
+}
+
+.nc-header-inner {
+    min-height: 76px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 22px;
+}
+
+.nc-brand,
+.nc-nav,
+.nc-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.nc-brand {
+    gap: 18px;
+    color: inherit;
+    text-decoration: none;
+}
+
+.nc-logo {
+    width: 148px;
+}
+
+.nc-muted {
+    color: var(--ip-grey);
+}
+
+.nc-nav a,
+.nc-button,
+.nc-ghost {
+    min-height: 42px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid transparent;
+    border-radius: var(--radius);
+    padding: 10px 14px;
+    color: inherit;
+    font-size: 14px;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.nc-nav a:hover,
+.nc-ghost:hover {
+    background: var(--ip-ivory);
+    border-color: var(--ip-line);
+}
+
+.nc-button {
+    background: var(--ip-brown);
+    border-color: var(--ip-brown);
+    color: var(--ip-white);
+}
+
+.nc-button:hover {
+    background: var(--ip-brown-dark);
+}
+
+.nc-button.is-secondary {
+    background: var(--ip-orange);
+    border-color: var(--ip-orange);
+}
+
+.nc-button.is-secondary:hover {
+    background: var(--ip-rust);
+    border-color: var(--ip-rust);
+}
+
+.nc-button:disabled {
+    cursor: not-allowed;
+    opacity: .55;
+}
+
+.nc-ghost {
+    background: var(--ip-white);
+    border-color: var(--ip-line);
+    color: var(--ip-brown);
+}
+
+.nc-user {
+    display: grid;
+    gap: 2px;
+    text-align: right;
+    font-size: 13px;
+}
+
+.nc-page {
+    padding: 40px 0 56px;
+}
+
+.nc-title-row {
+    display: grid;
+    grid-template-columns: 6px minmax(0, 1fr);
+    gap: 18px;
+    align-items: start;
+    margin-bottom: 28px;
+}
+
+.nc-title-row::before {
+    content: '';
+    width: 6px;
+    min-height: 88px;
+    height: 100%;
+    background: var(--ip-brown);
+}
+
+.nc-kicker {
+    margin: 0;
+    color: var(--ip-ochre);
+    font-size: 12px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+}
+
+.nc-title {
+    margin: 4px 0 8px;
+    color: var(--ip-brown);
+    font-family: var(--font-title);
+    font-size: clamp(32px, 5vw, 56px);
+    line-height: 1;
+    overflow-wrap: anywhere;
+}
+
+.nc-lead {
+    max-width: 760px;
+    margin: 0;
+    color: var(--ip-grey);
+    line-height: 1.65;
+}
+
+.nc-grid {
+    display: grid;
+    gap: 16px;
+}
+
+.nc-grid.tools {
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+}
+
+.nc-grid.two {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.nc-card,
+.nc-panel,
+.nc-auth-card {
+    background: var(--ip-white);
+    border: 1px solid var(--ip-line);
+    border-radius: var(--radius);
+}
+
+.nc-card,
+.nc-panel {
+    padding: 24px;
+}
+
+.nc-card h2,
+.nc-panel h2,
+.nc-panel h3 {
+    margin: 0;
+    color: var(--ip-brown);
+    font-weight: 800;
+}
+
+.nc-card p,
+.nc-panel p {
+    color: var(--ip-grey);
+    line-height: 1.6;
+}
+
+.nc-card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+    gap: 16px;
+}
+
+.nc-badge {
+    display: inline-flex;
+    align-items: center;
+    min-height: 28px;
+    border-radius: 999px;
+    padding: 4px 10px;
+    background: var(--ip-panel);
+    color: var(--ip-grey);
+    font-size: 12px;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+.nc-badge.active {
+    background: #edf3ea;
+    color: #315f31;
+}
+
+.nc-badge.warning {
+    background: #fff1e8;
+    color: var(--ip-rust);
+}
+
+.nc-actions {
+    margin-top: 20px;
+}
+
+.nc-form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+    margin-top: 18px;
+}
+
+.nc-field {
+    display: grid;
+    gap: 7px;
+}
+
+.nc-field label {
+    color: var(--ip-brown);
+    font-weight: 750;
+}
+
+.nc-field input,
+.nc-field select,
+.nc-field textarea {
+    width: 100%;
+    min-height: 44px;
+    border: 1px solid var(--ip-line);
+    border-radius: var(--radius);
+    background: var(--ip-white);
+    padding: 10px 12px;
+    color: var(--ip-brown-dark);
+}
+
+.nc-table {
+    width: 100%;
+    margin-top: 18px;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+
+.nc-table th {
+    width: 38%;
+    background: var(--ip-brown);
+    color: var(--ip-white);
+    text-align: left;
+}
+
+.nc-table th,
+.nc-table td {
+    padding: 12px;
+    border-bottom: 1px solid var(--ip-line);
+}
+
+.nc-table td {
+    color: var(--ip-grey);
+}
+
+.nc-auth {
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    padding: 32px 0;
+}
+
+.nc-auth-card {
+    width: min(560px, 100%);
+    padding: 34px;
+}
+
+.nc-auth-card .nc-logo {
+    width: 190px;
+    margin-bottom: 30px;
+}
+
+.nc-alert {
+    border: 1px solid #f0b38f;
+    border-radius: var(--radius);
+    background: #fff6f0;
+    color: var(--ip-rust);
+    padding: 14px;
+    line-height: 1.5;
+}
+
+.nc-footer-bar {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 8px;
+    display: grid;
+    grid-template-columns: 3fr 1fr 1fr 1fr 1fr;
+    pointer-events: none;
+}
+
+.nc-footer-bar span:nth-child(1) { background: var(--ip-brown); }
+.nc-footer-bar span:nth-child(2) { background: var(--ip-rust); }
+.nc-footer-bar span:nth-child(3) { background: var(--ip-ochre); }
+.nc-footer-bar span:nth-child(4) { background: var(--ip-grey); }
+.nc-footer-bar span:nth-child(5) { background: var(--ip-light-grey); }
+
+@media (max-width: 760px) {
+    .nc-header-inner {
+        align-items: flex-start;
+        flex-direction: column;
+        padding: 16px 0;
+    }
+
+    .nc-user {
+        text-align: left;
+    }
+
+    .nc-grid.two,
+    .nc-form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .nc-auth-card {
+        padding: 24px;
+    }
 }

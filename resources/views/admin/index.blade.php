@@ -1,13 +1,26 @@
 @extends('layouts.app', ['title' => 'Administration - Nere Tools'])
 
 @section('content')
-    <section class="mx-auto max-w-6xl px-6 py-10">
-        <div class="rounded border border-[#ded7cf] bg-white p-6 shadow-sm">
-            <p class="mb-2 text-sm font-semibold uppercase text-[#e1580a]">Administration</p>
-            <h1 class="text-2xl font-semibold text-[#522400]">Parametres du portail</h1>
-            <p class="mt-2 text-sm leading-6 text-[#5f5249]">
-                Cette zone est reservee aux administrateurs. Les ecrans metier seront ajoutes avec les prochaines phases.
-            </p>
+    <section class="nc-page">
+        <div class="nc-title-row">
+            <div>
+                <p class="nc-kicker">Administration</p>
+                <h1 class="nc-title">Parametres du portail</h1>
+                <p class="nc-lead">Gestion des acces, collaborateurs et modules internes.</p>
+            </div>
+        </div>
+
+        <div class="nc-grid two">
+            <section class="nc-card">
+                <h2>Utilisateurs autorises</h2>
+                <p>La connexion Microsoft ne suffit pas : l'email doit rester autorise ici.</p>
+                <div class="nc-actions"><span class="nc-ghost" aria-disabled="true">CRUD phase admin</span></div>
+            </section>
+            <section class="nc-card">
+                <h2>Collaborateurs</h2>
+                <p>Base des salaries, coefficients et regles de signature.</p>
+                <div class="nc-actions"><span class="nc-ghost" aria-disabled="true">Ecran phase Timesheets</span></div>
+            </section>
         </div>
     </section>
 @endsection

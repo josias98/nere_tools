@@ -8,28 +8,32 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     @endif
 </head>
-<body class="min-h-screen bg-[#f8f6f3] font-sans text-[#2f2925] antialiased">
-    <div class="min-h-screen">
+<body>
+    <div class="nc-shell">
         @auth
-            <header class="border-b border-[#ded7cf] bg-white">
-                <div class="mx-auto flex max-w-6xl items-center justify-between gap-4 px-6 py-4">
-                    <a href="{{ route('dashboard') }}" class="flex items-center gap-3">
-                        <span class="flex size-10 items-center justify-center rounded bg-[#522400] text-sm font-semibold text-white">NT</span>
-                        <span>
-                            <span class="block text-sm font-semibold text-[#522400]">Nere Tools</span>
-                            <span class="block text-xs text-[#756960]">Portail interne</span>
-                        </span>
+            <header class="nc-header">
+                <div class="nc-header-inner">
+                    <a href="{{ route('dashboard') }}" class="nc-brand" aria-label="Nere Tools - Accueil">
+                        <img class="nc-logo" src="{{ asset('brand/nere-capital-rgb.png') }}" alt="Nere Capital">
+                        <span class="nc-muted">Portail interne</span>
                     </a>
-                    <div class="flex items-center gap-4">
-                        <div class="hidden text-right sm:block">
-                            <div class="text-sm font-medium">{{ auth()->user()->name }}</div>
-                            <div class="text-xs text-[#756960]">{{ auth()->user()->email }}</div>
+
+                    <nav class="nc-nav" aria-label="Navigation principale">
+                        <a href="{{ route('dashboard') }}">Dashboard</a>
+                        <a href="{{ route('timesheets.index') }}">Feuilles de temps</a>
+                        @if (auth()->user()->role === \App\Models\User::ROLE_ADMIN)
+                            <a href="{{ route('admin.index') }}">Administration</a>
+                        @endif
+                    </nav>
+
+                    <div class="nc-nav">
+                        <div class="nc-user">
+                            <strong>{{ auth()->user()->name }}</strong>
+                            <span class="nc-muted">{{ auth()->user()->email }}</span>
                         </div>
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
-                            <button type="submit" class="rounded border border-[#cdc6c0] px-3 py-2 text-sm font-medium text-[#522400] transition hover:border-[#522400] hover:bg-[#f8f6f3]">
-                                Deconnexion
-                            </button>
+                            <button type="submit" class="nc-ghost">Deconnexion</button>
                         </form>
                     </div>
                 </div>
@@ -40,5 +44,6 @@
             @yield('content')
         </main>
     </div>
+    <div class="nc-footer-bar" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span></div>
 </body>
 </html>
