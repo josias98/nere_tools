@@ -12,6 +12,7 @@ class DashboardController extends Controller
     public function __invoke(): View
     {
         $tools = Tool::query()
+            ->where('status', Tool::STATUS_ACTIVE)
             ->orderBy('display_order')
             ->orderBy('name')
             ->get();
@@ -38,20 +39,6 @@ class DashboardController extends Controller
                 'description' => 'Generation automatique des feuilles mensuelles en PDF.',
                 'route' => '/timesheets',
                 'status' => Tool::STATUS_ACTIVE,
-            ],
-            (object) [
-                'name' => 'Generateur de documents',
-                'slug' => 'documents',
-                'description' => 'Preparation de documents internes standardises.',
-                'route' => '/documents',
-                'status' => Tool::STATUS_COMING_SOON,
-            ],
-            (object) [
-                'name' => 'Reporting portefeuille',
-                'slug' => 'reporting',
-                'description' => 'Suivi et restitution des indicateurs portefeuille.',
-                'route' => '/reporting',
-                'status' => Tool::STATUS_COMING_SOON,
             ],
         ]);
     }

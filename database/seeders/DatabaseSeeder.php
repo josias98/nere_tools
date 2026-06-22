@@ -84,6 +84,15 @@ class DatabaseSeeder extends Seeder
             );
         }
 
+        User::query()->updateOrCreate(
+            ['email' => 'jdiamitani@nerecapital.com'],
+            [
+                'name' => 'Josias Mansour DIAMITANI',
+                'role' => User::ROLE_FINANCE,
+                'is_active' => true,
+            ],
+        );
+
         $departments = Department::all()->keyBy('slug');
 
         foreach ($this->employees($departments) as $employee) {

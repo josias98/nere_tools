@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Employee;
+use App\Models\Tool;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
@@ -106,6 +107,36 @@ class MicrosoftAuthenticationTest extends TestCase
             ->get('/timesheets')
             ->assertOk()
             ->assertSee('Feuilles de temps');
+    }
+
+    public function test_dashboard_hides_coming_soon_tools(): void
+    {
+        $financeUser = User::factory()->create(['role' => User::ROLE_FINANCE]);
+
+        Tool::query()->create([
+            'name' => 'Feuilles de temps',
+            'slug' => 'timesheets',
+            'description' => 'Generation automatique des feuilles mensuelles en PDF.',
+            'route' => '/timesheets',
+            'status' => Tool::STATUS_ACTIVE,
+            'required_role' => User::ROLE_FINANCE,
+            'display_order' => 10,
+        ]);
+        Tool::query()->create([
+            'name' => 'Reporting portefeuille',
+            'slug' => 'reporting',
+            'description' => 'Suivi portefeuille.',
+            'route' => '/reporting',
+            'status' => Tool::STATUS_COMING_SOON,
+            'display_order' => 20,
+        ]);
+
+        $this->actingAs($financeUser)
+            ->get('/')
+            ->assertOk()
+            ->assertSee('Feuilles de temps')
+            ->assertDontSee('Reporting portefeuille')
+            ->assertDontSee('Bientot disponible');
     }
 
     public function test_timesheets_csv_upload_prepares_editable_rows(): void
