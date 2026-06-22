@@ -43,6 +43,9 @@
                     <p>Le décompte se fait en jours calendaires, week-ends inclus.</p>
                 </div>
                 <div class="nc-actions">
+                    @if ($canValidateLeaves)
+                        <a href="{{ route('leaves.validations.index') }}" class="nc-button">Validations</a>
+                    @endif
                     <a href="{{ route('leaves.history') }}" class="nc-button">Historique</a>
                     <a href="{{ route('leaves.create') }}" class="nc-button">Nouvelle demande</a>
                 </div>

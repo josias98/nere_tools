@@ -5,14 +5,17 @@ namespace App\Http\Controllers\Leaves;
 use App\Http\Controllers\Controller;
 use App\Models\LeaveRequest;
 use App\Services\Leaves\LeaveBalanceService;
-use Illuminate\Http\Request;
+use App\Services\Leaves\LeaveValidatorService;
 use Illuminate\Support\Facades\Auth;
 
 class LeaveDashboardController extends Controller
 {
     protected LeaveBalanceService $balanceService;
 
-    public function __construct(LeaveBalanceService $balanceService)
+    public function __construct(
+        LeaveBalanceService $balanceService,
+        private LeaveValidatorService $validatorService,
+    )
     {
         $this->balanceService = $balanceService;
     }
@@ -32,7 +35,8 @@ class LeaveDashboardController extends Controller
             ->orderBy('created_at', 'desc')
             ->take(5)
             ->get();
+        $canValidateLeaves = $this->validatorService->userCanValidate($user);
 
-        return view('leaves.index', compact('balance', 'recentRequests'));
+        return view('leaves.index', compact('balance', 'recentRequests', 'canValidateLeaves'));
     }
 }
