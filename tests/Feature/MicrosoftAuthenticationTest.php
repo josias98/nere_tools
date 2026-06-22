@@ -130,33 +130,82 @@ class MicrosoftAuthenticationTest extends TestCase
 
         $csv = UploadedFile::fake()->createWithContent(
             'timesheets.csv',
-            "collaborateur;year;start_month;end_month;signatory_name\nJob ZONGO;2026;1;1;Responsable CSV\n"
+            "prenom,nom,entite,pays,fonction,role,fonds,ipde,catal,autre_projets,code_analytique,lieu,nom_signature,responsable_hierarchique,signature_droite_titre\nJob,ZONGO,Nere Capital,Burkina Faso,DG Fonds,DG Fonds,88%,0%,12%,88%,1.1.1 Personnel technique,Ouagadougou,ZONGO P. Job,Responsable CSV,DAF\n"
         );
 
         $this->actingAs($financeUser)
             ->post('/timesheets/csv', ['csv_file' => $csv])
             ->assertRedirect('/timesheets')
             ->assertSessionHas('timesheet_csv_rows.0.employee_id', $employee->id)
-            ->assertSessionHas('timesheet_csv_rows.0.signatory_name', 'Responsable CSV');
+            ->assertSessionHas('timesheet_csv_rows.0.first_name', 'Job')
+            ->assertSessionHas('timesheet_csv_rows.0.signatory_name', 'Responsable CSV')
+            ->assertSessionHas('timesheet_csv_rows.0.signature_title', 'DAF');
 
         Storage::fake('local');
 
         $response = $this->actingAs($financeUser)->post('/timesheets/generate', [
             'download_zip' => 1,
+            'period_start' => '2026-01-01',
+            'period_end' => '2026-06-30',
+            'zip_label' => 'Feuilles_de_temps_S1_2026',
+            'excluded_signature_dates' => "2026-02-02\n",
             'rows' => [[
+                'selected' => 1,
                 'employee_id' => $employee->id,
-                'year' => 2026,
-                'start_month' => 1,
-                'end_month' => 1,
-                'entity_label' => 'Nere Capital',
-                'signature_date' => '2026-02-02',
+                'first_name' => 'Job',
+                'last_name' => 'ZONGO',
+                'entity_name' => 'Nere Capital',
+                'country' => 'Burkina Faso',
+                'function_title' => 'DG Fonds',
+                'role' => 'DG Fonds',
+                'funds' => '88%',
+                'ipde_rate' => 0,
+                'catal_rate' => 12,
+                'other_projects_rate' => 88,
+                'analytic_code' => '1.1.1 Personnel technique',
+                'location' => 'Ouagadougou',
+                'employee_signature_name' => 'ZONGO P. Job',
                 'signatory_name' => 'Responsable CSV',
+                'signature_title' => 'DAF',
                 'comments_label' => 'Commentaires / Details',
                 'include_comments' => 1,
             ]],
         ]);
 
         $response->assertOk();
-        $this->assertStringContainsString('Feuilles_de_temps_CSV_', $response->headers->get('content-disposition'));
+        $this->assertStringContainsString('Feuilles_de_temps_S1_2026', $response->headers->get('content-disposition'));
+    }
+
+    public function test_timesheets_csv_upload_matches_partial_last_name_without_error(): void
+    {
+        $financeUser = User::factory()->create(['role' => User::ROLE_FINANCE]);
+        $employee = Employee::query()->create([
+            'first_name' => 'Germaine',
+            'last_name' => 'BAKO/NAGALO',
+            'display_name' => 'Germaine BAKO/NAGALO',
+            'entity' => 'NERE CAPITAL PARTNERS',
+            'location' => 'Ouagadougou',
+            'job_title' => 'Assistant(e) administratif(ve) et financier(e)',
+            'analytic_code' => '1.1.1 Personnel technique',
+            'ipas_rate' => 80,
+            'catal_rate' => 20,
+            'ipde_rate' => 0,
+            'requires_other_projects' => true,
+            'signature_title' => 'DAF',
+            'signatory_name' => 'BAKO/NAGALO A Germaine',
+            'is_active' => true,
+        ]);
+
+        $csv = UploadedFile::fake()->createWithContent(
+            'timesheets.csv',
+            "prenom,nom,entite,pays,fonction,role,fonds,ipde,catal,autre_projets,code_analytique,lieu,nom_signature\nGermaine,BAKO,Nere Capital,Burkina Faso,Assistant(e) administratif(ve) et financier(e),AAF,80%,0%,20%,80%,1.1.1 Personnel technique,Ouagadougou,BAKO/NAGALO A Germaine\n"
+        );
+
+        $this->actingAs($financeUser)
+            ->post('/timesheets/csv', ['csv_file' => $csv])
+            ->assertRedirect('/timesheets')
+            ->assertSessionHas('timesheet_csv_rows.0.employee_id', $employee->id)
+            ->assertSessionHas('timesheet_csv_rows.0.first_name', 'Germaine')
+            ->assertSessionHas('timesheet_csv_rows.0.last_name', 'BAKO');
     }
 }

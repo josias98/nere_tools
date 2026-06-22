@@ -21,6 +21,7 @@ class TimesheetServiceTest extends TestCase
 
         $this->assertCount(5, $service->weeks(2026, 4));
         $this->assertSame('02/02/2026', $service->signatureDate(2026, 1)->format('d/m/Y'));
+        $this->assertSame('03/02/2026', $service->signatureDate(2026, 1, ['2026-02-02'])->format('d/m/Y'));
 
         $user = User::factory()->create(['role' => User::ROLE_FINANCE]);
         $job = Employee::query()->create([
@@ -55,20 +56,37 @@ class TimesheetServiceTest extends TestCase
         $this->assertSame(1, $generation->pdf_count);
         Storage::disk('local')->assertExists($generation->zip_path);
         Storage::disk('local')->assertExists($generation->files()->first()->file_path);
+        $this->assertStringContainsString('/Count 1', Storage::disk('local')->get($generation->files()->first()->file_path));
+        $this->assertStringContainsString('/Subtype /Image', Storage::disk('local')->get($generation->files()->first()->file_path));
 
         $csvGeneration = $service->generateRows([[
+            'selected' => 1,
             'employee_id' => $job->id,
-            'year' => 2026,
-            'start_month' => 2,
-            'end_month' => 2,
-            'entity_label' => 'Nere Capital',
-            'signature_date' => '2026-03-02',
+            'first_name' => 'Job',
+            'last_name' => 'ZONGO',
+            'entity_name' => 'Nere Capital',
+            'function_title' => 'DG Fonds',
+            'ipde_rate' => 0,
+            'catal_rate' => 12,
+            'other_projects_rate' => 88,
+            'analytic_code' => '1.1.1 Personnel technique',
+            'location' => 'Ouagadougou',
+            'employee_signature_name' => 'ZONGO P. Job',
             'signatory_name' => 'Responsable CSV',
+            'signature_title' => 'DAF',
             'comments_label' => 'Notes',
             'include_comments' => 0,
-        ]], $user);
+        ]], $user, [
+            'period_start' => '2026-01-01',
+            'period_end' => '2026-03-31',
+            'zip_label' => 'Feuilles_de_temps_Fevrier_2026',
+            'excluded_signature_dates' => "2026-03-02\n",
+        ]);
 
         $this->assertSame(1, $csvGeneration->pdf_count);
         Storage::disk('local')->assertExists($csvGeneration->zip_path);
+        $this->assertSame('Feuilles_de_temps_Fevrier_2026', $csvGeneration->period_label);
+        $this->assertStringContainsString('/Count 3', Storage::disk('local')->get($csvGeneration->files()->first()->file_path));
+        $this->assertStringContainsString('/Subtype /Image', Storage::disk('local')->get($csvGeneration->files()->first()->file_path));
     }
 }

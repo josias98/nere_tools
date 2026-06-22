@@ -45,10 +45,12 @@ class TimesheetService
             'status' => 'completed',
         ]);
 
-        foreach (range($startMonth, $endMonth) as $month) {
-            foreach ($employees as $employee) {
-                $this->createFile($generation, $employee, $year, $month, $data);
-            }
+        $periods = array_map(
+            fn (int $month): array => ['year' => $year, 'month' => $month],
+            range($startMonth, $endMonth)
+        );
+        foreach ($employees as $employee) {
+            $this->createFile($generation, $employee, $periods, $data);
         }
 
         $generation->update([
@@ -62,8 +64,10 @@ class TimesheetService
     /**
      * @param  array<int, array<string, mixed>>  $rows
      */
-    public function generateRows(array $rows, User $user): TimesheetGeneration
+    public function generateRows(array $rows, User $user, array $options = []): TimesheetGeneration
     {
+        $rows = array_values(array_filter($rows, fn (array $row): bool => (bool) ($row['selected'] ?? true)));
+
         if ($rows === []) {
             throw new RuntimeException('Le fichier CSV ne contient aucune ligne exploitable.');
         }
@@ -79,36 +83,53 @@ class TimesheetService
             throw new RuntimeException('Une ligne CSV cible un collaborateur introuvable ou inactif.');
         }
 
-        $starts = [];
-        $ends = [];
-        foreach ($rows as $row) {
-            if ((int) $row['end_month'] < (int) $row['start_month']) {
-                throw new RuntimeException('Une ligne CSV a un mois de fin anterieur au mois de debut.');
+        $monthPairs = [];
+        if (filled($options['period_start'] ?? null) && filled($options['period_end'] ?? null)) {
+            $periodStart = Carbon::parse((string) $options['period_start'])->startOfDay();
+            $periodEnd = Carbon::parse((string) $options['period_end'])->endOfDay();
+            $monthPairs = $this->monthPairs($periodStart, $periodEnd);
+        } else {
+            $starts = [];
+            $ends = [];
+            foreach ($rows as $row) {
+                if ((int) $row['end_month'] < (int) $row['start_month']) {
+                    throw new RuntimeException('Une ligne CSV a un mois de fin anterieur au mois de debut.');
+                }
+
+                $starts[] = Carbon::create((int) $row['year'], (int) $row['start_month'], 1);
+                $ends[] = Carbon::create((int) $row['year'], (int) $row['end_month'], 1)->endOfMonth();
             }
 
-            $starts[] = Carbon::create((int) $row['year'], (int) $row['start_month'], 1);
-            $ends[] = Carbon::create((int) $row['year'], (int) $row['end_month'], 1)->endOfMonth();
+            $periodStart = collect($starts)->sort()->first();
+            $periodEnd = collect($ends)->sortDesc()->first();
         }
 
-        $periodStart = collect($starts)->sort()->first();
-        $periodEnd = collect($ends)->sortDesc()->first();
         $generation = TimesheetGeneration::query()->create([
             'uuid' => (string) Str::uuid(),
             'period_start' => $periodStart,
             'period_end' => $periodEnd,
             'year' => (int) $periodStart->year,
-            'period_label' => 'CSV_'.$periodStart->format('Ym').'_'.$periodEnd->format('Ym'),
+            'period_label' => trim((string) ($options['zip_label'] ?? '')) ?: 'CSV_'.$periodStart->format('Ym').'_'.$periodEnd->format('Ym'),
             'generated_by_user_id' => $user->id,
             'employee_count' => $employeeIds->count(),
             'pdf_count' => 0,
             'status' => 'completed',
         ]);
 
-        foreach ($rows as $row) {
+        $excludedDates = $this->excludedDates((string) ($options['excluded_signature_dates'] ?? ''));
+        $rowsByEmployee = collect($rows)->keyBy(fn (array $row): int => (int) $row['employee_id'])->values();
+        foreach ($rowsByEmployee as $row) {
             $employee = $employees[(int) $row['employee_id']];
-            foreach (range((int) $row['start_month'], (int) $row['end_month']) as $month) {
-                $this->createFile($generation, $employee, (int) $row['year'], $month, $row);
+            if ($monthPairs !== []) {
+                $this->createFile($generation, $employee, $monthPairs, [...$row, 'excluded_signature_dates' => $excludedDates]);
+                continue;
             }
+
+            $periods = array_map(
+                fn (int $month): array => ['year' => (int) $row['year'], 'month' => $month],
+                range((int) $row['start_month'], (int) $row['end_month'])
+            );
+            $this->createFile($generation, $employee, $periods, [...$row, 'excluded_signature_dates' => $excludedDates]);
         }
 
         $generation->update([
@@ -146,11 +167,11 @@ class TimesheetService
         return $weeks;
     }
 
-    public function signatureDate(int $year, int $month): Carbon
+    public function signatureDate(int $year, int $month, array $excludedDates = []): Carbon
     {
         $date = Carbon::create($year, $month, 1)->endOfMonth()->addDay();
 
-        while ($date->isWeekend()) {
+        while ($date->isWeekend() || in_array($date->format('Y-m-d'), $excludedDates, true)) {
             $date->addDay();
         }
 
@@ -160,15 +181,18 @@ class TimesheetService
     /**
      * @return array<int, array{label: string, value: float}>
      */
-    public function columns(Employee $employee): array
+    public function columns(Employee $employee, array $options = []): array
     {
         $columns = [
-            ['label' => 'IPAS', 'value' => $employee->ipas_rate],
-            ['label' => "CATAL1,5\u{00B0}T", 'value' => $employee->catal_rate],
-            ['label' => 'IPDE', 'value' => $employee->ipde_rate],
+            ['label' => 'IPAS', 'value' => $this->rateValue($options, 'ipas_rate', $employee->ipas_rate)],
+            ['label' => "CATAL1,5\u{00B0}T", 'value' => $this->rateValue($options, 'catal_rate', $employee->catal_rate)],
+            ['label' => 'IPDE', 'value' => $this->rateValue($options, 'ipde_rate', $employee->ipde_rate)],
         ];
 
-        if ($employee->requires_other_projects) {
+        $otherProjectsRate = $this->rateValue($options, 'other_projects_rate');
+        if ($otherProjectsRate !== null) {
+            $columns[] = ['label' => 'Autres projets', 'value' => $otherProjectsRate];
+        } elseif ($employee->requires_other_projects) {
             $columns[] = ['label' => 'Autres projets', 'value' => 100 - array_sum(array_column($columns, 'value'))];
         }
 
@@ -181,20 +205,23 @@ class TimesheetService
     }
 
     /**
+     * @param  array<int, array{year: int, month: int}>  $periods
      * @param  array<string, mixed>  $options
      */
-    private function createFile(TimesheetGeneration $generation, Employee $employee, int $year, int $month, array $options): TimesheetGenerationFile
+    private function createFile(TimesheetGeneration $generation, Employee $employee, array $periods, array $options): TimesheetGenerationFile
     {
-        $safeName = Str::of($employee->name())->ascii()->replaceMatches('/[^A-Za-z0-9]+/', '_')->trim('_');
-        $fileName = sprintf('Feuille_de_temps_%d_%02d_%s.pdf', $year, $month, $safeName);
-        $path = sprintf('timesheets/%d/%02d/%s/%s', $year, $month, $safeName, $fileName);
+        $first = $periods[0];
+        $last = $periods[array_key_last($periods)];
+        $safeName = Str::of($this->employeeDisplayName($employee, $options))->ascii()->replaceMatches('/[^A-Za-z0-9]+/', '_')->trim('_');
+        $fileName = sprintf('Feuilles_de_temps_%d%02d_%d%02d_%s.pdf', $first['year'], $first['month'], $last['year'], $last['month'], $safeName);
+        $path = sprintf('timesheets/%s/%s/%s', $generation->uuid, $safeName, $fileName);
 
-        Storage::disk('local')->put($path, $this->pdf($employee, $year, $month, $options));
+        Storage::disk('local')->put($path, $this->pdf($employee, $periods, $options));
 
         return $generation->files()->create([
             'employee_id' => $employee->id,
-            'month' => $month,
-            'year' => $year,
+            'month' => $first['month'],
+            'year' => $first['year'],
             'file_name' => $fileName,
             'file_path' => $path,
             'status' => 'generated',
@@ -223,35 +250,58 @@ class TimesheetService
     }
 
     /**
+     * @param  array<int, array{year: int, month: int}>  $periods
      * @param  array<string, mixed>  $options
      */
-    private function pdf(Employee $employee, int $year, int $month, array $options): string
+    private function pdf(Employee $employee, array $periods, array $options): string
+    {
+        $logo = $this->logoAsset();
+
+        return $this->simplePdf(array_map(
+            fn (array $period): string => $this->pdfPage($employee, $period['year'], $period['month'], $options, $logo !== null),
+            $periods
+        ), $logo);
+    }
+
+    /**
+     * @param  array<string, mixed>  $options
+     */
+    private function pdfPage(Employee $employee, int $year, int $month, array $options, bool $hasLogo): string
     {
         $x = 28.2;
         $top = 718.0;
         $width = 539.0;
-        $columns = $this->columns($employee);
+        $columns = $this->columns($employee, $options);
         $includeComments = (bool) ($options['include_comments'] ?? true);
         $signatureDate = filled($options['signature_date'] ?? null)
             ? Carbon::parse($options['signature_date'])
-            : $this->signatureDate($year, $month);
+            : $this->signatureDate($year, $month, $options['excluded_signature_dates'] ?? []);
+        $employeeName = $this->employeeDisplayName($employee, $options);
         $signatoryName = trim((string) ($options['signatory_name'] ?? '')) ?: $employee->signatory_name;
-        $entity = trim((string) ($options['entity_label'] ?? '')) ?: $employee->entity;
+        $entity = trim((string) ($options['entity_name'] ?? $options['entity_label'] ?? '')) ?: $employee->entity;
+        $location = trim((string) ($options['location'] ?? '')) ?: $employee->location;
+        $jobTitle = trim((string) ($options['function_title'] ?? '')) ?: $employee->job_title;
+        $analyticCode = trim((string) ($options['analytic_code'] ?? '')) ?: $employee->analytic_code;
+        $signatureTitle = trim((string) ($options['signature_title'] ?? '')) ?: ($employee->signature_title ?: 'Signature du responsable hierarchique');
         $commentsLabel = trim((string) ($options['comments_label'] ?? '')) ?: 'Commentaires / Details';
         $content = "0.55 0.55 0.55 RG\n0.45 w\n";
 
-        $this->text($content, 'I&P', 48, 775, 26, 'F2', 'left', [0.34, 0.15, 0.04]);
-        $this->text($content, 'INVESTISSEURS', 78, 773, 8, 'F2', 'left', [0.34, 0.15, 0.04]);
-        $this->text($content, '& PARTENAIRES', 78, 763, 8, 'F2', 'left', [0.34, 0.15, 0.04]);
+        if ($hasLogo) {
+            $this->drawImage($content, 'Im1', 28.2, 736, 198, 81.78);
+        } else {
+            $this->text($content, 'I&P', 48, 775, 26, 'F2', 'left', [0.34, 0.15, 0.04]);
+            $this->text($content, 'INVESTISSEURS', 78, 773, 8, 'F2', 'left', [0.34, 0.15, 0.04]);
+            $this->text($content, '& PARTENAIRES', 78, 763, 8, 'F2', 'left', [0.34, 0.15, 0.04]);
+        }
         $this->text($content, 'FEUILLE DE TEMPS', 297.5, 733, 18, 'F2', 'center');
 
         $rowY = $top;
         foreach ([
             ['Entite : ', $entity],
-            ['Nom et prenom du salarie : ', $employee->name()],
-            ['Lieu : ', $employee->location],
-            ['Intitule du poste : ', $employee->job_title],
-            ['Code analytique : ', $employee->analytic_code],
+            ['Nom et prenom du salarie : ', $employeeName],
+            ['Lieu : ', $location],
+            ['Intitule du poste : ', $jobTitle],
+            ['Code analytique : ', $analyticCode],
         ] as [$label, $value]) {
             $this->rect($content, $x, $rowY - 17, $width, 17);
             $this->labelValue($content, $x + 3, $rowY - 12, $label, (string) $value);
@@ -327,41 +377,62 @@ class TimesheetService
         $this->rect($content, $x, $rowY - $signatureHeight, $width, $signatureHeight);
         $this->line($content, $splitX, $rowY, $splitX, $rowY - $signatureHeight);
         $this->text($content, 'Signature du salarie :', $x + 3, $rowY - 12, 10, 'F2');
-        $this->text($content, ($employee->signature_title ?: 'Signature du responsable hierarchique').' :', $splitX + 3, $rowY - 12, 10, 'F2');
+        $this->text($content, $signatureTitle.' :', $splitX + 3, $rowY - 12, 10, 'F2');
         $this->text($content, 'Date : '.$signatureDate->format('d/m/Y'), $x + 3, $rowY - 36, 10, 'F3');
-        $this->text($content, 'Nom et Prenom : '.$employee->name(), $x + 3, $rowY - 50, 10, 'F3');
+        $this->text($content, 'Nom et Prenom : '.$employeeName, $x + 3, $rowY - 50, 10, 'F3');
         $this->text($content, 'Date : '.$signatureDate->format('d/m/Y'), $splitX + 3, $rowY - 36, 10, 'F3');
         $this->text($content, 'Nom et Prenom : '.$signatoryName, $splitX + 3, $rowY - 50, 10, 'F3');
 
-        return $this->simplePdf($content);
+        return $content;
     }
 
-    private function simplePdf(string $content): string
+    /**
+     * @param  array<int, string>  $pages
+     */
+    private function simplePdf(array $pages, ?array $logo = null): string
     {
+        $pageCount = count($pages);
+        $font1 = 3 + $pageCount;
+        $font2 = $font1 + 1;
+        $font3 = $font2 + 1;
+        $logoId = $logo === null ? null : $font3 + 1;
+        $contentStart = ($logoId ?? $font3) + 1;
         $objects = [
-            "1 0 obj << /Type /Catalog /Pages 2 0 R >> endobj\n",
-            "2 0 obj << /Type /Pages /Kids [3 0 R] /Count 1 >> endobj\n",
-            "3 0 obj << /Type /Page /Parent 2 0 R /MediaBox [0 0 595.276 841.89] /Resources << /Font << /F1 4 0 R /F2 5 0 R /F3 6 0 R >> >> /Contents 7 0 R >> endobj\n",
-            "4 0 obj << /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >> endobj\n",
-            "5 0 obj << /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >> endobj\n",
-            "6 0 obj << /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Oblique /Encoding /WinAnsiEncoding >> endobj\n",
-            '7 0 obj << /Length '.strlen($content)." >> stream\n{$content}endstream\nendobj\n",
+            1 => "1 0 obj << /Type /Catalog /Pages 2 0 R >> endobj\n",
+            2 => '2 0 obj << /Type /Pages /Kids ['.implode(' ', array_map(fn (int $i): string => (3 + $i).' 0 R', array_keys($pages)))."] /Count {$pageCount} >> endobj\n",
+            $font1 => "{$font1} 0 obj << /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >> endobj\n",
+            $font2 => "{$font2} 0 obj << /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >> endobj\n",
+            $font3 => "{$font3} 0 obj << /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Oblique /Encoding /WinAnsiEncoding >> endobj\n",
         ];
+        if ($logoId !== null) {
+            $objects[$logoId] = $logoId.' 0 obj << /Type /XObject /Subtype /Image /Width '.$logo['width'].' /Height '.$logo['height'].' /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length '.strlen($logo['data'])." >> stream\n".$logo['data']."\nendstream\nendobj\n";
+        }
+
+        foreach ($pages as $i => $content) {
+            $pageId = 3 + $i;
+            $contentId = $contentStart + $i;
+            $xObject = $logoId === null ? '' : " /XObject << /Im1 {$logoId} 0 R >>";
+            $objects[$pageId] = "{$pageId} 0 obj << /Type /Page /Parent 2 0 R /MediaBox [0 0 595.276 841.89] /Resources << /Font << /F1 {$font1} 0 R /F2 {$font2} 0 R /F3 {$font3} 0 R >>{$xObject} >> /Contents {$contentId} 0 R >> endobj\n";
+            $objects[$contentId] = $contentId.' 0 obj << /Length '.strlen($content)." >> stream\n{$content}endstream\nendobj\n";
+        }
+
+        ksort($objects);
 
         $pdf = "%PDF-1.4\n";
         $offsets = [0];
-        foreach ($objects as $object) {
-            $offsets[] = strlen($pdf);
+        foreach ($objects as $id => $object) {
+            $offsets[$id] = strlen($pdf);
             $pdf .= $object;
         }
 
         $xref = strlen($pdf);
-        $pdf .= "xref\n0 8\n0000000000 65535 f \n";
-        for ($i = 1; $i <= 7; $i++) {
+        $size = max(array_keys($objects)) + 1;
+        $pdf .= "xref\n0 {$size}\n0000000000 65535 f \n";
+        for ($i = 1; $i < $size; $i++) {
             $pdf .= sprintf("%010d 00000 n \n", $offsets[$i]);
         }
 
-        return $pdf."trailer << /Size 8 /Root 1 0 R >>\nstartxref\n{$xref}\n%%EOF";
+        return $pdf."trailer << /Size {$size} /Root 1 0 R >>\nstartxref\n{$xref}\n%%EOF";
     }
 
     private function rect(string &$content, float $x, float $y, float $w, float $h): void
@@ -377,6 +448,11 @@ class TimesheetService
     private function line(string &$content, float $x1, float $y1, float $x2, float $y2): void
     {
         $content .= sprintf("%.2F %.2F m %.2F %.2F l S\n", $x1, $y1, $x2, $y2);
+    }
+
+    private function drawImage(string &$content, string $name, float $x, float $y, float $w, float $h): void
+    {
+        $content .= sprintf("q %.2F 0 0 %.2F %.2F %.2F cm /%s Do Q\n", $w, $h, $x, $y, $name);
     }
 
     private function text(string &$content, string $text, float $x, float $y, int $size = 10, string $font = 'F1', string $align = 'left', array $rgb = [0, 0, 0]): void
@@ -457,6 +533,92 @@ class TimesheetService
     private function percent(float $value): string
     {
         return rtrim(rtrim(number_format($value, 2, '.', ''), '0'), '.').'%';
+    }
+
+    /**
+     * @return array<int, array{year: int, month: int}>
+     */
+    private function monthPairs(Carbon $periodStart, Carbon $periodEnd): array
+    {
+        $cursor = $periodStart->copy()->startOfMonth();
+        $end = $periodEnd->copy()->startOfMonth();
+        $months = [];
+
+        while ($cursor->lte($end)) {
+            $months[] = ['year' => (int) $cursor->year, 'month' => (int) $cursor->month];
+            $cursor->addMonth();
+        }
+
+        return $months;
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    private function excludedDates(string $rawDates): array
+    {
+        return collect(preg_split('/\r\n|\r|\n/', $rawDates) ?: [])
+            ->map(fn (string $date): ?string => $this->normalizedDate($date))
+            ->filter()
+            ->values()
+            ->all();
+    }
+
+    private function normalizedDate(string $date): ?string
+    {
+        $date = trim($date);
+        if ($date === '') {
+            return null;
+        }
+
+        foreach (['Y-m-d', 'd/m/Y'] as $format) {
+            $parsed = Carbon::createFromFormat($format, $date);
+            if ($parsed !== false) {
+                return $parsed->format('Y-m-d');
+            }
+        }
+
+        return null;
+    }
+
+    private function rateValue(array $options, string $key, ?float $fallback = null): ?float
+    {
+        if (! array_key_exists($key, $options) || $options[$key] === '' || $options[$key] === null) {
+            return $fallback;
+        }
+
+        return (float) $options[$key];
+    }
+
+    private function employeeDisplayName(Employee $employee, array $options): string
+    {
+        $name = trim((string) ($options['employee_signature_name'] ?? ''));
+        if ($name !== '') {
+            return $name;
+        }
+
+        $composed = trim((string) ($options['first_name'] ?? '').' '.(string) ($options['last_name'] ?? ''));
+
+        return $composed !== '' ? $composed : $employee->name();
+    }
+
+    /**
+     * @return array{width: int, height: int, data: string}|null
+     */
+    private function logoAsset(): ?array
+    {
+        $path = public_path('brand/ip-investisseurs-partenaires.jpg');
+        if (! is_file($path)) {
+            return null;
+        }
+
+        $size = getimagesize($path);
+        $raw = file_get_contents($path);
+        if ($size === false || $raw === false) {
+            return null;
+        }
+
+        return ['width' => $size[0], 'height' => $size[1], 'data' => $raw];
     }
 
     private function periodLabel(int $year, int $startMonth, int $endMonth): string

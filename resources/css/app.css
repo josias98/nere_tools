@@ -32,6 +32,18 @@
     --ip-danger-line: #f0b38f;
     --ip-shadow: 0 18px 42px rgba(52, 22, 4, .08);
     --ip-shadow-soft: 0 8px 22px rgba(52, 22, 4, .06);
+    --ts-ink: var(--ip-brown);
+    --ts-ink-soft: var(--ip-grey);
+    --ts-surface: var(--ip-white);
+    --ts-panel: #f3efeb;
+    --ts-panel-strong: var(--ip-panel);
+    --ts-line: var(--ip-line);
+    --ts-line-strong: var(--ip-line-strong);
+    --ts-accent: var(--ip-brown);
+    --ts-accent-deep: var(--ip-brown-dark);
+    --ts-chip: var(--ip-orange);
+    --ts-chip-deep: var(--ip-rust);
+    --ts-glow: rgba(169, 140, 78, .18);
     --ease-out: cubic-bezier(.16, 1, .3, 1);
     --dur-fast: 160ms;
     --font-title: 'Le Monde Livre', Cambria, Georgia, serif;
@@ -405,9 +417,380 @@ img {
     color: var(--ip-success-text);
 }
 
+.nc-timesheet-studio {
+    display: grid;
+    gap: 24px;
+}
+
+.nc-timesheet-studio .nc-title-row {
+    margin-bottom: 0;
+}
+
+.nc-timesheet-studio .nc-title-row::before {
+    background: var(--ts-ink);
+    min-height: 72px;
+}
+
+.nc-timesheet-studio .nc-title {
+    color: var(--ts-ink);
+    font-family: var(--font-title);
+    font-size: clamp(30px, 4vw, 48px);
+    font-weight: 700;
+    line-height: 1;
+}
+
+.nc-timesheet-studio .nc-kicker {
+    color: var(--ip-rust);
+}
+
+.nc-timesheet-studio .nc-lead {
+    color: var(--ts-ink-soft);
+}
+
+.ts-import-card,
+.ts-card {
+    background: var(--ts-surface);
+    border: 1px solid var(--ts-line);
+    border-radius: 14px;
+    box-shadow: var(--ip-shadow-soft);
+    transition: transform var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out), background-color var(--dur-fast) var(--ease-out);
+    animation: ts-rise 380ms var(--ease-out) both;
+}
+
+.ts-import-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    padding: 18px 22px;
+    animation-delay: 40ms;
+}
+
+.ts-import-copy {
+    display: grid;
+    gap: 4px;
+}
+
+.ts-import-copy strong,
+.ts-step-head h2 {
+    color: var(--ts-ink);
+}
+
+.ts-import-copy span,
+.ts-step-head p,
+.ts-chip-block label,
+.ts-logo-upload p {
+    color: var(--ts-ink-soft);
+}
+
+.ts-import-form,
+.ts-logo-upload {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.ts-upload-stack {
+    display: grid;
+    gap: 6px;
+}
+
+.ts-import-form input[type="file"],
+.ts-logo-upload input[type="file"] {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    border: 0;
+}
+
+.ts-upload-button {
+    min-height: 40px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--ts-line);
+    border-radius: 10px;
+    background: linear-gradient(180deg, var(--ts-surface), var(--ts-panel));
+    padding: 0 18px;
+    color: var(--ts-ink);
+    font-weight: 700;
+    text-decoration: none;
+    cursor: pointer;
+    transition: transform var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out), background-color var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast) var(--ease-out);
+}
+
+.ts-upload-button:hover {
+    transform: translateY(-1px);
+    border-color: var(--ts-line-strong);
+    box-shadow: 0 10px 20px rgba(52, 22, 4, .06);
+}
+
+.ts-upload-meta {
+    color: var(--ts-ink-soft);
+    font-size: 12px;
+    line-height: 1.4;
+}
+
+.ts-wizard {
+    display: grid;
+    gap: 20px;
+}
+
+.ts-card {
+    padding: 28px;
+    min-width: 0;
+}
+
+.ts-wizard > .ts-card:nth-child(1) {
+    animation-delay: 90ms;
+}
+
+.ts-wizard > .ts-card:nth-child(2) {
+    animation-delay: 140ms;
+}
+
+.ts-wizard > .ts-card:nth-child(3) {
+    animation-delay: 190ms;
+}
+
+.ts-card-action {
+    box-shadow: none;
+    border-color: transparent;
+    background: transparent;
+    padding: 0;
+}
+
+.ts-empty-card {
+    border-style: dashed;
+    background: linear-gradient(180deg, rgba(243, 239, 235, .92), rgba(255, 255, 255, 1));
+}
+
+.ts-step-head {
+    display: grid;
+    gap: 8px;
+    margin-bottom: 18px;
+}
+
+.ts-step-head h2 {
+    margin: 0;
+    font-family: var(--font-body);
+    font-size: clamp(28px, 3vw, 32px);
+    font-weight: 800;
+    line-height: 1.08;
+}
+
+.ts-step-head h2 span {
+    margin-right: 8px;
+}
+
+.ts-step-head p {
+    margin: 0;
+    max-width: 840px;
+}
+
+.ts-grid-wrap {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    border: 1px solid var(--ts-line);
+    border-radius: 12px;
+    background: var(--ts-surface);
+    padding-bottom: 8px;
+    scrollbar-color: var(--ip-ochre) var(--ts-panel);
+}
+
+.ts-grid {
+    width: 1800px;
+    min-width: 1800px;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+
+.ts-grid th,
+.ts-grid td {
+    border-bottom: 1px solid var(--ts-line);
+    border-right: 1px solid rgba(222, 215, 209, .72);
+    padding: 0;
+    vertical-align: middle;
+    transition: background-color var(--dur-fast) var(--ease-out);
+}
+
+.ts-grid th {
+    background: var(--ts-panel);
+    color: var(--ts-ink-soft);
+    font-size: 13px;
+    font-weight: 700;
+    text-align: left;
+    white-space: nowrap;
+    padding: 12px 10px;
+}
+
+.ts-grid tr:hover td,
+.ts-grid tr.is-selected td {
+    background: rgba(169, 140, 78, .07);
+}
+
+.ts-grid td input {
+    width: 100%;
+    min-width: 0;
+    min-height: 46px;
+    border: 0;
+    background: transparent;
+    padding: 10px;
+    color: var(--ts-ink);
+    font-size: 14px;
+    transition: background-color var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out);
+}
+
+.ts-grid td input:focus {
+    background: rgba(255, 255, 255, .96);
+    box-shadow: inset 0 0 0 1px var(--ip-ochre);
+    outline: none;
+}
+
+.ts-grid-select {
+    width: 48px;
+    text-align: center;
+}
+
+.ts-grid-select input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--ts-accent);
+}
+
+.ts-chip-block {
+    display: grid;
+    gap: 10px;
+    margin-top: 18px;
+}
+
+.ts-chip-block label {
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.ts-chip-tray {
+    min-height: 58px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    border-radius: 12px;
+    background: var(--ts-panel);
+    border: 1px solid var(--ts-line);
+    padding: 10px 12px;
+}
+
+.ts-chip {
+    display: inline-flex;
+    align-items: center;
+    min-height: 34px;
+    border-radius: 10px;
+    background: linear-gradient(180deg, var(--ts-chip), var(--ts-chip-deep));
+    padding: 0 12px;
+    color: var(--ts-surface);
+    font-size: 14px;
+    font-weight: 700;
+    white-space: nowrap;
+    box-shadow: 0 8px 14px rgba(143, 52, 42, .16);
+    animation: ts-chip-in 180ms var(--ease-out) both;
+}
+
+.ts-parameter-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.ts-field {
+    display: grid;
+    gap: 8px;
+}
+
+.ts-field span {
+    color: var(--ts-ink);
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.ts-field input,
+.ts-field textarea {
+    width: 100%;
+    min-height: 44px;
+    border: 1px solid var(--ts-line);
+    border-radius: 12px;
+    background: var(--ts-panel);
+    padding: 12px 14px;
+    color: var(--ts-ink);
+    transition: border-color var(--dur-fast) var(--ease-out), background-color var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast) var(--ease-out), transform var(--dur-fast) var(--ease-out);
+}
+
+.ts-field input:hover,
+.ts-field textarea:hover {
+    border-color: var(--ts-line-strong);
+}
+
+.ts-field input:focus,
+.ts-field textarea:focus {
+    background: var(--ts-surface);
+    border-color: var(--ip-ochre);
+    box-shadow: 0 0 0 4px var(--ts-glow);
+    outline: none;
+}
+
+.ts-field textarea {
+    min-height: 122px;
+    resize: vertical;
+}
+
+.ts-logo-upload {
+    min-height: 66px;
+    border-radius: 12px;
+    background: var(--ts-panel);
+    border: 1px solid var(--ts-line);
+    padding: 12px;
+}
+
+.ts-logo-upload p {
+    margin: 0;
+}
+
+.ts-generate-button {
+    min-height: 54px;
+    border: 0;
+    border-radius: 12px;
+    background: var(--ts-accent);
+    padding: 0 22px;
+    color: var(--ts-surface);
+    font-size: 17px;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: 0 14px 28px rgba(52, 22, 4, .16);
+    transition: transform var(--dur-fast) var(--ease-out), background-color var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast) var(--ease-out);
+}
+
+.ts-generate-button:hover {
+    background: var(--ts-accent-deep);
+    transform: translateY(-1px);
+    box-shadow: 0 18px 34px rgba(52, 22, 4, .2);
+}
+
 .nc-timesheet-workbench {
     display: grid;
     gap: 18px;
+    min-width: 0;
+}
+
+.nc-timesheet-workbench > * {
+    animation: ts-rise 420ms var(--ease-out) both;
+    animation-delay: 220ms;
 }
 
 .nc-upload {
@@ -455,6 +838,31 @@ img {
 
 .nc-table-wrap .nc-table {
     margin-top: 0;
+}
+
+.ts-help-list {
+    display: grid;
+    gap: 0;
+    margin-top: 16px;
+    border-top: 1px solid var(--ip-line);
+}
+
+.ts-help-list article {
+    display: grid;
+    gap: 5px;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--ip-line);
+}
+
+.ts-help-list h3 {
+    margin: 0;
+    color: var(--ip-brown);
+    font-size: 15px;
+    font-weight: 800;
+}
+
+.ts-help-list p {
+    margin: 0;
 }
 
 .nc-edit-table {
@@ -531,6 +939,16 @@ img {
         grid-template-columns: 1fr;
     }
 
+    .ts-import-card,
+    .ts-parameter-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .ts-import-card {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
     .nc-panel-heading {
         display: grid;
     }
@@ -544,12 +962,43 @@ img {
     .nc-button,
     .nc-ghost,
     .nc-card,
-    .nc-panel {
+    .nc-panel,
+    .ts-generate-button,
+    .ts-import-card,
+    .ts-card,
+    .nc-timesheet-workbench > * {
         transition-duration: 1ms;
+        animation: none;
     }
 
     .nc-button:hover,
-    .nc-ghost:hover {
+    .nc-ghost:hover,
+    .ts-generate-button:hover,
+    .ts-upload-button:hover {
         transform: none;
+    }
+}
+
+@keyframes ts-rise {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes ts-chip-in {
+    from {
+        opacity: 0;
+        transform: translateY(4px) scale(.98);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
     }
 }
