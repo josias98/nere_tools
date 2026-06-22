@@ -40,4 +40,10 @@ Route::middleware('auth')->group(function (): void {
     Route::view('/admin', 'admin.index')
         ->middleware('role:'.User::ROLE_ADMIN)
         ->name('admin.index');
+
+    Route::get('/conges', [\App\Http\Controllers\Leaves\LeaveDashboardController::class, 'index'])->name('leaves.index');
+    Route::get('/conges/demande', [\App\Http\Controllers\Leaves\LeaveRequestController::class, 'create'])->name('leaves.create');
+    Route::post('/conges/demande', [\App\Http\Controllers\Leaves\LeaveRequestController::class, 'store'])->name('leaves.store');
+    Route::get('/conges/historique', [\App\Http\Controllers\Leaves\LeaveHistoryController::class, 'index'])->name('leaves.history');
+    Route::get('/conges/{leaveRequest:uuid}', [\App\Http\Controllers\Leaves\LeaveRequestController::class, 'show'])->name('leaves.show');
 });
