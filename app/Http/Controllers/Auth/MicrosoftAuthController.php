@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\Employee;
 use App\Models\User;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Http\RedirectResponse;
@@ -94,6 +95,24 @@ class MicrosoftAuthController extends Controller
         $user = User::query()
             ->whereRaw('LOWER(email) = ?', [$email])
             ->first();
+
+        if (! $user) {
+            $employee = Employee::query()
+                ->whereRaw('LOWER(email) = ?', [$email])
+                ->first();
+
+            if ($employee) {
+                // ponytail: employee email is the local allow-list; create the app user on first sign-in.
+                $user = User::query()->create([
+                    'name' => $profile['displayName'] ?: $employee->name(),
+                    'email' => $email,
+                    'microsoft_id' => $profile['id'] ?? null,
+                    'role' => User::ROLE_USER,
+                    'is_active' => true,
+                    'last_login_at' => now(),
+                ]);
+            }
+        }
 
         if (! $user || ! $user->is_active) {
             Log::notice('Microsoft authenticated user is not locally authorized.', [

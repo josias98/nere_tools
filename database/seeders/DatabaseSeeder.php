@@ -116,6 +116,7 @@ class DatabaseSeeder extends Seeder
                 'first_name' => 'Josias',
                 'last_name' => 'DIAMITANI',
                 'display_name' => 'Josias Mansour DIAMITANI',
+                'email' => 'jdiamitani@nerecapital.com',
                 'entity' => 'NERE CAPITAL PARTNERS',
                 'location' => 'Ouagadougou',
                 'job_title' => 'Chargé de projet amorçage',
