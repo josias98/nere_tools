@@ -9,6 +9,8 @@ use App\Models\LeaveType;
 use App\Models\LeaveValidator;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Mail\Events\MessageSent;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Tests\TestCase;
@@ -100,6 +102,30 @@ class LeaveModuleTest extends TestCase
             ->get(route('leaves.validations.show', $leaveRequest->uuid))
             ->assertOk()
             ->assertSee('Examiner la demande');
+    }
+
+    public function test_submission_emails_validator(): void
+    {
+        Event::fake([MessageSent::class]);
+
+        [$requester] = $this->userWithEmployee('requester@nere.test', 'Requester');
+        [, $validatorEmployee] = $this->userWithEmployee('validator@nere.test', 'Validator');
+        $type = LeaveType::query()->create(['name' => 'Congé annuel', 'slug' => 'annual-test']);
+        LeaveValidator::query()->create([
+            'employee_id' => $validatorEmployee->id,
+            'scope' => 'global',
+            'is_active' => true,
+        ]);
+
+        $this->actingAs($requester)
+            ->post(route('leaves.store'), [
+                'leave_type_id' => $type->id,
+                'start_date' => '2026-08-01',
+                'end_date' => '2026-08-05',
+            ])
+            ->assertRedirect();
+
+        Event::assertDispatched(MessageSent::class);
     }
 
     public function test_admin_can_open_leave_admin(): void
