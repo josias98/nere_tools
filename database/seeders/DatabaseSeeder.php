@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Department;
 use App\Models\Employee;
 use App\Models\Tool;
 use App\Models\User;
@@ -17,11 +18,17 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        $this->call([
+            DepartmentSeeder::class,
+            LeaveSettingSeeder::class,
+            LeaveTypeSeeder::class,
+        ]);
+
         Tool::query()->updateOrCreate(
             ['slug' => 'timesheets'],
             [
                 'name' => 'Feuilles de temps',
-                'description' => 'Generation automatique des feuilles mensuelles en PDF.',
+                'description' => 'Génération automatique des feuilles mensuelles en PDF.',
                 'route' => '/timesheets',
                 'status' => Tool::STATUS_ACTIVE,
                 'required_role' => User::ROLE_FINANCE,
@@ -30,14 +37,26 @@ class DatabaseSeeder extends Seeder
         );
 
         Tool::query()->updateOrCreate(
+            ['slug' => 'conges'],
+            [
+                'name' => 'Demandes de congé',
+                'description' => 'Soumettre, suivre et valider les demandes de congé, avec calcul des soldes et notifications Office 365.',
+                'route' => '/conges',
+                'status' => Tool::STATUS_ACTIVE,
+                'required_role' => User::ROLE_USER,
+                'display_order' => 20,
+            ],
+        );
+
+        Tool::query()->updateOrCreate(
             ['slug' => 'documents'],
             [
-                'name' => 'Generateur de documents',
-                'description' => 'Preparation de documents internes standardises.',
+                'name' => 'Générateur de documents',
+                'description' => 'Préparation de documents internes standardisés.',
                 'route' => '/documents',
                 'status' => Tool::STATUS_COMING_SOON,
                 'required_role' => null,
-                'display_order' => 20,
+                'display_order' => 30,
             ],
         );
 
@@ -49,7 +68,7 @@ class DatabaseSeeder extends Seeder
                 'route' => '/reporting',
                 'status' => Tool::STATUS_COMING_SOON,
                 'required_role' => null,
-                'display_order' => 30,
+                'display_order' => 40,
             ],
         );
 
@@ -64,7 +83,9 @@ class DatabaseSeeder extends Seeder
             );
         }
 
-        foreach ($this->employees() as $employee) {
+        $departments = Department::all()->keyBy('slug');
+
+        foreach ($this->employees($departments) as $employee) {
             Employee::query()->updateOrCreate(
                 ['display_name' => $employee['display_name']],
                 $employee,
@@ -73,9 +94,10 @@ class DatabaseSeeder extends Seeder
     }
 
     /**
+     * @param \Illuminate\Support\Collection $departments
      * @return array<int, array<string, mixed>>
      */
-    private function employees(): array
+    private function employees($departments): array
     {
         return [
             [
@@ -84,15 +106,16 @@ class DatabaseSeeder extends Seeder
                 'display_name' => 'Josias Mansour DIAMITANI',
                 'entity' => 'NERE CAPITAL PARTNERS',
                 'location' => 'Ouagadougou',
-                'job_title' => 'Charge de projet amorcage',
+                'job_title' => 'Chargé de projet amorçage',
                 'analytic_code' => '1.1.1 Personnel technique',
                 'ipas_rate' => 0,
                 'catal_rate' => 100,
                 'ipde_rate' => 0,
                 'requires_other_projects' => false,
-                'signature_title' => 'Signature du responsable hierarchique',
+                'signature_title' => 'Signature du responsable hiérarchique',
                 'signatory_name' => 'Alida OUEDRAOGO',
                 'is_active' => true,
+                'department_id' => $departments->get('acceleration')?->id,
             ],
             [
                 'first_name' => 'Alida',
@@ -100,15 +123,16 @@ class DatabaseSeeder extends Seeder
                 'display_name' => 'Alida OUEDRAOGO',
                 'entity' => 'NERE CAPITAL PARTNERS',
                 'location' => 'Ouagadougou',
-                'job_title' => 'Responsable de projet amorcage',
+                'job_title' => 'Responsable d\'Amorçage',
                 'analytic_code' => '1.1.1 Personnel technique',
                 'ipas_rate' => 0,
                 'catal_rate' => 96,
                 'ipde_rate' => 4,
                 'requires_other_projects' => false,
-                'signature_title' => 'Signature du responsable hierarchique',
+                'signature_title' => 'Signature du responsable hiérarchique',
                 'signatory_name' => 'ZONGO P. Job',
                 'is_active' => true,
+                'department_id' => $departments->get('acceleration')?->id,
             ],
             [
                 'first_name' => 'Job',
@@ -116,7 +140,7 @@ class DatabaseSeeder extends Seeder
                 'display_name' => 'Job ZONGO',
                 'entity' => 'NERE CAPITAL PARTNERS',
                 'location' => 'Ouagadougou',
-                'job_title' => 'DG Fonds',
+                'job_title' => 'Directeur général',
                 'analytic_code' => '1.1.1 Personnel technique',
                 'ipas_rate' => 0,
                 'catal_rate' => 12,
@@ -125,22 +149,112 @@ class DatabaseSeeder extends Seeder
                 'signature_title' => 'Signature du DAF',
                 'signatory_name' => 'BAKO/NAGALO A Germaine',
                 'is_active' => true,
+                'department_id' => $departments->get('administratif-finance')?->id,
             ],
             [
                 'first_name' => 'Germaine',
-                'last_name' => 'BAKO/NAGALO',
-                'display_name' => 'Germaine BAKO/NAGALO',
+                'last_name' => 'BAKO / NAGALO',
+                'display_name' => 'Germaine BAKO / NAGALO',
                 'entity' => 'NERE CAPITAL PARTNERS',
                 'location' => 'Ouagadougou',
-                'job_title' => 'DAF',
+                'job_title' => 'Directrice Administrative et Financière',
                 'analytic_code' => '1.1.1 Personnel technique',
                 'ipas_rate' => 0,
                 'catal_rate' => 20,
                 'ipde_rate' => 0,
                 'requires_other_projects' => true,
-                'signature_title' => 'Signature du responsable hierarchique',
+                'signature_title' => 'Signature du responsable hiérarchique',
                 'signatory_name' => 'ZONGO P. Job',
                 'is_active' => true,
+                'department_id' => $departments->get('administratif-finance')?->id,
+            ],
+            [
+                'first_name' => 'Aïcha',
+                'last_name' => 'ZIO / SAVADOGO',
+                'display_name' => 'Aïcha ZIO / SAVADOGO',
+                'entity' => 'NERE CAPITAL PARTNERS',
+                'location' => 'Ouagadougou',
+                'job_title' => 'Directrice pôle études et conseils',
+                'analytic_code' => '1.1.1 Personnel technique',
+                'is_active' => true,
+                'department_id' => $departments->get('conseil')?->id,
+            ],
+            [
+                'first_name' => 'Aboubacar Sidiki',
+                'last_name' => 'SANOU',
+                'display_name' => 'Aboubacar Sidiki SANOU',
+                'entity' => 'NERE CAPITAL PARTNERS',
+                'location' => 'Ouagadougou',
+                'job_title' => 'Responsable d\'investissement',
+                'analytic_code' => '1.1.1 Personnel technique',
+                'is_active' => true,
+                'department_id' => $departments->get('equity')?->id,
+            ],
+            [
+                'first_name' => 'Brice Gaël',
+                'last_name' => 'SOUBEIGA',
+                'display_name' => 'Brice Gaël SOUBEIGA',
+                'entity' => 'NERE CAPITAL PARTNERS',
+                'location' => 'Ouagadougou',
+                'job_title' => 'Directeur d\'investissement',
+                'analytic_code' => '1.1.1 Personnel technique',
+                'is_active' => true,
+                'department_id' => $departments->get('equity')?->id,
+            ],
+            [
+                'first_name' => 'Samiratou Cyrielle',
+                'last_name' => 'TRAORE',
+                'display_name' => 'Samiratou Cyrielle TRAORE',
+                'entity' => 'NERE CAPITAL PARTNERS',
+                'location' => 'Ouagadougou',
+                'job_title' => 'Chargée d\'investissement',
+                'analytic_code' => '1.1.1 Personnel technique',
+                'is_active' => true,
+                'department_id' => $departments->get('equity')?->id,
+            ],
+            [
+                'first_name' => 'Fabien',
+                'last_name' => 'OUEDRAOGO',
+                'display_name' => 'Fabien OUEDRAOGO',
+                'entity' => 'NERE CAPITAL PARTNERS',
+                'location' => 'Ouagadougou',
+                'job_title' => 'Chauffeur-coursier',
+                'analytic_code' => '1.1.1 Personnel technique',
+                'is_active' => true,
+                'department_id' => $departments->get('administratif-finance')?->id,
+            ],
+            [
+                'first_name' => 'Relwendé Gloria',
+                'last_name' => 'OUEDRAOGO',
+                'display_name' => 'Relwendé Gloria OUEDRAOGO',
+                'entity' => 'NERE CAPITAL PARTNERS',
+                'location' => 'Ouagadougou',
+                'job_title' => 'Assistante financière',
+                'analytic_code' => '1.1.1 Personnel technique',
+                'is_active' => true,
+                'department_id' => $departments->get('administratif-finance')?->id,
+            ],
+            [
+                'first_name' => 'Saint André',
+                'last_name' => 'KOLAGBE',
+                'display_name' => 'Saint André KOLAGBE',
+                'entity' => 'NERE CAPITAL PARTNERS',
+                'location' => 'Ouagadougou',
+                'job_title' => 'Analyste financier',
+                'analytic_code' => '1.1.1 Personnel technique',
+                'is_active' => true,
+                'department_id' => $departments->get('equity')?->id,
+            ],
+            [
+                'first_name' => 'Samira',
+                'last_name' => 'OUEDRAOGO',
+                'display_name' => 'Samira OUEDRAOGO',
+                'entity' => 'NERE CAPITAL PARTNERS',
+                'location' => 'Ouagadougou',
+                'job_title' => 'Analyste financier',
+                'analytic_code' => '1.1.1 Personnel technique',
+                'is_active' => true,
+                'department_id' => $departments->get('conseil')?->id,
             ],
         ];
     }
