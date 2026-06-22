@@ -8,6 +8,7 @@ use App\Models\LeaveType;
 use App\Services\Leaves\LeaveBalanceService;
 use App\Services\Leaves\LeaveDayCountService;
 use App\Services\Leaves\LeaveRequestWorkflowService;
+use App\Services\Leaves\LeaveValidatorService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -16,15 +17,18 @@ class LeaveRequestController extends Controller
     protected LeaveBalanceService $balanceService;
     protected LeaveRequestWorkflowService $workflowService;
     protected LeaveDayCountService $dayCountService;
+    protected LeaveValidatorService $validatorService;
 
     public function __construct(
         LeaveBalanceService $balanceService,
         LeaveRequestWorkflowService $workflowService,
-        LeaveDayCountService $dayCountService
+        LeaveDayCountService $dayCountService,
+        LeaveValidatorService $validatorService
     ) {
         $this->balanceService = $balanceService;
         $this->workflowService = $workflowService;
         $this->dayCountService = $dayCountService;
+        $this->validatorService = $validatorService;
     }
 
     public function create()
@@ -50,6 +54,10 @@ class LeaveRequestController extends Controller
         ]);
 
         $user = Auth::user();
+
+        if (! $user->employee) {
+            return redirect()->route('dashboard')->with('error', 'Profil employé manquant.');
+        }
         
         try {
             $leaveRequest = $this->workflowService->submitRequest($user->employee, $request->all(), $user->id);
@@ -62,8 +70,13 @@ class LeaveRequestController extends Controller
     public function show(LeaveRequest $leaveRequest)
     {
         $user = Auth::user();
+        $leaveRequest->load(['employee.department', 'leaveType', 'reviewer', 'document']);
         
-        if ($leaveRequest->employee_id !== $user->employee?->id && !$user->hasRole('admin')) {
+        if (
+            $leaveRequest->employee_id !== $user->employee?->id
+            && ! $user->hasRole('admin')
+            && ! $this->validatorService->userCanValidate($user, $leaveRequest)
+        ) {
             abort(403);
         }
 

@@ -27,7 +27,8 @@ class LeaveDashboardController extends Controller
 
         $balance = $this->balanceService->getBalance($user->employee);
         
-        $recentRequests = LeaveRequest::where('employee_id', $user->employee->id)
+        $recentRequests = LeaveRequest::with('leaveType')
+            ->where('employee_id', $user->employee->id)
             ->orderBy('created_at', 'desc')
             ->take(5)
             ->get();

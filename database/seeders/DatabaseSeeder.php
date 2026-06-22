@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\Department;
 use App\Models\Employee;
+use App\Models\LeaveValidator;
 use App\Models\Tool;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
@@ -90,6 +91,17 @@ class DatabaseSeeder extends Seeder
                 ['display_name' => $employee['display_name']],
                 $employee,
             );
+        }
+
+        foreach (['Germaine BAKO / NAGALO', 'Relwendé Gloria OUEDRAOGO', 'Job ZONGO'] as $validatorName) {
+            $employee = Employee::query()->where('display_name', $validatorName)->first();
+
+            if ($employee) {
+                LeaveValidator::query()->updateOrCreate(
+                    ['employee_id' => $employee->id, 'scope' => 'global'],
+                    ['is_active' => true, 'notify_by_email' => true],
+                );
+            }
         }
     }
 

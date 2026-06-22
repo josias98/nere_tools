@@ -63,6 +63,7 @@ class DashboardController extends Controller
     {
         return [
             '/timesheets' => [User::ROLE_ADMIN, User::ROLE_FINANCE, User::ROLE_DIRECTION],
+            '/conges' => [User::ROLE_ADMIN, User::ROLE_FINANCE, User::ROLE_DIRECTION, User::ROLE_MANAGER, User::ROLE_USER],
             '/admin' => [User::ROLE_ADMIN],
         ];
     }

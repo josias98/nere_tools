@@ -17,7 +17,7 @@ class LeaveHistoryController extends Controller
             return redirect()->route('dashboard')->with('error', 'Profil employé manquant.');
         }
 
-        $query = LeaveRequest::where('employee_id', $user->employee->id)->orderBy('created_at', 'desc');
+        $query = LeaveRequest::with('leaveType')->where('employee_id', $user->employee->id)->orderBy('created_at', 'desc');
 
         if ($request->has('year') && $request->year) {
             $query->whereYear('start_date', $request->year);

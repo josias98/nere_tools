@@ -20,6 +20,7 @@
 
                     <nav class="nc-nav" aria-label="Navigation principale">
                         <a href="{{ route('dashboard') }}">Dashboard</a>
+                        <a href="{{ route('leaves.index') }}">Conges</a>
                         <a href="{{ route('timesheets.index') }}">Feuilles de temps</a>
                         @if (auth()->user()->role === \App\Models\User::ROLE_ADMIN)
                             <a href="{{ route('admin.index') }}">Administration</a>
