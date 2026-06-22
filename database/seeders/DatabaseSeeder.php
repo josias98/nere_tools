@@ -88,7 +88,7 @@ class DatabaseSeeder extends Seeder
             ['email' => 'jdiamitani@nerecapital.com'],
             [
                 'name' => 'Josias Mansour DIAMITANI',
-                'role' => User::ROLE_FINANCE,
+                'role' => User::ROLE_ADMIN,
                 'is_active' => true,
             ],
         );

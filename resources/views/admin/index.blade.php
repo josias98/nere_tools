@@ -20,7 +20,7 @@
             <section class="nc-card">
                 <h2>Utilisateurs autorises</h2>
                 <p>La connexion Microsoft ne suffit pas : l'email doit rester autorise ici.</p>
-                <div class="nc-actions"><span class="nc-ghost" aria-disabled="true">CRUD phase admin</span></div>
+                <div class="nc-actions"><a href="{{ route('admin.users.index') }}" class="nc-button is-secondary">Gerer les utilisateurs</a></div>
             </section>
             <section class="nc-card">
                 <h2>Collaborateurs</h2>

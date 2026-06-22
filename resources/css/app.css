@@ -616,6 +616,32 @@ img {
     padding: 8px;
 }
 
+.admin-users {
+    display: grid;
+    gap: 18px;
+}
+
+.admin-user-form {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) auto auto;
+    gap: 14px;
+    align-items: end;
+}
+
+.admin-access-list {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    grid-column: 1 / -1;
+    border-top: 1px solid var(--ip-line);
+    padding-top: 12px;
+}
+
+.admin-user-table .nc-badge {
+    margin: 2px;
+}
+
 .nc-timesheet-studio {
     display: grid;
     gap: 24px;
@@ -1135,6 +1161,7 @@ img {
     .nc-grid.two,
     .nc-form-grid,
     .nc-upload,
+    .admin-user-form,
     .leave-metrics,
     .leave-admin-grid,
     .leave-review-grid,
