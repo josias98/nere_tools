@@ -1,4 +1,5 @@
 /* Hallmark · macrostructure: Workbench · tone: institutional · anchor hue: brown
+ * pre-emit critique: P4 H4 E4 S4 R5 V4
  * ponytail: one CSS file owns this UI; split only when real components appear.
  */
 @import 'tailwindcss';
@@ -22,6 +23,17 @@
     --ip-ivory: #f7f4f1;
     --ip-panel: #eeeae7;
     --ip-line: #ded7d1;
+    --ip-line-strong: #bfb3aa;
+    --ip-success-surface: #f4fbf0;
+    --ip-success-line: #b8d6ad;
+    --ip-success-text: #315f31;
+    --ip-warning-surface: #fff1e8;
+    --ip-danger-surface: #fff6f0;
+    --ip-danger-line: #f0b38f;
+    --ip-shadow: 0 18px 42px rgba(52, 22, 4, .08);
+    --ip-shadow-soft: 0 8px 22px rgba(52, 22, 4, .06);
+    --ease-out: cubic-bezier(.16, 1, .3, 1);
+    --dur-fast: 160ms;
     --font-title: 'Le Monde Livre', Cambria, Georgia, serif;
     --font-body: 'Work Sans', Calibri, Arial, sans-serif;
     --radius: 6px;
@@ -126,6 +138,7 @@ img {
 
 .nc-button:hover {
     background: var(--ip-brown-dark);
+    transform: translateY(-1px);
 }
 
 .nc-button.is-secondary {
@@ -136,6 +149,17 @@ img {
 .nc-button.is-secondary:hover {
     background: var(--ip-rust);
     border-color: var(--ip-rust);
+}
+
+.nc-button,
+.nc-ghost,
+.nc-card,
+.nc-panel {
+    transition: transform var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast) var(--ease-out), background-color var(--dur-fast) var(--ease-out);
+}
+
+.nc-ghost:hover {
+    transform: translateY(-1px);
 }
 
 .nc-button:disabled {
@@ -227,6 +251,27 @@ img {
     padding: 24px;
 }
 
+.nc-panel-premium {
+    border-color: var(--ip-line-strong);
+    box-shadow: var(--ip-shadow-soft);
+}
+
+.nc-panel-premium:hover {
+    box-shadow: var(--ip-shadow);
+}
+
+.nc-panel-heading {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 18px;
+    margin-bottom: 18px;
+}
+
+.nc-panel-heading p {
+    margin: 6px 0 0;
+}
+
 .nc-card h2,
 .nc-panel h2,
 .nc-panel h3 {
@@ -262,12 +307,12 @@ img {
 }
 
 .nc-badge.active {
-    background: #edf3ea;
-    color: #315f31;
+    background: var(--ip-success-surface);
+    color: var(--ip-success-text);
 }
 
 .nc-badge.warning {
-    background: #fff1e8;
+    background: var(--ip-warning-surface);
     color: var(--ip-rust);
 }
 
@@ -346,12 +391,110 @@ img {
 }
 
 .nc-alert {
-    border: 1px solid #f0b38f;
+    border: 1px solid var(--ip-danger-line);
     border-radius: var(--radius);
-    background: #fff6f0;
+    background: var(--ip-danger-surface);
     color: var(--ip-rust);
     padding: 14px;
     line-height: 1.5;
+}
+
+.nc-alert.is-success {
+    border-color: var(--ip-success-line);
+    background: var(--ip-success-surface);
+    color: var(--ip-success-text);
+}
+
+.nc-timesheet-workbench {
+    display: grid;
+    gap: 18px;
+}
+
+.nc-upload {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(220px, auto) auto;
+    gap: 14px;
+    align-items: end;
+}
+
+.nc-upload input[type="file"] {
+    min-height: 44px;
+    padding: 10px;
+    border: 1px solid var(--ip-line);
+    border-radius: var(--radius);
+    background: var(--ip-white);
+}
+
+.nc-dropzone {
+    display: grid;
+    gap: 5px;
+    min-height: 92px;
+    border: 1px dashed var(--ip-line-strong);
+    border-radius: var(--radius);
+    background: linear-gradient(180deg, var(--ip-white), var(--ip-ivory));
+    padding: 18px;
+}
+
+.nc-dropzone span {
+    color: var(--ip-brown);
+    font-weight: 850;
+}
+
+.nc-dropzone small,
+.nc-mini-check {
+    color: var(--ip-grey);
+    line-height: 1.45;
+}
+
+.nc-table-wrap {
+    width: 100%;
+    overflow-x: auto;
+    border: 1px solid var(--ip-line);
+    border-radius: var(--radius);
+}
+
+.nc-table-wrap .nc-table {
+    margin-top: 0;
+}
+
+.nc-edit-table {
+    min-width: 1120px;
+}
+
+.nc-edit-table th {
+    width: auto;
+    white-space: nowrap;
+}
+
+.nc-edit-table input,
+.nc-edit-table select {
+    width: 100%;
+    min-width: 84px;
+    min-height: 38px;
+    border: 1px solid var(--ip-line);
+    border-radius: var(--radius);
+    background: var(--ip-white);
+    color: var(--ip-brown-dark);
+    padding: 8px 9px;
+}
+
+.nc-edit-table td {
+    vertical-align: top;
+}
+
+.nc-mini-check {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 8px;
+    font-size: 12px;
+    font-weight: 750;
+}
+
+.nc-mini-check input {
+    min-width: 0;
+    min-height: 0;
+    width: auto;
 }
 
 .nc-footer-bar {
@@ -383,11 +526,30 @@ img {
     }
 
     .nc-grid.two,
-    .nc-form-grid {
+    .nc-form-grid,
+    .nc-upload {
         grid-template-columns: 1fr;
+    }
+
+    .nc-panel-heading {
+        display: grid;
     }
 
     .nc-auth-card {
         padding: 24px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .nc-button,
+    .nc-ghost,
+    .nc-card,
+    .nc-panel {
+        transition-duration: 1ms;
+    }
+
+    .nc-button:hover,
+    .nc-ghost:hover {
+        transform: none;
     }
 }

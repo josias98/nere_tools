@@ -28,6 +28,8 @@ Route::middleware('auth')->group(function (): void {
         User::ROLE_DIRECTION,
     ]))->group(function (): void {
         Route::get('/timesheets', [TimesheetController::class, 'index'])->name('timesheets.index');
+        Route::post('/timesheets/csv', [TimesheetController::class, 'uploadCsv'])->name('timesheets.csv');
+        Route::get('/timesheets/csv/clear', [TimesheetController::class, 'clearCsv'])->name('timesheets.csv.clear');
         Route::post('/timesheets/generate', [TimesheetController::class, 'generate'])->name('timesheets.generate');
         Route::get('/timesheets/results/{generation:uuid}', [TimesheetController::class, 'result'])->name('timesheets.result');
         Route::get('/timesheets/history', [TimesheetController::class, 'history'])->name('timesheets.history');

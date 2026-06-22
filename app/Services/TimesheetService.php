@@ -60,6 +60,66 @@ class TimesheetService
     }
 
     /**
+     * @param  array<int, array<string, mixed>>  $rows
+     */
+    public function generateRows(array $rows, User $user): TimesheetGeneration
+    {
+        if ($rows === []) {
+            throw new RuntimeException('Le fichier CSV ne contient aucune ligne exploitable.');
+        }
+
+        $employeeIds = collect($rows)->pluck('employee_id')->map(fn ($id): int => (int) $id)->unique()->values();
+        $employees = Employee::query()
+            ->whereIn('id', $employeeIds)
+            ->where('is_active', true)
+            ->get()
+            ->keyBy('id');
+
+        if ($employees->count() !== $employeeIds->count()) {
+            throw new RuntimeException('Une ligne CSV cible un collaborateur introuvable ou inactif.');
+        }
+
+        $starts = [];
+        $ends = [];
+        foreach ($rows as $row) {
+            if ((int) $row['end_month'] < (int) $row['start_month']) {
+                throw new RuntimeException('Une ligne CSV a un mois de fin anterieur au mois de debut.');
+            }
+
+            $starts[] = Carbon::create((int) $row['year'], (int) $row['start_month'], 1);
+            $ends[] = Carbon::create((int) $row['year'], (int) $row['end_month'], 1)->endOfMonth();
+        }
+
+        $periodStart = collect($starts)->sort()->first();
+        $periodEnd = collect($ends)->sortDesc()->first();
+        $generation = TimesheetGeneration::query()->create([
+            'uuid' => (string) Str::uuid(),
+            'period_start' => $periodStart,
+            'period_end' => $periodEnd,
+            'year' => (int) $periodStart->year,
+            'period_label' => 'CSV_'.$periodStart->format('Ym').'_'.$periodEnd->format('Ym'),
+            'generated_by_user_id' => $user->id,
+            'employee_count' => $employeeIds->count(),
+            'pdf_count' => 0,
+            'status' => 'completed',
+        ]);
+
+        foreach ($rows as $row) {
+            $employee = $employees[(int) $row['employee_id']];
+            foreach (range((int) $row['start_month'], (int) $row['end_month']) as $month) {
+                $this->createFile($generation, $employee, (int) $row['year'], $month, $row);
+            }
+        }
+
+        $generation->update([
+            'pdf_count' => $generation->files()->count(),
+            'zip_path' => $this->zip($generation),
+        ]);
+
+        return $generation->refresh();
+    }
+
+    /**
      * @return array<int, array{label: string, start: Carbon, end: Carbon}>
      */
     public function weeks(int $year, int $month): array

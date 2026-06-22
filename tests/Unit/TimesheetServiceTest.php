@@ -55,5 +55,20 @@ class TimesheetServiceTest extends TestCase
         $this->assertSame(1, $generation->pdf_count);
         Storage::disk('local')->assertExists($generation->zip_path);
         Storage::disk('local')->assertExists($generation->files()->first()->file_path);
+
+        $csvGeneration = $service->generateRows([[
+            'employee_id' => $job->id,
+            'year' => 2026,
+            'start_month' => 2,
+            'end_month' => 2,
+            'entity_label' => 'Nere Capital',
+            'signature_date' => '2026-03-02',
+            'signatory_name' => 'Responsable CSV',
+            'comments_label' => 'Notes',
+            'include_comments' => 0,
+        ]], $user);
+
+        $this->assertSame(1, $csvGeneration->pdf_count);
+        Storage::disk('local')->assertExists($csvGeneration->zip_path);
     }
 }
