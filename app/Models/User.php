@@ -4,10 +4,11 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Database\Factories\UserFactory;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -44,6 +45,50 @@ class User extends Authenticatable
     public function employee(): HasOne
     {
         return $this->hasOne(Employee::class, 'email', 'email');
+    }
+
+    public function tools(): BelongsToMany
+    {
+        return $this->belongsToMany(Tool::class, 'tool_user_access')
+            ->withPivot('can_access')
+            ->withTimestamps();
+    }
+
+    public function canAccessAdmin(): bool
+    {
+        if ($this->hasRole(self::ROLE_ADMIN)) {
+            return true;
+        }
+
+        return $this->employee?->department?->slug === 'administratif-finance';
+    }
+
+    public function canAccessTool(string $slug): bool
+    {
+        if ($this->hasRole(self::ROLE_ADMIN)) {
+            return true;
+        }
+
+        $tool = Tool::query()->where('slug', $slug)->where('status', Tool::STATUS_ACTIVE)->first();
+
+        if (! $tool) {
+            return match ($slug) {
+                'timesheets' => $this->hasAnyRole([self::ROLE_ADMIN, self::ROLE_FINANCE, self::ROLE_DIRECTION]),
+                'conges' => $this->is_active,
+                default => false,
+            };
+        }
+
+        $access = ToolUserAccess::query()
+            ->where('user_id', $this->id)
+            ->where('tool_id', $tool->id)
+            ->first();
+
+        if ($access) {
+            return $access->can_access;
+        }
+
+        return $tool->required_role ? $this->hasRole($tool->required_role) : true;
     }
 
     /**

@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Middleware\EnsureUserHasRole;
+use App\Http\Middleware\EnsureUserCanAccessTool;
+use App\Http\Middleware\EnsureUserCanAdmin;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -16,7 +18,9 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->trustProxies(at: '127.0.0.1');
 
         $middleware->alias([
+            'admin-area' => EnsureUserCanAdmin::class,
             'role' => EnsureUserHasRole::class,
+            'tool' => EnsureUserCanAccessTool::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

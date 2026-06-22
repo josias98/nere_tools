@@ -11,7 +11,6 @@ use App\Http\Controllers\Leaves\LeaveHistoryController;
 use App\Http\Controllers\Leaves\LeaveRequestController;
 use App\Http\Controllers\Leaves\LeaveValidationController;
 use App\Http\Controllers\TimesheetController;
-use App\Models\User;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('guest')->group(function (): void {
@@ -30,11 +29,7 @@ Route::post('/logout', [MicrosoftAuthController::class, 'logout'])
 Route::middleware('auth')->group(function (): void {
     Route::get('/', DashboardController::class)->name('dashboard');
 
-    Route::middleware('role:'.implode(',', [
-        User::ROLE_ADMIN,
-        User::ROLE_FINANCE,
-        User::ROLE_DIRECTION,
-    ]))->group(function (): void {
+    Route::middleware('tool:timesheets')->group(function (): void {
         Route::get('/timesheets', [TimesheetController::class, 'index'])->name('timesheets.index');
         Route::post('/timesheets/csv', [TimesheetController::class, 'uploadCsv'])->name('timesheets.csv');
         Route::get('/timesheets/csv/clear', [TimesheetController::class, 'clearCsv'])->name('timesheets.csv.clear');
@@ -46,21 +41,23 @@ Route::middleware('auth')->group(function (): void {
     });
 
     Route::view('/admin', 'admin.index')
-        ->middleware('role:'.User::ROLE_ADMIN)
+        ->middleware('admin-area')
         ->name('admin.index');
 
-    Route::get('/conges', [LeaveDashboardController::class, 'index'])->name('leaves.index');
-    Route::get('/conges/demande', [LeaveRequestController::class, 'create'])->name('leaves.create');
-    Route::post('/conges/demande', [LeaveRequestController::class, 'store'])->name('leaves.store');
-    Route::get('/conges/historique', [LeaveHistoryController::class, 'index'])->name('leaves.history');
-    Route::get('/conges/validations/en-attente', [LeaveValidationController::class, 'index'])->name('leaves.validations.index');
-    Route::get('/conges/validations/{leaveRequest:uuid}', [LeaveValidationController::class, 'show'])->name('leaves.validations.show');
-    Route::post('/conges/validations/{leaveRequest:uuid}/approuver', [LeaveValidationController::class, 'approve'])->name('leaves.validations.approve');
-    Route::post('/conges/validations/{leaveRequest:uuid}/rejeter', [LeaveValidationController::class, 'reject'])->name('leaves.validations.reject');
-    Route::get('/conges/documents/{document}/telecharger', LeaveDocumentController::class)->name('leaves.documents.download');
-    Route::get('/conges/{leaveRequest:uuid}', [LeaveRequestController::class, 'show'])->name('leaves.show');
+    Route::middleware('tool:conges')->group(function (): void {
+        Route::get('/conges', [LeaveDashboardController::class, 'index'])->name('leaves.index');
+        Route::get('/conges/demande', [LeaveRequestController::class, 'create'])->name('leaves.create');
+        Route::post('/conges/demande', [LeaveRequestController::class, 'store'])->name('leaves.store');
+        Route::get('/conges/historique', [LeaveHistoryController::class, 'index'])->name('leaves.history');
+        Route::get('/conges/validations/en-attente', [LeaveValidationController::class, 'index'])->name('leaves.validations.index');
+        Route::get('/conges/validations/{leaveRequest:uuid}', [LeaveValidationController::class, 'show'])->name('leaves.validations.show');
+        Route::post('/conges/validations/{leaveRequest:uuid}/approuver', [LeaveValidationController::class, 'approve'])->name('leaves.validations.approve');
+        Route::post('/conges/validations/{leaveRequest:uuid}/rejeter', [LeaveValidationController::class, 'reject'])->name('leaves.validations.reject');
+        Route::get('/conges/documents/{document}/telecharger', LeaveDocumentController::class)->name('leaves.documents.download');
+        Route::get('/conges/{leaveRequest:uuid}', [LeaveRequestController::class, 'show'])->name('leaves.show');
+    });
 
-    Route::middleware('role:'.User::ROLE_ADMIN)->group(function (): void {
+    Route::middleware('admin-area')->group(function (): void {
         Route::get('/admin/conges', [LeaveAdminController::class, 'index'])->name('admin.leaves.index');
         Route::put('/admin/conges/collaborateurs/{employee}', [LeaveAdminController::class, 'updateEmployee'])->name('admin.leaves.employees.update');
         Route::put('/admin/conges/parametres', [LeaveAdminController::class, 'updateSettings'])->name('admin.leaves.settings.update');

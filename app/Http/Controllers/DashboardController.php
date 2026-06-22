@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Tool;
-use App\Models\User;
 use Illuminate\Support\Collection;
 use Illuminate\View\View;
 
@@ -23,7 +22,6 @@ class DashboardController extends Controller
 
         return view('dashboard', [
             'tools' => $tools,
-            'accessibleRoutes' => $this->accessibleRoutes(),
         ]);
     }
 
@@ -43,15 +41,4 @@ class DashboardController extends Controller
         ]);
     }
 
-    /**
-     * @return array<string, array<int, string>>
-     */
-    private function accessibleRoutes(): array
-    {
-        return [
-            '/timesheets' => [User::ROLE_ADMIN, User::ROLE_FINANCE, User::ROLE_DIRECTION],
-            '/conges' => [User::ROLE_ADMIN, User::ROLE_FINANCE, User::ROLE_DIRECTION, User::ROLE_MANAGER, User::ROLE_USER],
-            '/admin' => [User::ROLE_ADMIN],
-        ];
-    }
 }

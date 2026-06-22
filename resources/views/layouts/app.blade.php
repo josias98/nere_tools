@@ -22,7 +22,7 @@
                         <a href="{{ route('dashboard') }}">Dashboard</a>
                         <a href="{{ route('leaves.index') }}">Conges</a>
                         <a href="{{ route('timesheets.index') }}">Feuilles de temps</a>
-                        @if (auth()->user()->role === \App\Models\User::ROLE_ADMIN)
+                        @if (auth()->user()->canAccessAdmin())
                             <a href="{{ route('admin.index') }}">Administration</a>
                         @endif
                     </nav>

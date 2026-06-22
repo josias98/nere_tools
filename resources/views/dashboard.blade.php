@@ -18,9 +18,8 @@
         <div class="nc-grid tools">
             @foreach ($tools as $tool)
                 @php
-                    $roles = $accessibleRoutes[$tool->route] ?? [];
                     $isActive = $tool->status === \App\Models\Tool::STATUS_ACTIVE;
-                    $hasAccess = empty($roles) || auth()->user()->hasAnyRole($roles);
+                    $hasAccess = auth()->user()->canAccessTool($tool->slug);
                 @endphp
 
                 <article class="nc-card">
