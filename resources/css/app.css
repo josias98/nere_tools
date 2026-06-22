@@ -48,7 +48,7 @@
     --dur-fast: 160ms;
     --font-title: 'Le Monde Livre', Cambria, Georgia, serif;
     --font-body: 'Work Sans', Calibri, Arial, sans-serif;
-    --radius: 6px;
+    --radius: 0px;
 }
 
 html,
@@ -114,6 +114,7 @@ img {
 
 .nc-logo {
     width: 148px;
+    padding: 20px;
 }
 
 .nc-muted {
@@ -128,11 +129,12 @@ img {
     align-items: center;
     justify-content: center;
     border: 1px solid transparent;
-    border-radius: var(--radius);
-    padding: 10px 14px;
+    /* border-radius: var(--radius); */
+    padding: 10px 12px;
     color: inherit;
-    font-size: 14px;
-    font-weight: 700;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
     text-decoration: none;
 }
 
@@ -405,7 +407,7 @@ img {
 
 .nc-table th {
     width: 38%;
-    background: var(--ip-brown);
+    background: #635c58;
     color: var(--ip-white);
     text-align: left;
 }
@@ -847,7 +849,8 @@ img {
 }
 
 .ts-grid th {
-    background: var(--ts-panel);
+        background: #635c58;
+
     color: var(--ts-ink-soft);
     font-size: 13px;
     font-weight: 700;

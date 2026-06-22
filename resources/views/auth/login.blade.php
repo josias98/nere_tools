@@ -18,9 +18,8 @@
                 @endif
 
                 <div class="nc-actions">
-                    <a href="{{ route('auth.microsoft.redirect') }}" class="nc-button">Continuer avec Microsoft 365</a>
+                    <a href="{{ route('auth.microsoft.redirect') }}" class="nc-button">Se connecter avec Microsoft 365</a>
                 </div>
-                <p class="nc-muted">Acces reserve aux collaborateurs autorises.</p>
             </div>
         </div>
     </section>

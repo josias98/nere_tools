@@ -15,13 +15,10 @@
                 <div class="nc-header-inner">
                     <a href="{{ route('dashboard') }}" class="nc-brand" aria-label="Nere Tools - Accueil">
                         <img class="nc-logo" src="{{ asset('brand/nere-capital-rgb.png') }}" alt="Nere Capital">
-                        <span class="nc-muted">Portail interne</span>
+                        <!-- <span class="nc-muted">Portail interne</span> -->
                     </a>
 
-                    <nav class="nc-nav" aria-label="Navigation principale">
-                        <a href="{{ route('dashboard') }}">Dashboard</a>
-                        <a href="{{ route('leaves.index') }}">Conges</a>
-                        <a href="{{ route('timesheets.index') }}">Feuilles de temps</a>
+                    <nav class="nc-nav">
                         @if (auth()->user()->canAccessAdmin())
                             <a href="{{ route('admin.index') }}">Administration</a>
                         @endif

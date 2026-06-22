@@ -102,7 +102,7 @@ class DatabaseSeeder extends Seeder
             );
         }
 
-        foreach (['Germaine BAKO / NAGALO', 'Relwendé Gloria OUEDRAOGO', 'Job ZONGO'] as $validatorName) {
+        foreach (['Josias Mansour DIAMITANI', 'Germaine BAKO / NAGALO', 'Relwendé Gloria OUEDRAOGO', 'Job ZONGO'] as $validatorName) {
             $employee = Employee::query()->where('display_name', $validatorName)->first();
 
             if ($employee) {

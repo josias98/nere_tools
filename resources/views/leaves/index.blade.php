@@ -43,7 +43,7 @@
                     <p>Le décompte se fait en jours calendaires, week-ends inclus.</p>
                 </div>
                 <div class="nc-actions">
-                    <a href="{{ route('leaves.history') }}" class="nc-ghost">Historique</a>
+                    <a href="{{ route('leaves.history') }}" class="nc-button">Historique</a>
                     <a href="{{ route('leaves.create') }}" class="nc-button">Nouvelle demande</a>
                 </div>
             </div>
@@ -69,7 +69,7 @@
                                     <td>{{ $request->leaveType?->name ?? 'Congé' }}</td>
                                     <td>{{ number_format($request->requested_days, 2) }}</td>
                                     <td><span class="leave-status is-{{ $request->status }}">{{ $request->status }}</span></td>
-                                    <td><a href="{{ route('leaves.show', $request->uuid) }}">Détail</a></td>
+                                    <td><a href="{{ route('leaves.show', $request->uuid) }}" class="nc-button">Détail</a></td>
                                 </tr>
                             @endforeach
                         </tbody>

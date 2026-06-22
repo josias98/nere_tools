@@ -7,7 +7,7 @@
         "dev": "vite",
         "setup:ca": "powershell -ExecutionPolicy Bypass -File scripts/setup-ca-bundle.ps1",
         "setup:https": "powershell -ExecutionPolicy Bypass -File scripts/setup-local-https.ps1",
-        "serve:https": "concurrently -k -n laravel,https -c \"#fdba74,#93c5fd\" \"php artisan serve --host=127.0.0.1 --port=8000\" \"node scripts/https-proxy.mjs\""
+        "serve:https": "concurrently -k -n laravel,vite,https -c \"#fdba74,#86efac,#93c5fd\" \"php artisan serve --host=127.0.0.1 --port=8000\" \"npm run dev -- --host 127.0.0.1\" \"node scripts/https-proxy.mjs\""
     },
     "devDependencies": {
         "@tailwindcss/vite": "^4.0.0",
