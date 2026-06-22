@@ -24,9 +24,10 @@ class LeaveAccrualService
         
         if ($accrualPolicy === 'end_of_month') {
             $currentDate = $referenceDate->copy()->endOfMonth();
-            while ($currentDate->lessThanOrEqualTo($targetDate)) {
+            $targetDateEnd = $targetDate->copy()->endOfDay();
+            while ($currentDate->lessThanOrEqualTo($targetDateEnd)) {
                 $months++;
-                $currentDate->addMonth()->endOfMonth();
+                $currentDate->addMonthNoOverflow()->endOfMonth();
             }
         } else {
             $months = $referenceDate->diffInMonths($targetDate);
