@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Leaves\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Department;
 use App\Models\Employee;
 use App\Models\LeaveSetting;
 use App\Models\LeaveValidator;
@@ -16,6 +17,7 @@ class LeaveAdminController extends Controller
     {
         return view('leaves.admin.index', [
             'employees' => Employee::query()->with('department')->orderBy('display_name')->get(),
+            'departments' => Department::query()->orderBy('name')->get(),
             'settings' => LeaveSetting::query()->orderBy('key')->get()->keyBy('key'),
             'validators' => LeaveValidator::query()->with(['employee', 'department', 'targetEmployee'])->latest()->get(),
         ]);

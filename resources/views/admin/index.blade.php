@@ -19,7 +19,7 @@
             <section class="nc-card">
                 <h2>Collaborateurs</h2>
                 <p>Base des salaries, coefficients et regles de signature.</p>
-                <div class="nc-actions"><span class="nc-ghost" aria-disabled="true">Ecran phase Timesheets</span></div>
+                <div class="nc-actions"><a href="{{ route('admin.leaves.index') }}" class="nc-button is-secondary">Gerer les conges</a></div>
             </section>
         </div>
     </section>

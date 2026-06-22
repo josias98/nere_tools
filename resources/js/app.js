@@ -7,6 +7,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const periodEnd = document.getElementById('period_end');
     const zipLabel = document.getElementById('zip_label');
     const logoPreviewText = document.getElementById('logo_preview_text');
+    const leaveStart = document.getElementById('leave_start_date');
+    const leaveEnd = document.getElementById('leave_end_date');
+    const leaveDayCount = document.getElementById('leave_day_count');
+    const leaveBalanceHint = document.getElementById('leave_balance_hint');
+    const leaveForm = document.querySelector('[data-leave-form]');
     const csvPlaceholder = 'CSV non selectionne.';
     const logoPlaceholder = 'Le logo IP joint est applique automatiquement dans les PDF generes.';
 
@@ -90,6 +95,42 @@ document.addEventListener('DOMContentLoaded', () => {
         zipLabel.value = computedZipLabel();
     };
 
+    const syncLeaveDays = () => {
+        if (!leaveStart || !leaveEnd || !leaveDayCount) {
+            return;
+        }
+
+        const start = new Date(`${leaveStart.value}T00:00:00`);
+        const end = new Date(`${leaveEnd.value}T00:00:00`);
+
+        if (!leaveStart.value || !leaveEnd.value || Number.isNaN(start.valueOf()) || Number.isNaN(end.valueOf())) {
+            leaveDayCount.textContent = '-';
+            if (leaveBalanceHint) {
+                leaveBalanceHint.textContent = 'Sélectionnez les dates pour vérifier le solde.';
+            }
+            return;
+        }
+
+        const days = Math.floor((end - start) / 86400000) + 1;
+
+        if (days < 1) {
+            leaveDayCount.textContent = 'Erreur';
+            if (leaveBalanceHint) {
+                leaveBalanceHint.textContent = 'La date de fin doit être après la date de début.';
+            }
+            return;
+        }
+
+        leaveDayCount.textContent = String(days);
+
+        if (leaveBalanceHint && leaveForm) {
+            const projected = Number(leaveForm.dataset.projectedBalance ?? 0);
+            leaveBalanceHint.textContent = days > projected
+                ? 'Cette demande dépasse votre solde projeté. Elle pourra être refusée.'
+                : 'Votre solde projeté couvre cette demande.';
+        }
+    };
+
     rowToggles.forEach((toggle) => toggle.addEventListener('change', () => {
         renderChips();
         syncSelectedRows();
@@ -99,6 +140,8 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     periodStart?.addEventListener('change', syncZipLabel);
     periodEnd?.addEventListener('change', syncZipLabel);
+    leaveStart?.addEventListener('change', syncLeaveDays);
+    leaveEnd?.addEventListener('change', syncLeaveDays);
     zipLabel?.addEventListener('input', () => {
         zipLabel.dataset.userEdited = '1';
     });
@@ -116,4 +159,5 @@ document.addEventListener('DOMContentLoaded', () => {
     renderChips();
     syncSelectedRows();
     syncZipLabel();
+    syncLeaveDays();
 });
