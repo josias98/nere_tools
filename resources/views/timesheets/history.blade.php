@@ -1,4 +1,11 @@
-@extends('layouts.app', ['title' => 'Historique - Feuilles de temps'])
+@extends('layouts.app', [
+    'title' => 'Historique - Feuilles de temps',
+    'breadcrumbs' => [
+        ['label' => 'Dashboard', 'url' => route('dashboard')],
+        ['label' => 'Feuilles de temps', 'url' => route('timesheets.index')],
+        ['label' => 'Historique'],
+    ],
+])
 
 @section('content')
     <section class="nc-page">

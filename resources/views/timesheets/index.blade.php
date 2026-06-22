@@ -1,4 +1,10 @@
-@extends('layouts.app', ['title' => 'Feuilles de temps - Nere Tools'])
+@extends('layouts.app', [
+    'title' => 'Feuilles de temps - Nere Tools',
+    'breadcrumbs' => [
+        ['label' => 'Dashboard', 'url' => route('dashboard')],
+        ['label' => 'Feuilles de temps'],
+    ],
+])
 
 @section('content')
     @php($rows = old('rows', $csvRows))

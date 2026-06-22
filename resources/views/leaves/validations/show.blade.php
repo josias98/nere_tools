@@ -1,4 +1,12 @@
-@extends('layouts.app', ['title' => 'Validation demande - Nere Tools'])
+@extends('layouts.app', [
+    'title' => 'Validation demande - Nere Tools',
+    'breadcrumbs' => [
+        ['label' => 'Dashboard', 'url' => route('dashboard')],
+        ['label' => 'Congés', 'url' => route('leaves.index')],
+        ['label' => 'Validations', 'url' => route('leaves.validations.index')],
+        ['label' => 'Détail'],
+    ],
+])
 
 @section('content')
     <section class="nc-page leave-workbench">

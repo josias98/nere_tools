@@ -42,6 +42,18 @@
         @endauth
 
         <main>
+            @isset($breadcrumbs)
+                <nav class="nc-breadcrumb" aria-label="Fil d'Ariane">
+                    @foreach ($breadcrumbs as $breadcrumb)
+                        @if (! empty($breadcrumb['url']) && ! $loop->last)
+                            <a href="{{ $breadcrumb['url'] }}">{{ $breadcrumb['label'] }}</a>
+                        @else
+                            <span aria-current="{{ $loop->last ? 'page' : 'false' }}">{{ $breadcrumb['label'] }}</span>
+                        @endif
+                    @endforeach
+                </nav>
+            @endisset
+
             @yield('content')
         </main>
     </div>

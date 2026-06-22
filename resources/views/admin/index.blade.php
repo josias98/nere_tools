@@ -1,4 +1,10 @@
-@extends('layouts.app', ['title' => 'Administration - Nere Tools'])
+@extends('layouts.app', [
+    'title' => 'Administration - Nere Tools',
+    'breadcrumbs' => [
+        ['label' => 'Dashboard', 'url' => route('dashboard')],
+        ['label' => 'Administration'],
+    ],
+])
 
 @section('content')
     <section class="nc-page">
