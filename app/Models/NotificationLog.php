@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 class NotificationLog extends Model
 {
@@ -18,5 +19,10 @@ class NotificationLog extends Model
             'sent_at' => 'datetime',
             'failed_at' => 'datetime',
         ];
+    }
+
+    public function related(): MorphTo
+    {
+        return $this->morphTo();
     }
 }

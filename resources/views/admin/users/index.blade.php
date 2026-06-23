@@ -13,7 +13,7 @@
             <div>
                 <p class="nc-kicker">Administration</p>
                 <h1 class="nc-title">Utilisateurs</h1>
-                <p class="nc-lead">Gérez les comptes autorisés, leurs rôles et leurs accès aux applications actives.</p>
+                <p class="nc-lead">Decidez simplement qui peut entrer dans le portail, quel role lui donner et quels modules lui ouvrir.</p>
             </div>
         </div>
 
@@ -22,8 +22,8 @@
         <section class="nc-panel">
             <div class="nc-panel-heading">
                 <div>
-                    <h2>Nouvel utilisateur</h2>
-                    <p>Le compte se connectera via son email Microsoft 365.</p>
+                    <h2>Ajouter un utilisateur</h2>
+                    <p>Le compte sera reconnu a la connexion via son adresse Microsoft 365 professionnelle.</p>
                 </div>
             </div>
             <form method="POST" action="{{ route('admin.users.store') }}" class="admin-user-form">
@@ -37,7 +37,7 @@
                     <input name="email" type="email" value="{{ old('email') }}" required>
                 </label>
                 <label class="nc-field">
-                    <span>Rôle</span>
+                    <span>Role</span>
                     <select name="role" required>
                         @foreach ($roles as $value => $label)
                             <option value="{{ $value }}" @selected(old('role', \App\Models\User::ROLE_USER) === $value)>{{ $label }}</option>
@@ -50,15 +50,18 @@
                         <label class="nc-mini-check"><input type="checkbox" name="tool_ids[]" value="{{ $tool->id }}" @checked(old('tool_ids') && in_array($tool->id, old('tool_ids', [])))> {{ $tool->name }}</label>
                     @endforeach
                 </div>
-                <button class="nc-button" type="submit">Créer</button>
+                <button class="nc-button" type="submit">
+                    <i data-lucide="plus" class="nc-icon" aria-hidden="true"></i>
+                    Creer le compte
+                </button>
             </form>
         </section>
 
         <section class="nc-panel">
             <div class="nc-panel-heading">
                 <div>
-                    <h2>Comptes autorisés</h2>
-                    <p>Les applications “bientôt” ne sont pas affichées ici.</p>
+                    <h2>Comptes autorises</h2>
+                    <p>Retrouvez ici les personnes deja ouvertes au portail et les modules qui leur sont attribues.</p>
                 </div>
             </div>
             <div class="nc-table-wrap">
@@ -66,10 +69,10 @@
                     <thead>
                         <tr>
                             <th>Utilisateur</th>
-                            <th>Rôle</th>
-                            <th>Département</th>
+                            <th>Role</th>
+                            <th>Departement</th>
                             <th>Applications</th>
-                            <th>État</th>
+                            <th>Etat</th>
                             <th></th>
                         </tr>
                     </thead>
@@ -87,7 +90,12 @@
                                     @endforeach
                                 </td>
                                 <td><span class="leave-status {{ $user->is_active ? 'is-approved' : 'is-cancelled' }}">{{ $user->is_active ? 'actif' : 'inactif' }}</span></td>
-                                <td><a class="nc-ghost" href="{{ route('admin.users.edit', $user) }}">Modifier</a></td>
+                                <td>
+                                    <a class="nc-ghost" href="{{ route('admin.users.edit', $user) }}">
+                                        <i data-lucide="settings" class="nc-icon" aria-hidden="true"></i>
+                                        Modifier
+                                    </a>
+                                </td>
                             </tr>
                         @endforeach
                     </tbody>

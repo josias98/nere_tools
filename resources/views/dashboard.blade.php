@@ -6,6 +6,13 @@
 ])
 
 @section('content')
+    @php
+        $toolIcons = [
+            'timesheets' => 'file-text',
+            'conges' => 'calendar-range',
+        ];
+    @endphp
+
     <section class="nc-page">
         <div class="nc-title-row">
             <div>
@@ -19,15 +26,26 @@
             @if (auth()->user()->canAccessAdmin())
                 <article class="nc-card nc-card-feature">
                     <div class="nc-card-top">
-                        <div>
-                            <h2>Administration</h2>
-                            <p>Gerez les utilisateurs, les acces et les reglages internes depuis un point d'entree dedie.</p>
+                        <div class="nc-card-top">
+                            <span class="nc-card-symbol" aria-hidden="true">
+                                <i data-lucide="settings" class="nc-icon"></i>
+                            </span>
+                            <div>
+                                <h2>Administration</h2>
+                                <p>Retrouvez les acces, les roles et les reglages metier depuis un espace de pilotage unique.</p>
+                            </div>
                         </div>
-                        <span class="nc-badge active">Admin</span>
+                        <span class="nc-badge active">
+                            <i data-lucide="shield-check" class="nc-icon" aria-hidden="true"></i>
+                            Admin
+                        </span>
                     </div>
 
                     <div class="nc-actions">
-                        <a href="{{ route('admin.index') }}" class="nc-button">Ouvrir l'administration</a>
+                        <a href="{{ route('admin.index') }}" class="nc-button">
+                            <i data-lucide="arrow-right" class="nc-icon" aria-hidden="true"></i>
+                            Ouvrir l'administration
+                        </a>
                     </div>
                 </article>
             @endif
@@ -36,23 +54,38 @@
                 @php
                     $isActive = $tool->status === \App\Models\Tool::STATUS_ACTIVE;
                     $hasAccess = auth()->user()->canAccessTool($tool->slug);
+                    $toolIcon = $toolIcons[$tool->slug] ?? 'layout-grid';
                 @endphp
 
                 <article class="nc-card">
                     <div class="nc-card-top">
-                        <div>
-                            <h2>{{ $tool->name }}</h2>
-                            <p>{{ $tool->description }}</p>
+                        <div class="nc-card-top">
+                            <span class="nc-card-symbol" aria-hidden="true">
+                                <i data-lucide="{{ $toolIcon }}" class="nc-icon"></i>
+                            </span>
+                            <div>
+                                <h2>{{ $tool->name }}</h2>
+                                <p>{{ $tool->description }}</p>
+                            </div>
                         </div>
                     </div>
 
                     <div class="nc-actions">
                         @if ($isActive && $hasAccess)
-                            <a href="{{ $tool->route }}" class="nc-button">Ouvrir l'outil</a>
+                            <a href="{{ $tool->route }}" class="nc-button">
+                                <i data-lucide="arrow-right" class="nc-icon" aria-hidden="true"></i>
+                                Ouvrir l'outil
+                            </a>
                         @elseif ($isActive)
-                            <span class="nc-ghost" aria-disabled="true">Accès non autorisé</span>
+                            <span class="nc-ghost" aria-disabled="true">
+                                <i data-lucide="circle-slash" class="nc-icon" aria-hidden="true"></i>
+                                Acces non autorise
+                            </span>
                         @else
-                            <span class="nc-ghost" aria-disabled="true">Bientôt disponible</span>
+                            <span class="nc-ghost" aria-disabled="true">
+                                <i data-lucide="clock-3" class="nc-icon" aria-hidden="true"></i>
+                                Bientot disponible
+                            </span>
                         @endif
                     </div>
                 </article>

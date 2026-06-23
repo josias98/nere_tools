@@ -114,6 +114,18 @@ img {
     text-decoration: none;
 }
 
+.nc-nav {
+    margin-left: auto;
+    justify-content: flex-end;
+}
+
+.nc-nav-links {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
 .nc-logo {
     width: 148px;
     padding: 20px;
@@ -130,6 +142,7 @@ img {
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    gap: 8px;
     border: 1px solid transparent;
     padding: 10px 12px;
     color: inherit;
@@ -144,6 +157,9 @@ img {
 }
 
 .nc-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
     text-decoration: underline;
     font-weight: 600;
     font-size: 0.8rem;
@@ -199,11 +215,22 @@ img {
     color: var(--ip-brown);
 }
 
+.nc-ghost[aria-disabled="true"] {
+    opacity: .7;
+}
+
 .nc-user {
     display: grid;
     gap: 2px;
     text-align: right;
     font-size: 13px;
+}
+
+.nc-icon {
+    width: 16px;
+    height: 16px;
+    flex: 0 0 auto;
+    stroke-width: 2.1;
 }
 
 .nc-page {
@@ -360,6 +387,27 @@ img {
     gap: 16px;
 }
 
+.nc-card-symbol,
+.nc-overview-icon,
+.nc-role-icon {
+    width: 44px;
+    height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--ip-line);
+    background: var(--ip-panel);
+    color: var(--ip-brown);
+    flex: 0 0 auto;
+}
+
+.nc-card-symbol .nc-icon,
+.nc-overview-icon .nc-icon,
+.nc-role-icon .nc-icon {
+    width: 20px;
+    height: 20px;
+}
+
 .nc-badge {
     display: inline-flex;
     align-items: center;
@@ -489,6 +537,132 @@ label.nc-field span {
     color: var(--ip-grey);
 }
 
+.nc-overview-grid,
+.nc-role-grid,
+.nc-admin-module-grid,
+.nc-admin-support-grid {
+    display: grid;
+    gap: 18px;
+}
+
+.nc-overview-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    margin-bottom: 20px;
+}
+
+.nc-overview-card {
+    display: grid;
+    gap: 12px;
+}
+
+.nc-overview-value {
+    color: var(--ip-brown);
+    font-family: var(--font-title);
+    font-size: clamp(30px, 4vw, 42px);
+    line-height: 1;
+}
+
+.nc-overview-card strong,
+.nc-admin-facts dd,
+.nc-role-count {
+    color: var(--ip-brown-dark);
+}
+
+.nc-overview-card p,
+.nc-admin-card p,
+.nc-role-card p,
+.nc-admin-note p {
+    margin: 0;
+}
+
+.nc-admin-shell,
+.nc-admin-stack {
+    display: grid;
+    gap: 18px;
+}
+
+.nc-admin-shell {
+    grid-template-columns: minmax(0, 1.45fr) minmax(280px, .95fr);
+    margin-bottom: 20px;
+}
+
+.nc-role-grid,
+.nc-admin-module-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.nc-admin-card,
+.nc-role-card,
+.nc-admin-note {
+    display: grid;
+    gap: 14px;
+}
+
+.nc-admin-card-head,
+.nc-role-head {
+    display: flex;
+    align-items: start;
+    gap: 14px;
+}
+
+.nc-admin-card-head > div,
+.nc-role-head > div {
+    display: grid;
+    gap: 4px;
+}
+
+.nc-admin-card h3,
+.nc-role-card h3,
+.nc-admin-note h3 {
+    margin: 0;
+    color: var(--ip-brown);
+}
+
+.nc-role-count {
+    font-size: 12px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+}
+
+.nc-admin-facts {
+    display: grid;
+    gap: 10px;
+    margin: 0;
+}
+
+.nc-admin-facts div {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 14px;
+    border-top: 1px solid var(--ip-line);
+    padding-top: 10px;
+}
+
+.nc-admin-facts dt {
+    color: var(--ip-grey);
+    font-size: 12px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+}
+
+.nc-admin-facts dd {
+    margin: 0;
+    text-align: right;
+    font-weight: 700;
+}
+
+.nc-list {
+    display: grid;
+    gap: 10px;
+    margin: 0;
+    padding-left: 18px;
+    color: var(--ip-grey);
+    line-height: 1.6;
+}
+
 .nc-footer-bar {
     position: fixed;
     left: 0;
@@ -513,10 +687,25 @@ label.nc-field span {
         padding: 16px 0;
     }
 
+    .nc-nav {
+        width: 100%;
+        display: grid;
+        justify-content: stretch;
+    }
+
+    .nc-nav-links {
+        width: 100%;
+    }
+
     .nc-user {
         text-align: left;
     }
 
+    .nc-overview-grid,
+    .nc-role-grid,
+    .nc-admin-module-grid,
+    .nc-admin-support-grid,
+    .nc-admin-shell,
     .nc-grid.two,
     .nc-form-grid,
     .nc-upload {

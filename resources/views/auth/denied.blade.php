@@ -5,7 +5,10 @@
         <div class="nc-auth-inner">
             <div class="nc-auth-card">
                 <img class="nc-logo" src="{{ asset('brand/nere-capital-rgb.png') }}" alt="Nere Capital">
-                <span class="nc-badge warning">Acces refuse</span>
+                <span class="nc-badge warning">
+                    <i data-lucide="alert-triangle" class="nc-icon" aria-hidden="true"></i>
+                    Acces refuse
+                </span>
                 <h1 class="nc-title">Compte non autorise</h1>
                 <p class="nc-lead">{{ $reason }}</p>
 
@@ -14,7 +17,10 @@
                 @endif
 
                 <div class="nc-actions">
-                    <a href="{{ route('login') }}" class="nc-button">Retour a la connexion</a>
+                    <a href="{{ route('login') }}" class="nc-button">
+                        <i data-lucide="arrow-left" class="nc-icon" aria-hidden="true"></i>
+                        Retour a la connexion
+                    </a>
                 </div>
             </div>
         </div>

@@ -18,20 +18,18 @@
                         <!-- <span class="nc-muted">Portail interne</span> -->
                     </a>
 
-                    <!-- <nav class="nc-nav">
-                        @if (auth()->user()->canAccessAdmin())
-                            <a href="{{ route('admin.index') }}">Administration</a>
-                        @endif
-                    </nav> -->
-
                     <div class="nc-nav">
+                        
                         <div class="nc-user">
                             <strong>{{ auth()->user()->name }}</strong>
                             <span class="nc-muted">{{ auth()->user()->email }}</span>
                         </div>
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
-                            <button type="submit" class="nc-ghost">Deconnexion</button>
+                            <button type="submit" class="nc-ghost">
+                                <i data-lucide="log-out" class="nc-icon" aria-hidden="true"></i>
+                                Deconnexion
+                            </button>
                         </form>
                     </div>
                 </div>

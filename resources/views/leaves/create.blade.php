@@ -2,7 +2,7 @@
     'title' => 'Nouvelle demande - Nere Tools',
     'breadcrumbs' => [
         ['label' => 'Dashboard', 'url' => route('dashboard')],
-        ['label' => 'Congés', 'url' => route('leaves.index')],
+        ['label' => 'Conges', 'url' => route('leaves.index')],
         ['label' => 'Nouvelle demande'],
     ],
 ])
@@ -11,9 +11,9 @@
     <section class="nc-page leave-workbench">
         <div class="nc-title-row">
             <div>
-                <p class="nc-kicker">Congés</p>
+                <p class="nc-kicker">Conges</p>
                 <h1 class="nc-title">Nouvelle demande</h1>
-                <p class="nc-lead">Choisissez une période. Le nombre de jours calendaires est calculé automatiquement.</p>
+                <p class="nc-lead">Choisissez une periode. Le nombre de jours calendaires est calcule automatiquement.</p>
             </div>
         </div>
 
@@ -25,7 +25,7 @@
             <div class="leave-split">
                 <div class="nc-form-grid">
                     <label class="nc-field">
-                        <span>Type de congé</span>
+                        <span>Type de conge</span>
                         <select name="leave_type_id" required>
                             @foreach ($leaveTypes as $type)
                                 <option value="{{ $type->id }}" @selected(old('leave_type_id') == $type->id)>{{ $type->name }}</option>
@@ -35,7 +35,7 @@
                     </label>
 
                     <label class="nc-field">
-                        <span>Date de début</span>
+                        <span>Date de debut</span>
                         <input type="date" name="start_date" id="leave_start_date" value="{{ old('start_date') }}" required>
                         @error('start_date') <small class="nc-error">{{ $message }}</small> @enderror
                     </label>
@@ -54,16 +54,22 @@
                 </div>
 
                 <aside class="leave-summary">
-                    <span>Jours demandés</span>
+                    <span>Jours demandes</span>
                     <strong id="leave_day_count">-</strong>
-                    <small>Solde projeté actuel : {{ number_format($balance['projected_balance'], 2) }} jours</small>
-                    <p id="leave_balance_hint" class="nc-muted">Sélectionnez les dates pour vérifier le solde.</p>
+                    <small>Solde projete actuel : {{ number_format($balance['projected_balance'], 2) }} jours</small>
+                    <p id="leave_balance_hint" class="nc-muted">Selectionnez les dates pour verifier le solde.</p>
                 </aside>
             </div>
 
             <div class="nc-actions">
-                <a href="{{ route('leaves.index') }}" class="nc-ghost">Annuler</a>
-                <button type="submit" class="nc-button">Soumettre</button>
+                <a href="{{ route('leaves.index') }}" class="nc-ghost">
+                    <i data-lucide="arrow-left" class="nc-icon" aria-hidden="true"></i>
+                    Annuler
+                </a>
+                <button type="submit" class="nc-button">
+                    <i data-lucide="send" class="nc-icon" aria-hidden="true"></i>
+                    Soumettre
+                </button>
             </div>
         </form>
     </section>

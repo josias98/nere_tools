@@ -12,15 +12,15 @@
         <div class="nc-title-row">
             <div>
                 <p class="nc-kicker">Historique</p>
-                <h1 class="nc-title">Générations passées</h1>
-                <p class="nc-lead">Retrouvez ici les lots déjà générés. Les fichiers restent stockés de manière privée et sont servis via l'application.</p>
+                <h1 class="nc-title">Generations passees</h1>
+                <p class="nc-lead">Retrouvez ici les lots deja generes. Les fichiers restent stockes de maniere privee et sont servis via l'application.</p>
             </div>
         </div>
 
         <section class="nc-panel">
             <table class="nc-table">
                 <thead>
-                    <tr><th>Date</th><th>Période</th><th>PDF</th><th>Généré par</th><th>Actions</th></tr>
+                    <tr><th>Date</th><th>Periode</th><th>PDF</th><th>Genere par</th><th>Actions</th></tr>
                 </thead>
                 <tbody>
                     @foreach ($generations as $generation)
@@ -30,8 +30,14 @@
                             <td>{{ $generation->pdf_count }}</td>
                             <td>{{ $generation->user->name }}</td>
                             <td>
-                                <a class="nc-ghost" href="{{ route('timesheets.result', $generation) }}">Voir</a>
-                                <a class="nc-ghost" href="{{ route('timesheets.download.zip', $generation) }}">ZIP</a>
+                                <a class="nc-ghost" href="{{ route('timesheets.result', $generation) }}">
+                                    <i data-lucide="eye" class="nc-icon" aria-hidden="true"></i>
+                                    Voir
+                                </a>
+                                <a class="nc-ghost" href="{{ route('timesheets.download.zip', $generation) }}">
+                                    <i data-lucide="download" class="nc-icon" aria-hidden="true"></i>
+                                    ZIP
+                                </a>
                             </td>
                         </tr>
                     @endforeach

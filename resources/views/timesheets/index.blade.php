@@ -39,9 +39,15 @@
                         <input id="csv_file" name="csv_file" type="file" accept=".csv,text/csv" required>
                         <span class="ts-upload-meta" id="csv_file_name">{{ $rows ? count($rows).' ligne(s) chargée(s).' : 'Aucun fichier CSV sélectionné.' }}</span>
                     </div>
-                    <button class="nc-button" type="submit">Charger le fichier</button>
+                    <button class="nc-button" type="submit">
+                        <i data-lucide="upload" class="nc-icon" aria-hidden="true"></i>
+                        Charger le fichier
+                    </button>
                     @if ($rows)
-                        <a class="nc-ghost" href="{{ route('timesheets.csv.clear') }}">Vider le CSV</a>
+                        <a class="nc-ghost" href="{{ route('timesheets.csv.clear') }}">
+                            <i data-lucide="refresh-cw" class="nc-icon" aria-hidden="true"></i>
+                            Vider le CSV
+                        </a>
                     @endif
                 </form>
             </section>
@@ -281,7 +287,10 @@
                     </details>
                 </div>
                 <div class="nc-actions">
-                    <a class="nc-ghost" href="{{ route('timesheets.history') }}">Voir l'historique</a>
+                    <a class="nc-ghost" href="{{ route('timesheets.history') }}">
+                        <i data-lucide="history" class="nc-icon" aria-hidden="true"></i>
+                        Voir l'historique
+                    </a>
                 </div>
             </aside>
         </div>

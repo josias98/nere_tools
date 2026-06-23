@@ -14,9 +14,17 @@
     grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
+.leave-metrics--compact {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
 .leave-admin-grid,
 .leave-review-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.leave-admin-grid--top {
+    align-items: stretch;
 }
 
 .leave-metric {
@@ -77,6 +85,7 @@
 .leave-status {
     display: inline-flex;
     align-items: center;
+    gap: 6px;
     min-height: 28px;
     padding: 4px 10px;
     background: var(--ip-panel);
@@ -142,6 +151,41 @@
     align-items: center;
     gap: 10px;
     flex-wrap: wrap;
+}
+
+.leave-filter--notifications {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) auto;
+}
+
+.notification-table td {
+    vertical-align: top;
+}
+
+.notification-meta {
+    display: grid;
+    gap: 4px;
+    margin-top: 8px;
+    color: var(--ip-grey);
+    font-size: 12px;
+}
+
+.notification-error summary {
+    cursor: pointer;
+    color: var(--ip-brown);
+    font-weight: 700;
+}
+
+.notification-error pre {
+    margin: 10px 0 0;
+    white-space: pre-wrap;
+    word-break: break-word;
+    color: var(--ip-rust);
+    font-size: 12px;
+    line-height: 1.55;
+}
+
+.notification-pagination {
+    margin-top: 18px;
 }
 
 .leave-admin-table input[type="email"],

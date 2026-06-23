@@ -33,7 +33,7 @@
                     <input name="email" type="email" value="{{ old('email', $managedUser->email) }}" required>
                 </label>
                 <label class="nc-field">
-                    <span>Rôle</span>
+                    <span>Role</span>
                     <select name="role" required>
                         @foreach ($roles as $value => $label)
                             <option value="{{ $value }}" @selected(old('role', $managedUser->role) === $value)>{{ $label }}</option>
@@ -46,7 +46,10 @@
                         <label class="nc-mini-check"><input type="checkbox" name="tool_ids[]" value="{{ $tool->id }}" @checked($managedUser->canAccessTool($tool->slug))> {{ $tool->name }}</label>
                     @endforeach
                 </div>
-                <button class="nc-button" type="submit">Enregistrer</button>
+                <button class="nc-button" type="submit">
+                    <i data-lucide="save" class="nc-icon" aria-hidden="true"></i>
+                    Enregistrer
+                </button>
             </form>
         </section>
 
@@ -54,12 +57,12 @@
             <div class="nc-panel-heading">
                 <div>
                     <h2>Connexion Microsoft 365</h2>
-                    <p>L’email ci-dessus doit correspondre au compte Office 365 utilisé à la connexion.</p>
+                    <p>L'email ci-dessus doit correspondre au compte Microsoft 365 utilise au moment de la connexion.</p>
                 </div>
             </div>
             <dl class="leave-detail-grid">
-                <div><dt>Département</dt><dd>{{ $managedUser->employee?->department?->name ?? 'Non relié à un collaborateur' }}</dd></div>
-                <div><dt>Dernière connexion</dt><dd>{{ $managedUser->last_login_at?->format('d/m/Y H:i') ?? '-' }}</dd></div>
+                <div><dt>Departement</dt><dd>{{ $managedUser->employee?->department?->name ?? 'Non relie a un collaborateur' }}</dd></div>
+                <div><dt>Derniere connexion</dt><dd>{{ $managedUser->last_login_at?->format('d/m/Y H:i') ?? '-' }}</dd></div>
             </dl>
         </section>
 
@@ -67,8 +70,14 @@
             <form method="POST" action="{{ route('admin.users.destroy', $managedUser) }}" class="nc-actions">
                 @csrf
                 @method('DELETE')
-                <button class="nc-ghost danger" type="submit">Supprimer</button>
-                <a class="nc-ghost" href="{{ route('admin.users.index') }}">Retour</a>
+                <button class="nc-ghost danger" type="submit">
+                    <i data-lucide="trash-2" class="nc-icon" aria-hidden="true"></i>
+                    Supprimer
+                </button>
+                <a class="nc-ghost" href="{{ route('admin.users.index') }}">
+                    <i data-lucide="arrow-left" class="nc-icon" aria-hidden="true"></i>
+                    Retour
+                </a>
             </form>
         @endif
     </section>
