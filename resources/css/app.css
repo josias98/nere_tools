@@ -138,6 +138,10 @@ img {
     text-decoration: none;
 }
 
+.nc-nav a {
+    padding-inline: 14px;
+}
+
 .nc-link{
     text-decoration: underline;
     font-weight: 600;
@@ -202,7 +206,7 @@ img {
 }
 
 .nc-page {
-    padding: 40px 0 56px;
+    padding: 48px 0 72px;
 }
 
 .nc-breadcrumb {
@@ -283,7 +287,7 @@ img {
 
 .nc-grid {
     display: grid;
-    gap: 16px;
+    gap: 20px;
 }
 
 .nc-grid.tools {
@@ -304,7 +308,12 @@ img {
 
 .nc-card,
 .nc-panel {
-    padding: 24px;
+    padding: 28px;
+}
+
+.nc-card-feature {
+    border-color: var(--ip-line-strong);
+    background: linear-gradient(180deg, var(--ip-white), var(--ip-ivory));
 }
 
 .nc-panel-premium {
@@ -374,7 +383,7 @@ img {
 }
 
 .nc-actions {
-    margin-top: 20px;
+    margin-top: 24px;
 }
 
 .nc-form-grid {
@@ -1229,6 +1238,27 @@ label.nc-field span{
 
     .nc-auth-card {
         padding: 24px;
+    }
+
+    .nc-page,
+    .nc-auth {
+        padding-top: 32px;
+        padding-bottom: 88px;
+    }
+
+    .nc-card,
+    .nc-panel,
+    .nc-auth-card {
+        padding: 22px;
+    }
+
+    .nc-title-row {
+        gap: 16px;
+        margin-bottom: 24px;
+    }
+
+    .nc-breadcrumb {
+        margin-top: 14px;
     }
 }
 

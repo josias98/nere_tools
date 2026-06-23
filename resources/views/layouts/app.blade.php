@@ -18,11 +18,11 @@
                         <!-- <span class="nc-muted">Portail interne</span> -->
                     </a>
 
-                    <nav class="nc-nav">
+                    <!-- <nav class="nc-nav">
                         @if (auth()->user()->canAccessAdmin())
                             <a href="{{ route('admin.index') }}">Administration</a>
                         @endif
-                    </nav>
+                    </nav> -->
 
                     <div class="nc-nav">
                         <div class="nc-user">
