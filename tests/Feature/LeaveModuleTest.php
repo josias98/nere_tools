@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Jobs\SendGraphMailJob;
 use App\Models\Employee;
 use App\Models\LeaveBalance;
 use App\Models\LeaveRequest;
@@ -9,8 +10,7 @@ use App\Models\LeaveType;
 use App\Models\LeaveValidator;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Mail\Events\MessageSent;
-use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Tests\TestCase;
@@ -106,11 +106,12 @@ class LeaveModuleTest extends TestCase
 
     public function test_submission_emails_validator(): void
     {
-        Event::fake([MessageSent::class]);
+        Queue::fake();
+        config(['services.graph_mail.enabled' => true]);
 
         [$requester] = $this->userWithEmployee('requester@nere.test', 'Requester');
         [, $validatorEmployee] = $this->userWithEmployee('validator@nere.test', 'Validator');
-        $type = LeaveType::query()->create(['name' => 'Congé annuel', 'slug' => 'annual-test']);
+        $type = LeaveType::query()->create(['name' => 'Conge annuel', 'slug' => 'annual-test']);
         LeaveValidator::query()->create([
             'employee_id' => $validatorEmployee->id,
             'scope' => 'global',
@@ -125,7 +126,7 @@ class LeaveModuleTest extends TestCase
             ])
             ->assertRedirect();
 
-        Event::assertDispatched(MessageSent::class);
+        Queue::assertPushed(SendGraphMailJob::class);
     }
 
     public function test_admin_can_open_leave_admin(): void
@@ -167,7 +168,7 @@ class LeaveModuleTest extends TestCase
 
     private function leaveRequestFor(Employee $employee, User $user): LeaveRequest
     {
-        $type = LeaveType::query()->create(['name' => 'Congé annuel', 'slug' => 'annual-'.Str::random(6)]);
+        $type = LeaveType::query()->create(['name' => 'Conge annuel', 'slug' => 'annual-'.Str::random(6)]);
 
         return LeaveRequest::query()->create([
             'uuid' => Str::uuid(),

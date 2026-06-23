@@ -188,6 +188,7 @@ npm run serve:https
 Services demarres:
 
 - Laravel sur `http://127.0.0.1:8000`
+- worker de queue Laravel pour traiter les notifications et jobs
 - Vite en dev
 - proxy HTTPS local sur `https://localhost:8443`
 
