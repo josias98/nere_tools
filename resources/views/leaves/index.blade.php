@@ -44,9 +44,9 @@
                 </div>
                 <div class="nc-actions">
                     @if ($canValidateLeaves)
-                        <a href="{{ route('leaves.validations.index') }}" class="nc-button">Validations</a>
+                        <a href="{{ route('leaves.validations.index') }}" class="nc-ghost">Validations</a>
                     @endif
-                    <a href="{{ route('leaves.history') }}" class="nc-button">Historique</a>
+                    <a href="{{ route('leaves.history') }}" class="nc-ghost">Historique</a>
                     <a href="{{ route('leaves.create') }}" class="nc-button">Nouvelle demande</a>
                 </div>
             </div>
@@ -62,7 +62,7 @@
                                 <th>Type</th>
                                 <th>Jours</th>
                                 <th>Statut</th>
-                                <th></th>
+                                <th>Action</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -72,7 +72,7 @@
                                     <td>{{ $request->leaveType?->name ?? 'Congé' }}</td>
                                     <td>{{ number_format($request->requested_days, 2) }}</td>
                                     <td><span class="leave-status is-{{ $request->status }}">{{ $request->status }}</span></td>
-                                    <td><a href="{{ route('leaves.show', $request->uuid) }}" class="nc-button">Détail</a></td>
+                                    <td><a href="{{ route('leaves.show', $request->uuid) }}" class="nc-link">Détail</a></td>
                                 </tr>
                             @endforeach
                         </tbody>

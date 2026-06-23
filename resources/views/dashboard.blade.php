@@ -28,12 +28,12 @@
                             <h2>{{ $tool->name }}</h2>
                             <p>{{ $tool->description }}</p>
                         </div>
-                        <span class="nc-badge {{ $isActive ? 'active' : '' }}">{{ $isActive ? 'Actif' : 'Bientot' }}</span>
+                        <!-- <span class="nc-badge {{ $isActive ? 'active' : '' }}">{{ $isActive ? 'Actif' : 'Bientot' }}</span> -->
                     </div>
 
                     <div class="nc-actions">
                         @if ($isActive && $hasAccess)
-                            <a href="{{ $tool->route }}" class="nc-button is-secondary">Acceder</a>
+                            <a href="{{ $tool->route }}" class="nc-button">Accéder</a>
                         @elseif ($isActive)
                             <span class="nc-ghost" aria-disabled="true">Non autorise</span>
                         @else

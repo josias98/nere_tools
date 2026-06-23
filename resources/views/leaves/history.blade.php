@@ -32,7 +32,7 @@
                         @endforeach
                     </select>
                 </label>
-                <button class="nc-button" type="submit">Filtrer</button>
+                <button class="nc-ghost" type="submit">Filtrer</button>
             </form>
 
             @if ($requests->isEmpty())

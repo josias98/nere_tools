@@ -26,22 +26,6 @@
             <p class="nc-alert is-success">{{ session('status') }}</p>
         @endif
 
-        <section class="ts-import-card">
-            <div class="ts-import-copy">
-                <strong>Source CSV</strong>
-                <span>Format detecte automatiquement. Le fichier fourni peut reprendre les colonnes <code>prenom</code>, <code>nom</code>, <code>entite</code>, <code>fonction</code>, <code>ipde</code>, <code>catal</code>, <code>autre_projets</code>, etc.</span>
-            </div>
-            <form method="POST" action="{{ route('timesheets.csv') }}" enctype="multipart/form-data" class="ts-import-form">
-                @csrf
-                <div class="ts-upload-stack">
-                    <label class="ts-upload-button" for="csv_file">Upload CSV</label>
-                    <input id="csv_file" name="csv_file" type="file" accept=".csv,text/csv" required>
-                    <small class="ts-upload-meta" id="csv_file_name">CSV non selectionne.</small>
-                </div>
-                <button class="nc-button" type="submit">Charger</button>
-            </form>
-        </section>
-
         @if ($rows)
             <form method="POST" action="{{ route('timesheets.generate') }}" class="ts-wizard">
                 @csrf
@@ -52,6 +36,8 @@
                         <h2><span>1.</span> Cle de repartition</h2>
                         <p>Chaque ligne reste editable avant generation. Les profils coches seront exportes.</p>
                     </div>
+
+                    
 
                     <div class="ts-grid-wrap">
                         <table class="ts-grid">

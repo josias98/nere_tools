@@ -19,8 +19,8 @@
 
         @include('leaves.partials.flash')
 
-        <section class="nc-panel">
-            @if ($requests->isEmpty())
+
+        @if ($requests->isEmpty())
                 <p class="nc-empty">Aucune demande en attente.</p>
             @else
                 <div class="nc-table-wrap">
@@ -32,7 +32,7 @@
                                 <th>Période</th>
                                 <th>Jours</th>
                                 <th>Statut</th>
-                                <th></th>
+                                <th>Action</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -43,7 +43,7 @@
                                     <td>{{ $request->start_date->format('d/m/Y') }} au {{ $request->end_date->format('d/m/Y') }}</td>
                                     <td>{{ number_format($request->requested_days, 2) }}</td>
                                     <td><span class="leave-status is-{{ $request->status }}">{{ $request->status }}</span></td>
-                                    <td><a href="{{ route('leaves.validations.show', $request->uuid) }}">Examiner</a></td>
+                                    <td><a href="{{ route('leaves.validations.show', $request->uuid) }}" class="nc-link">Examiner</a></td>
                                 </tr>
                             @endforeach
                         </tbody>
@@ -51,6 +51,5 @@
                 </div>
                 {{ $requests->links() }}
             @endif
-        </section>
     </section>
 @endsection

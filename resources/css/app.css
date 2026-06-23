@@ -138,6 +138,13 @@ img {
     text-decoration: none;
 }
 
+.nc-link{
+    text-decoration: underline;
+    font-weight: 600;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+}
+
 .nc-nav a:hover,
 .nc-ghost:hover {
     background: var(--ip-ivory);
@@ -333,6 +340,7 @@ img {
 .nc-panel p {
     color: var(--ip-grey);
     line-height: 1.6;
+    font-size: 0.9rem;
 }
 
 .nc-card-top {
@@ -379,6 +387,11 @@ img {
 .nc-field {
     display: grid;
     gap: 7px;
+}
+
+label.nc-field span{
+    font-size: 0.9rem;
+    font-weight: 600;
 }
 
 .nc-field label {
@@ -450,8 +463,10 @@ img {
 
 .nc-alert.is-success {
     border-color: var(--ip-success-line);
-    background: var(--ip-success-surface);
-    color: var(--ip-success-text);
+    color: var(--ip-success-surface);
+    background: var(--ip-success-text);
+    font-size: .9rem;
+    font-weight: 500;
 }
 
 .nc-error {
@@ -544,30 +559,31 @@ img {
     display: inline-flex;
     align-items: center;
     min-height: 28px;
-    border-radius: 999px;
+    /* border-radius: 999px; */
     padding: 4px 10px;
     background: var(--ip-panel);
     color: var(--ip-grey);
-    font-size: 12px;
-    font-weight: 850;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
     white-space: nowrap;
 }
 
 .leave-status.is-submitted,
 .leave-status.is-under_review {
-    background: var(--ip-warning-surface);
-    color: var(--ip-rust);
+    color: var(--ip-warning-surface);
+    background: var(--ip-rust);
 }
 
 .leave-status.is-approved {
-    background: var(--ip-success-surface);
-    color: var(--ip-success-text);
+    color: var(--ip-success-surface);
+    background: var(--ip-success-text);
 }
 
 .leave-status.is-rejected,
 .leave-status.is-cancelled {
-    background: var(--ip-danger-surface);
-    color: var(--ip-rust);
+    color: var(--ip-danger-surface);
+    background: var(--ip-rust);
 }
 
 .leave-detail-grid {
@@ -678,7 +694,7 @@ img {
 .ts-card {
     background: var(--ts-surface);
     border: 1px solid var(--ts-line);
-    border-radius: 14px;
+    /* border-radius: 14px; */
     box-shadow: var(--ip-shadow-soft);
     transition: transform var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out), background-color var(--dur-fast) var(--ease-out);
     animation: ts-rise 380ms var(--ease-out) both;
@@ -793,8 +809,8 @@ img {
 }
 
 .ts-empty-card {
-    border-style: dashed;
-    background: linear-gradient(180deg, rgba(243, 239, 235, .92), rgba(255, 255, 255, 1));
+    /* border-style: dashed; */
+    /* background: linear-gradient(180deg, rgba(243, 239, 235, .92), rgba(255, 255, 255, 1)); */
 }
 
 .ts-step-head {
