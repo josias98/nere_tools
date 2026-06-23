@@ -1,58 +1,292 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Nere Tools
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Portail interne Laravel pour NERE Capital.
 
-## About Laravel
+L'application couvre aujourd'hui deux usages metier:
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- generation de feuilles de temps PDF puis archivage ZIP ;
+- gestion des conges avec demande, validation, solde et historique.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Analyse rapide du code
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+Le projet est une application Laravel 13 assez classique cote structure, avec
+une separation simple entre HTTP, logique metier et rendu.
 
-## Learning Laravel
+Points notables:
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+- authentification Microsoft 365 via OAuth dans `app/Http/Controllers/Auth/MicrosoftAuthController.php` ;
+- controle d'acces par role et par outil via `User::canAccessTool()` et le middleware `tool:*` ;
+- logique metier placee surtout dans `app/Services` ;
+- generation PDF faite maison pour limiter les dependances :
+  - timesheets dans `app/Modules/Timesheets/Support/TimesheetPdfRenderer.php` ;
+  - conges dans `app/Services/Leaves/LeavePdfService.php` ;
+- archivage ZIP des feuilles de temps via `ZipArchive` ;
+- routes web decoupees par domaine dans `routes/web/*.php` ;
+- front leger avec Blade + Vite + Tailwind CSS 4 + un peu de JavaScript modulaire ;
+- couverture de tests deja presente pour auth Microsoft, timesheets et conges.
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## Organisation du depot
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
-
-## Agentic Development
-
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
-
-```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+```text
+app/
+  Http/
+    Controllers/       Pages web et actions HTTP
+    Middleware/        Controle d'acces
+  Models/              Entites Eloquent
+  Modules/
+    Timesheets/Support/ PDF/CSV/ZIP du module feuilles de temps
+  Services/
+    Leaves/            Logique metier du module conges
+    TimesheetService.php
+bootstrap/
+config/
+database/
+  migrations/          Schema
+  seeders/             Donnees de base
+public/                Point d'entree web + assets de marque
+resources/
+  css/                 Shell UI + styles par module
+  js/                  Boot global + scripts par module
+  views/               Templates Blade
+routes/
+  web/                 Fichiers de routes par domaine
+scripts/               Aides au HTTPS local et bundle CA
+tests/
+  Feature/             Parcours applicatifs
+  Unit/                Services et logique pure
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+## Modules existants
 
-## Contributing
+### 1. Dashboard et administration
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+- `/` : dashboard qui liste les outils actifs.
+- `/admin` : entree administration.
+- `/admin/users` : gestion des utilisateurs.
+- `/admin/conges` : administration du module conges.
 
-## Code of Conduct
+### 2. Timesheets
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Routes sous `/timesheets`.
 
-## Security Vulnerabilities
+Ce module permet:
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+- de generer des feuilles de temps depuis une selection de collaborateurs ;
+- d'importer un CSV puis corriger les lignes avant generation ;
+- de produire des PDF en stockage local ;
+- de telecharger un ZIP des fichiers generes ;
+- de consulter un historique des generations.
 
-## License
+Le coeur du module est ici:
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+- `app/Services/TimesheetService.php`
+- `app/Modules/Timesheets/Support/TimesheetPdfRenderer.php`
+- `app/Modules/Timesheets/Support/TimesheetCsvParser.php`
+- `app/Modules/Timesheets/Support/TimesheetArchiveBuilder.php`
+
+### 3. Conges
+
+Routes sous `/conges`.
+
+Ce module permet:
+
+- de soumettre une demande ;
+- de suivre son historique ;
+- de valider ou rejeter une demande ;
+- de calculer les soldes ;
+- de generer un PDF de decision ;
+- d'envoyer des emails de notification.
+
+Le coeur du module est ici:
+
+- `app/Services/Leaves/LeaveRequestWorkflowService.php`
+- `app/Services/Leaves/LeaveBalanceService.php`
+- `app/Services/Leaves/LeaveDayCountService.php`
+- `app/Services/Leaves/LeaveNotificationService.php`
+- `app/Services/Leaves/LeavePdfService.php`
+
+## Prerequis
+
+- PHP 8.4+
+- Composer
+- Node.js 20+ et npm
+- extension PHP `zip` pour la generation des archives
+- SQLite par defaut, ou une autre base si vous adaptez `.env`
+
+## Configuration locale
+
+1. Installer les dependances PHP et JS:
+
+```bash
+composer install
+npm install
+```
+
+2. Initialiser l'environnement:
+
+```bash
+copy .env.example .env
+```
+
+3. Verifier que la base SQLite existe:
+
+```bash
+if not exist database\database.sqlite type nul > database\database.sqlite
+```
+
+4. Generer la cle application puis migrer et peupler:
+
+```bash
+php artisan key:generate
+php artisan migrate --seed
+```
+
+## Auth Microsoft et variables utiles
+
+Le projet attend une connexion Microsoft 365.
+
+Variables importantes dans `.env`:
+
+- `MICROSOFT_TENANT_ID`
+- `MICROSOFT_CLIENT_ID`
+- `MICROSOFT_CLIENT_SECRET`
+- `MICROSOFT_REDIRECT_URI`
+- `MICROSOFT_SCOPES`
+- `MICROSOFT_CA_BUNDLE`
+- `INITIAL_ADMIN_EMAIL`
+- `INITIAL_ADMIN_NAME`
+
+Le comportement actuel est le suivant:
+
+- un utilisateur deja present dans `users` peut se connecter ;
+- sinon, si son email existe dans `employees`, un compte local est cree au premier login ;
+- sinon l'acces est refuse.
+
+## Lancer le projet
+
+### Option recommandee: HTTPS local
+
+C'est le chemin principal a utiliser pour un vrai test applicatif, parce que:
+
+- `.env.example` pointe vers `https://localhost:8443` ;
+- `SESSION_SECURE_COOKIE=true` ;
+- la redirection Microsoft est configuree en HTTPS local.
+
+Preparation:
+
+```bash
+npm run setup:https
+npm run setup:ca
+```
+
+Demarrage:
+
+```bash
+npm run serve:https
+```
+
+Services demarres:
+
+- Laravel sur `http://127.0.0.1:8000`
+- Vite en dev
+- proxy HTTPS local sur `https://localhost:8443`
+
+### Option simple: dev HTTP
+
+```bash
+composer run dev
+```
+
+Cette option est pratique pour du developpement front/back rapide, mais elle
+n'est pas le meilleur choix pour tester l'auth Microsoft ou la session telle
+qu'elle est configuree par defaut.
+
+## Tests
+
+```bash
+php artisan test
+```
+
+Les tests couvrent deja:
+
+- l'authentification Microsoft ;
+- les acces aux modules ;
+- le workflow conges ;
+- la generation timesheets et CSV.
+
+## Stockage et fichiers generes
+
+Les fichiers applicatifs sont stockes sur le disque `local`, qui pointe vers:
+
+```text
+storage/app/private
+```
+
+On y retrouve notamment:
+
+- les PDF de conges ;
+- les PDF de feuilles de temps ;
+- les archives ZIP ;
+- le bundle CA telecharge pour Microsoft si vous utilisez `npm run setup:ca`.
+
+## Deploiement
+
+Le depot ne contient pas de Dockerfile, pipeline CI/CD, config Nginx/Apache,
+ou script d'infra de production. Le deploiement actuel est donc a traiter
+comme un deploiement Laravel standard.
+
+### Procedure minimale de deploiement
+
+1. Provisionner un serveur avec:
+
+- PHP 8.4+
+- Composer
+- Node.js 20+ pour builder les assets
+- extension PHP `zip`
+- un serveur web pointant vers `public/`
+
+2. Recuperer le code puis installer les dependances:
+
+```bash
+composer install --no-dev --optimize-autoloader
+npm ci
+npm run build
+```
+
+3. Configurer `.env` en production:
+
+- `APP_ENV=production`
+- `APP_DEBUG=false`
+- `APP_URL=https://...`
+- variables base de donnees
+- variables mail
+- variables Microsoft 365
+
+4. Initialiser Laravel:
+
+```bash
+php artisan key:generate
+php artisan migrate --force --seed
+php artisan config:cache
+php artisan route:cache
+php artisan view:cache
+```
+
+5. Donner les droits d'ecriture a:
+
+- `storage/`
+- `bootstrap/cache/`
+
+6. Lancer un worker si vous gardez la queue `database` en production:
+
+```bash
+php artisan queue:work
+```
+
+## Limites et observations utiles
+
+- Pas d'automatisation de deploiement dans le depot.
+- PDF construits sans librairie externe: simple et suffisant, mais a surveiller si les besoins d'impression deviennent plus riches.
+- Le module timesheets est deja bien isole fonctionnellement via `app/Modules/Timesheets/Support`.
+- Le module conges reste organise surtout par services, ce qui est coherent avec son etat actuel.
+- Le fichier `README` d'origine Laravel ne decrivait pas l'application ; il a ete remplace par une doc projet.
