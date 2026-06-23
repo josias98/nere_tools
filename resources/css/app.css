@@ -694,8 +694,7 @@ label.nc-field span{
 .ts-card {
     background: var(--ts-surface);
     border: 1px solid var(--ts-line);
-    /* border-radius: 14px; */
-    box-shadow: var(--ip-shadow-soft);
+    box-shadow: none;
     transition: transform var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out), background-color var(--dur-fast) var(--ease-out);
     animation: ts-rise 380ms var(--ease-out) both;
 }
@@ -757,8 +756,8 @@ label.nc-field span{
     align-items: center;
     justify-content: center;
     border: 1px solid var(--ts-line);
-    border-radius: 10px;
-    background: linear-gradient(180deg, var(--ts-surface), var(--ts-panel));
+    border-radius: var(--radius);
+    background: var(--ip-white);
     padding: 0 18px;
     color: var(--ts-ink);
     font-weight: 700;
@@ -770,7 +769,8 @@ label.nc-field span{
 .ts-upload-button:hover {
     transform: translateY(-1px);
     border-color: var(--ts-line-strong);
-    box-shadow: 0 10px 20px rgba(52, 22, 4, .06);
+    background: var(--ip-ivory);
+    box-shadow: none;
 }
 
 .ts-upload-meta {
@@ -782,6 +782,13 @@ label.nc-field span{
 .ts-wizard {
     display: grid;
     gap: 20px;
+}
+
+.ts-option-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+    align-items: start;
 }
 
 .ts-card {
@@ -806,11 +813,6 @@ label.nc-field span{
     border-color: transparent;
     background: transparent;
     padding: 0;
-}
-
-.ts-empty-card {
-    /* border-style: dashed; */
-    /* background: linear-gradient(180deg, rgba(243, 239, 235, .92), rgba(255, 255, 255, 1)); */
 }
 
 .ts-step-head {
@@ -842,7 +844,7 @@ label.nc-field span{
     overflow-x: auto;
     overscroll-behavior-x: contain;
     border: 1px solid var(--ts-line);
-    border-radius: 12px;
+    border-radius: var(--radius);
     background: var(--ts-surface);
     padding-bottom: 8px;
     scrollbar-color: var(--ip-ochre) var(--ts-panel);
@@ -926,7 +928,7 @@ label.nc-field span{
     align-items: center;
     gap: 8px;
     flex-wrap: wrap;
-    border-radius: 12px;
+    border-radius: var(--radius);
     background: var(--ts-panel);
     border: 1px solid var(--ts-line);
     padding: 10px 12px;
@@ -936,14 +938,14 @@ label.nc-field span{
     display: inline-flex;
     align-items: center;
     min-height: 34px;
-    border-radius: 10px;
-    background: linear-gradient(180deg, var(--ts-chip), var(--ts-chip-deep));
+    border-radius: var(--radius);
+    background: var(--ts-chip-deep);
     padding: 0 12px;
     color: var(--ts-surface);
     font-size: 14px;
     font-weight: 700;
     white-space: nowrap;
-    box-shadow: 0 8px 14px rgba(143, 52, 42, .16);
+    box-shadow: none;
     animation: ts-chip-in 180ms var(--ease-out) both;
 }
 
@@ -969,7 +971,7 @@ label.nc-field span{
     width: 100%;
     min-height: 44px;
     border: 1px solid var(--ts-line);
-    border-radius: 12px;
+    border-radius: var(--radius);
     background: var(--ts-panel);
     padding: 12px 14px;
     color: var(--ts-ink);
@@ -996,7 +998,7 @@ label.nc-field span{
 
 .ts-logo-upload {
     min-height: 66px;
-    border-radius: 12px;
+    border-radius: var(--radius);
     background: var(--ts-panel);
     border: 1px solid var(--ts-line);
     padding: 12px;
@@ -1009,21 +1011,21 @@ label.nc-field span{
 .ts-generate-button {
     min-height: 54px;
     border: 0;
-    border-radius: 12px;
+    border-radius: var(--radius);
     background: var(--ts-accent);
     padding: 0 22px;
     color: var(--ts-surface);
     font-size: 17px;
     font-weight: 800;
     cursor: pointer;
-    box-shadow: 0 14px 28px rgba(52, 22, 4, .16);
+    box-shadow: none;
     transition: transform var(--dur-fast) var(--ease-out), background-color var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast) var(--ease-out);
 }
 
 .ts-generate-button:hover {
     background: var(--ts-accent-deep);
     transform: translateY(-1px);
-    box-shadow: 0 18px 34px rgba(52, 22, 4, .2);
+    box-shadow: none;
 }
 
 .nc-timesheet-workbench {
@@ -1091,11 +1093,26 @@ label.nc-field span{
     border-top: 1px solid var(--ip-line);
 }
 
-.ts-help-list article {
+.ts-help-list details {
     display: grid;
     gap: 5px;
     padding: 14px 0;
     border-bottom: 1px solid var(--ip-line);
+}
+
+.ts-help-list summary {
+    color: var(--ip-brown);
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: 800;
+}
+
+.ts-help-list summary::marker {
+    color: var(--ip-orange);
+}
+
+.ts-help-list summary:hover {
+    color: var(--ip-rust);
 }
 
 .ts-help-list h3 {
@@ -1107,6 +1124,7 @@ label.nc-field span{
 
 .ts-help-list p {
     margin: 0;
+    padding-top: 8px;
 }
 
 .nc-edit-table {
@@ -1194,6 +1212,7 @@ label.nc-field span{
     }
 
     .ts-import-card,
+    .ts-option-grid,
     .ts-parameter-grid {
         grid-template-columns: 1fr;
     }

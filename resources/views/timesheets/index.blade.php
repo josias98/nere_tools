@@ -26,6 +26,98 @@
             <p class="nc-alert is-success">{{ session('status') }}</p>
         @endif
 
+        <div class="ts-option-grid">
+            <section class="ts-card">
+                <div class="ts-step-head">
+                    <h2><span>Option 1.</span> Charger un fichier CSV</h2>
+                    <p>Utilisez ce mode pour generer un lot controle depuis une cle de repartition. Apres chargement, chaque ligne reste editable avant export.</p>
+                </div>
+                <form method="POST" action="{{ route('timesheets.csv') }}" enctype="multipart/form-data" class="ts-import-form">
+                    @csrf
+                    <div class="ts-upload-stack">
+                        <label class="ts-upload-button" for="csv_file">Choisir un CSV</label>
+                        <input id="csv_file" name="csv_file" type="file" accept=".csv,text/csv" required>
+                        <span class="ts-upload-meta" id="csv_file_name">{{ $rows ? count($rows).' ligne(s) chargee(s).' : 'CSV non selectionne.' }}</span>
+                    </div>
+                    <button class="nc-button" type="submit">Charger le fichier</button>
+                    @if ($rows)
+                        <a class="nc-ghost" href="{{ route('timesheets.csv.clear') }}">Vider le CSV</a>
+                    @endif
+                </form>
+            </section>
+
+            <section class="ts-card">
+                <div class="ts-step-head">
+                    <h2><span>Option 2.</span> Generation manuelle</h2>
+                    <p>Utilisez ce mode pour un lot simple a partir des collaborateurs deja presents dans Nere Tools, sans fichier source.</p>
+                </div>
+                @if ($rows)
+                    <p class="nc-muted">Un CSV est charge. Videz-le si vous voulez revenir au formulaire manuel.</p>
+                @else
+                    <form method="POST" action="{{ route('timesheets.generate') }}" class="nc-form-grid">
+                        @csrf
+                        <div class="nc-field">
+                            <label for="period_type">Type de periode</label>
+                            <select id="period_type" name="period_type">
+                                <option value="month">Mois</option>
+                                <option value="quarter">Trimestre</option>
+                                <option value="semester" selected>Semestre</option>
+                                <option value="custom">Personnalisee</option>
+                            </select>
+                        </div>
+                        <div class="nc-field">
+                            <label for="year">Annee</label>
+                            <input id="year" name="year" type="number" min="2020" max="2100" value="{{ old('year', now()->year) }}">
+                        </div>
+                        <div class="nc-field">
+                            <label for="start_month">Mois de debut</label>
+                            <input id="start_month" name="start_month" type="number" min="1" max="12" value="{{ old('start_month', 1) }}">
+                        </div>
+                        <div class="nc-field">
+                            <label for="end_month">Mois de fin</label>
+                            <input id="end_month" name="end_month" type="number" min="1" max="12" value="{{ old('end_month', 6) }}">
+                        </div>
+                        <div class="nc-field" style="grid-column: 1 / -1">
+                            <label for="employee_ids">Collaborateurs</label>
+                            <select id="employee_ids" name="employee_ids[]" multiple size="6" required>
+                                @foreach ($employees as $employee)
+                                    <option value="{{ $employee->id }}">{{ $employee->name() }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="nc-field">
+                            <label for="entity_label">Entite affichee</label>
+                            <input id="entity_label" name="entity_label" type="text" value="{{ old('entity_label', 'Nere Capital') }}">
+                        </div>
+                        <div class="nc-field">
+                            <label for="signature_date">Date de signature forcee</label>
+                            <input id="signature_date" name="signature_date" type="date" value="{{ old('signature_date') }}">
+                        </div>
+                        <div class="nc-field">
+                            <label for="signatory_name">Responsable force</label>
+                            <input id="signatory_name" name="signatory_name" type="text" value="{{ old('signatory_name') }}" placeholder="Valeur collaborateur par defaut">
+                        </div>
+                        <div class="nc-field">
+                            <label for="comments_label">Libelle commentaires</label>
+                            <input id="comments_label" name="comments_label" type="text" value="{{ old('comments_label', 'Commentaires / Details') }}">
+                        </div>
+                        <label class="nc-field" style="grid-column: 1 / -1">
+                            <span>Options PDF</span>
+                            <span>
+                                <input name="include_comments" type="hidden" value="0">
+                                <input name="include_comments" type="checkbox" value="1" @checked(old('include_comments', '1'))>
+                                Afficher la colonne commentaires
+                            </span>
+                        </label>
+                        <div class="nc-actions">
+                            <button class="nc-button is-secondary" type="submit">Generer les feuilles</button>
+                            <a class="nc-ghost" href="{{ route('timesheets.index') }}">Reinitialiser</a>
+                        </div>
+                    </form>
+                @endif
+            </section>
+        </div>
+
         @if ($rows)
             <form method="POST" action="{{ route('timesheets.generate') }}" class="ts-wizard">
                 @csrf
@@ -156,105 +248,39 @@
         @endif
 
         <div class="nc-timesheet-workbench">
-            @if (! $rows)
-                <section class="nc-panel">
-                    <div class="nc-panel-heading">
-                        <div>
-                            <h2>Generation manuelle</h2>
-                            <p>Conservez ce mode pour un lot simple sans CSV.</p>
-                        </div>
-                    </div>
-                    <form method="POST" action="{{ route('timesheets.generate') }}" class="nc-form-grid">
-                        @csrf
-                        <div class="nc-field">
-                            <label for="period_type">Type de periode</label>
-                            <select id="period_type" name="period_type">
-                                <option value="month">Mois</option>
-                                <option value="quarter">Trimestre</option>
-                                <option value="semester" selected>Semestre</option>
-                                <option value="custom">Personnalisee</option>
-                            </select>
-                        </div>
-                        <div class="nc-field">
-                            <label for="year">Annee</label>
-                            <input id="year" name="year" type="number" min="2020" max="2100" value="{{ old('year', now()->year) }}">
-                        </div>
-                        <div class="nc-field">
-                            <label for="start_month">Mois de debut</label>
-                            <input id="start_month" name="start_month" type="number" min="1" max="12" value="{{ old('start_month', 1) }}">
-                        </div>
-                        <div class="nc-field">
-                            <label for="end_month">Mois de fin</label>
-                            <input id="end_month" name="end_month" type="number" min="1" max="12" value="{{ old('end_month', 6) }}">
-                        </div>
-                        <div class="nc-field" style="grid-column: 1 / -1">
-                            <label for="employee_ids">Collaborateurs</label>
-                            <select id="employee_ids" name="employee_ids[]" multiple size="6" required>
-                                @foreach ($employees as $employee)
-                                    <option value="{{ $employee->id }}">{{ $employee->name() }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="nc-field">
-                            <label for="entity_label">Entite affichee</label>
-                            <input id="entity_label" name="entity_label" type="text" value="{{ old('entity_label', 'Nere Capital') }}">
-                        </div>
-                        <div class="nc-field">
-                            <label for="signature_date">Date de signature forcee</label>
-                            <input id="signature_date" name="signature_date" type="date" value="{{ old('signature_date') }}">
-                        </div>
-                        <div class="nc-field">
-                            <label for="signatory_name">Responsable force</label>
-                            <input id="signatory_name" name="signatory_name" type="text" value="{{ old('signatory_name') }}" placeholder="Valeur collaborateur par defaut">
-                        </div>
-                        <div class="nc-field">
-                            <label for="comments_label">Libelle commentaires</label>
-                            <input id="comments_label" name="comments_label" type="text" value="{{ old('comments_label', 'Commentaires / Details') }}">
-                        </div>
-                        <label class="nc-field" style="grid-column: 1 / -1">
-                            <span>Options PDF</span>
-                            <span>
-                                <input name="include_comments" type="hidden" value="0">
-                                <input name="include_comments" type="checkbox" value="1" @checked(old('include_comments', '1'))>
-                                Afficher la colonne commentaires
-                            </span>
-                        </label>
-                        <div class="nc-actions">
-                            <button class="nc-button is-secondary" type="submit">Generer les feuilles</button>
-                            <a class="nc-ghost" href="{{ route('timesheets.index') }}">Reinitialiser</a>
-                        </div>
-                    </form>
-                </section>
-            @endif
-
             <aside class="nc-panel">
-                <h2>FAQ et manuel rapide</h2>
+                <h2>FAQ et manuel d'utilisation</h2>
                 <div class="ts-help-list">
-                    <article>
-                        <h3>Comment utiliser un CSV ?</h3>
-                        <p>Chargez le fichier, verifiez les lignes, decochez les salaries a exclure, puis lancez la generation.</p>
-                    </article>
-                    <article>
-                        <h3>Que fait la periode ?</h3>
-                        <p>Les dates de debut et de fin determinent les mois generes. Le PDF final contient une page par mois.</p>
-                    </article>
-                    <article>
-                        <h3>Que contient le ZIP ?</h3>
-                        <p>Un PDF par salarie selectionne, groupe par utilisateur, avec toutes ses pages de periode.</p>
-                    </article>
-                    <article>
-                        <h3>Comment sont calculees les signatures ?</h3>
-                        <p>La date tombe au premier jour ouvrable apres la fin du mois, en sautant les week-ends et les dates exclues.</p>
-                    </article>
-                    <article>
-                        <h3>Quand utiliser la generation manuelle ?</h3>
-                        <p>Quand aucun CSV n'est charge et que le lot repose seulement sur les profils collaborateurs deja en base.</p>
-                    </article>
+                    <details open>
+                        <summary>Quel mode choisir ?</summary>
+                        <p>Choisissez l'option 1 si vous avez une cle de repartition CSV a verifier ligne par ligne. Choisissez l'option 2 si vous voulez generer rapidement des feuilles depuis les collaborateurs actifs deja en base.</p>
+                    </details>
+                    <details>
+                        <summary>Comment preparer le CSV ?</summary>
+                        <p>Le fichier doit permettre d'identifier chaque collaborateur par id, nom complet, prenom/nom ou nom affiche. Les colonnes reconnues incluent notamment prenom, nom, entite, pays, fonction, role, fonds, ipde, catal, autre_projets, code_analytique, lieu, nom_signature, responsable_hierarchique et signature_droite_titre.</p>
+                    </details>
+                    <details>
+                        <summary>Que verifier apres chargement du CSV ?</summary>
+                        <p>Controlez les noms, entites, taux de repartition, codes analytiques, lieux et signataires. Decochez les salaries a exclure du ZIP. Les modifications faites dans le tableau sont prises en compte uniquement pour la generation en cours.</p>
+                    </details>
+                    <details>
+                        <summary>Comment regler la periode ?</summary>
+                        <p>En mode CSV, la date de debut et la date de fin s'appliquent a tout le lot. Chaque mois compris dans cette periode devient une page dans le PDF du salarie. Le libelle ZIP est calcule automatiquement, mais il peut etre modifie avant generation.</p>
+                    </details>
+                    <details>
+                        <summary>A quoi servent les dates exclues ?</summary>
+                        <p>Ajoutez une date par ligne pour eviter qu'une signature tombe sur un jour ferme. Les formats acceptes sont YYYY-MM-DD et DD/MM/YYYY. Les week-ends sont deja sautes automatiquement.</p>
+                    </details>
+                    <details>
+                        <summary>Que contient le ZIP genere ?</summary>
+                        <p>Le ZIP contient un PDF par salarie selectionne. Chaque PDF regroupe toutes les pages mensuelles de la periode demandee. Apres une generation CSV reussie, le CSV charge est vide pour eviter une regeneration accidentelle.</p>
+                    </details>
+                    <details>
+                        <summary>Quand utiliser la generation manuelle ?</summary>
+                        <p>Utilisez-la pour une generation ponctuelle sans cle de repartition. Selectionnez les collaborateurs, la periode, l'entite affichee et les options PDF. Les valeurs manquantes viennent des profils collaborateurs en base.</p>
+                    </details>
                 </div>
                 <div class="nc-actions">
-                    @if ($rows)
-                        <a class="nc-ghost" href="{{ route('timesheets.csv.clear') }}">Vider le CSV</a>
-                    @endif
                     <a class="nc-ghost" href="{{ route('timesheets.history') }}">Voir l'historique</a>
                 </div>
             </aside>
