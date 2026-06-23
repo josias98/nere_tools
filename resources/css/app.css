@@ -964,6 +964,7 @@ label.nc-field span{
     color: var(--ts-ink);
     font-size: 14px;
     font-weight: 700;
+    margin-top: 10px;
 }
 
 .ts-field input,

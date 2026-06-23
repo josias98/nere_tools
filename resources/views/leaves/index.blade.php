@@ -1,7 +1,7 @@
 @extends('layouts.app', [
     'title' => 'Demandes de congé - Nere Tools',
     'breadcrumbs' => [
-        ['label' => 'Dashboard', 'url' => route('dashboard')],
+        ['label' => 'Accueil', 'url' => route('dashboard')],
         ['label' => 'Congés'],
     ],
 ])
@@ -12,7 +12,7 @@
             <div>
                 <p class="nc-kicker">Congés</p>
                 <h1 class="nc-title">Demandes de congé</h1>
-                <p class="nc-lead">Consultez votre solde, soumettez une demande et suivez son traitement.</p>
+                <p class="nc-lead">Consultez votre solde, envoyez une demande et suivez son avancement en toute simplicité.</p>
             </div>
         </div>
 
@@ -39,8 +39,8 @@
         <section class="nc-panel">
             <div class="nc-panel-heading">
                 <div>
-                    <h2>Dernières demandes</h2>
-                    <p>Le décompte se fait en jours calendaires, week-ends inclus.</p>
+                    <h2>Vos dernières demandes</h2>
+                    <p>Le calcul se fait en jours calendaires, week-ends inclus.</p>
                 </div>
                 <div class="nc-actions">
                     @if ($canValidateLeaves)
@@ -52,7 +52,7 @@
             </div>
 
             @if ($recentRequests->isEmpty())
-                <p class="nc-empty">Aucune demande pour le moment.</p>
+                <p class="nc-empty">Vous n'avez encore aucune demande.</p>
             @else
                 <div class="nc-table-wrap">
                     <table class="nc-table">
@@ -72,7 +72,7 @@
                                     <td>{{ $request->leaveType?->name ?? 'Congé' }}</td>
                                     <td>{{ number_format($request->requested_days, 2) }}</td>
                                     <td><span class="leave-status is-{{ $request->status }}">{{ $request->status }}</span></td>
-                                    <td><a href="{{ route('leaves.show', $request->uuid) }}" class="nc-link">Détail</a></td>
+                                    <td><a href="{{ route('leaves.show', $request->uuid) }}" class="nc-link">Voir le détail</a></td>
                                 </tr>
                             @endforeach
                         </tbody>

@@ -12,8 +12,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const leaveDayCount = document.getElementById('leave_day_count');
     const leaveBalanceHint = document.getElementById('leave_balance_hint');
     const leaveForm = document.querySelector('[data-leave-form]');
-    const csvPlaceholder = 'CSV non selectionne.';
-    const logoPlaceholder = 'Le logo IP joint est applique automatiquement dans les PDF generes.';
+    const csvPlaceholder = 'Aucun fichier CSV sélectionné.';
+    const logoPlaceholder = 'Le logo IP fourni sera appliqué automatiquement dans les PDF générés.';
 
     const renderChips = () => {
         if (!chipTray) {
@@ -36,7 +36,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (selectedLabels.length === 0) {
             const empty = document.createElement('span');
             empty.className = 'nc-muted';
-            empty.textContent = 'Aucun salarie selectionne.';
+            empty.textContent = 'Aucun collaborateur sélectionné.';
             chipTray.append(empty);
             return;
         }
@@ -116,7 +116,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (days < 1) {
             leaveDayCount.textContent = 'Erreur';
             if (leaveBalanceHint) {
-                leaveBalanceHint.textContent = 'La date de fin doit être après la date de début.';
+                leaveBalanceHint.textContent = 'La date de fin doit être postérieure ou égale à la date de début.';
             }
             return;
         }

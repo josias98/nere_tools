@@ -1,7 +1,7 @@
 @extends('layouts.app', [
     'title' => 'Nere Tools',
     'breadcrumbs' => [
-        ['label' => 'Dashboard'],
+        ['label' => 'Accueil'],
     ],
 ])
 
@@ -11,7 +11,7 @@
             <div>
                 <p class="nc-kicker">Portail interne</p>
                 <h1 class="nc-title">Nere Tools</h1>
-                <p class="nc-lead">Bienvenue, {{ auth()->user()->name }}. Selectionnez un outil interne pour demarrer.</p>
+                <p class="nc-lead">Bienvenue, {{ auth()->user()->name }}. Choisissez l'outil dont vous avez besoin pour commencer.</p>
             </div>
         </div>
 
@@ -28,16 +28,15 @@
                             <h2>{{ $tool->name }}</h2>
                             <p>{{ $tool->description }}</p>
                         </div>
-                        <!-- <span class="nc-badge {{ $isActive ? 'active' : '' }}">{{ $isActive ? 'Actif' : 'Bientot' }}</span> -->
                     </div>
 
                     <div class="nc-actions">
                         @if ($isActive && $hasAccess)
-                            <a href="{{ $tool->route }}" class="nc-button">Accéder</a>
+                            <a href="{{ $tool->route }}" class="nc-button">Ouvrir l'outil</a>
                         @elseif ($isActive)
-                            <span class="nc-ghost" aria-disabled="true">Non autorise</span>
+                            <span class="nc-ghost" aria-disabled="true">Accès non autorisé</span>
                         @else
-                            <span class="nc-ghost" aria-disabled="true">Bientot disponible</span>
+                            <span class="nc-ghost" aria-disabled="true">Bientôt disponible</span>
                         @endif
                     </div>
                 </article>
