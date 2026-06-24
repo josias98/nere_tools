@@ -72,11 +72,7 @@ class LeaveRequestController extends Controller
         $user = Auth::user();
         $leaveRequest->load(['employee.department', 'leaveType', 'reviewer', 'document']);
         
-        if (
-            $leaveRequest->employee_id !== $user->employee?->id
-            && ! $user->hasRole('admin')
-            && ! $this->validatorService->userCanValidate($user, $leaveRequest)
-        ) {
+        if (! $this->validatorService->userCanAccessDocument($user, $leaveRequest)) {
             abort(403);
         }
 

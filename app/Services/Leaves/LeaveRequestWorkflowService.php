@@ -101,7 +101,7 @@ class LeaveRequestWorkflowService
             'balance_after' => $balance['available_balance'] - $request->requested_days,
         ])->save();
 
-        ($this->pdfService ?? app(LeavePdfService::class))->generate($request);
+        ($this->pdfService ?? app(LeavePdfService::class))->generate($request, $reviewer);
         ($this->notificationService ?? app(LeaveNotificationService::class))->requestDecided($request);
         $this->audit('leave.approved', $request, $reviewer->id);
 

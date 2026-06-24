@@ -9,6 +9,7 @@ use App\Models\LeaveRequest;
 use App\Models\LeaveType;
 use App\Models\LeaveValidator;
 use App\Models\User;
+use App\Services\Leaves\LeavePdfService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Storage;
@@ -78,7 +79,128 @@ class LeaveModuleTest extends TestCase
 
         $this->assertSame('approved', $leaveRequest->status);
         $this->assertNotNull($leaveRequest->document);
-        Storage::disk('local')->assertExists($leaveRequest->document->local_path);
+        Storage::disk('local')->assertExists($leaveRequest->document->file_path);
+    }
+
+    public function test_rejected_request_does_not_generate_pdf(): void
+    {
+        Storage::fake('local');
+
+        [$requester, $employee] = $this->userWithEmployee('requester@nere.test', 'Requester');
+        [$validator, $validatorEmployee] = $this->userWithEmployee('validator@nere.test', 'Validator');
+        $leaveRequest = $this->leaveRequestFor($employee, $requester);
+
+        LeaveValidator::query()->create([
+            'employee_id' => $validatorEmployee->id,
+            'scope' => 'global',
+            'is_active' => true,
+        ]);
+
+        $this->actingAs($validator)
+            ->post(route('leaves.validations.reject', $leaveRequest->uuid), [
+                'reviewer_comment' => 'Refus motive',
+            ])
+            ->assertRedirect(route('leaves.validations.show', $leaveRequest->uuid));
+
+        $leaveRequest->refresh();
+
+        $this->assertSame('rejected', $leaveRequest->status);
+        $this->assertNull($leaveRequest->document);
+    }
+
+    public function test_pdf_generation_is_idempotent_for_approved_request(): void
+    {
+        Storage::fake('local');
+
+        [$requester, $employee] = $this->userWithEmployee('requester@nere.test', 'Requester');
+        [$validator, $validatorEmployee] = $this->userWithEmployee('validator@nere.test', 'Validator');
+        $leaveRequest = $this->leaveRequestFor($employee, $requester);
+
+        LeaveBalance::query()->create([
+            'employee_id' => $employee->id,
+            'reference_date' => '2026-01-01',
+            'initial_remaining_days' => 30,
+        ]);
+        LeaveValidator::query()->create([
+            'employee_id' => $validatorEmployee->id,
+            'scope' => 'global',
+            'is_active' => true,
+        ]);
+
+        $this->actingAs($validator)->post(route('leaves.validations.approve', $leaveRequest->uuid), [
+            'reviewer_comment' => 'OK',
+        ]);
+
+        $leaveRequest->refresh();
+        $firstDocument = $leaveRequest->document;
+
+        $secondDocument = app(LeavePdfService::class)->generate($leaveRequest->fresh(), $validator);
+
+        $this->assertSame($firstDocument->id, $secondDocument->id);
+        $this->assertSame(1, $leaveRequest->fresh()->documents()->count());
+    }
+
+    public function test_generated_document_records_reference_token_and_hash(): void
+    {
+        Storage::fake('local');
+
+        [$requester, $employee] = $this->userWithEmployee('requester@nere.test', 'Requester');
+        [$validator, $validatorEmployee] = $this->userWithEmployee('validator@nere.test', 'Validator');
+        $leaveRequest = $this->leaveRequestFor($employee, $requester);
+
+        LeaveBalance::query()->create([
+            'employee_id' => $employee->id,
+            'reference_date' => '2026-01-01',
+            'initial_remaining_days' => 30,
+        ]);
+        LeaveValidator::query()->create([
+            'employee_id' => $validatorEmployee->id,
+            'scope' => 'global',
+            'is_active' => true,
+        ]);
+
+        $this->actingAs($validator)->post(route('leaves.validations.approve', $leaveRequest->uuid), [
+            'reviewer_comment' => 'OK',
+        ]);
+
+        $document = $leaveRequest->fresh()->document;
+
+        $this->assertNotNull($document);
+        $this->assertMatchesRegularExpression('/^NC-CONGES-2026-\d{5}$/', $document->document_reference);
+        $this->assertNotEmpty($document->verification_token);
+        $this->assertSame(route('leaves.verify.show', $document->verification_token), $document->verification_url);
+        $this->assertSame(64, strlen($document->sha256_hash));
+    }
+
+    public function test_unauthorized_user_cannot_download_leave_pdf(): void
+    {
+        Storage::fake('local');
+
+        [$requester, $employee] = $this->userWithEmployee('requester@nere.test', 'Requester');
+        [$validator, $validatorEmployee] = $this->userWithEmployee('validator@nere.test', 'Validator');
+        [$other] = $this->userWithEmployee('other@nere.test', 'Other');
+        $leaveRequest = $this->leaveRequestFor($employee, $requester);
+
+        LeaveBalance::query()->create([
+            'employee_id' => $employee->id,
+            'reference_date' => '2026-01-01',
+            'initial_remaining_days' => 30,
+        ]);
+        LeaveValidator::query()->create([
+            'employee_id' => $validatorEmployee->id,
+            'scope' => 'global',
+            'is_active' => true,
+        ]);
+
+        $this->actingAs($validator)->post(route('leaves.validations.approve', $leaveRequest->uuid), [
+            'reviewer_comment' => 'OK',
+        ]);
+
+        $document = $leaveRequest->fresh()->document;
+
+        $this->actingAs($other)
+            ->get(route('leaves.documents.download', $document))
+            ->assertForbidden();
     }
 
     public function test_validator_can_open_validation_queue(): void

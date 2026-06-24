@@ -2,10 +2,17 @@
 
 use App\Http\Controllers\Leaves\LeaveDashboardController;
 use App\Http\Controllers\Leaves\LeaveDocumentController;
+use App\Http\Controllers\Leaves\LeaveDocumentVerificationController;
 use App\Http\Controllers\Leaves\LeaveHistoryController;
 use App\Http\Controllers\Leaves\LeaveRequestController;
 use App\Http\Controllers\Leaves\LeaveValidationController;
 use Illuminate\Support\Facades\Route;
+
+Route::get('/conges/verify', [LeaveDocumentVerificationController::class, 'index'])->name('leaves.verify.index');
+Route::get('/conges/verify/{token}', [LeaveDocumentVerificationController::class, 'show'])->name('leaves.verify.show');
+Route::post('/conges/verify/upload', [LeaveDocumentVerificationController::class, 'upload'])
+    ->middleware('throttle:leave-document-upload')
+    ->name('leaves.verify.upload');
 
 Route::middleware(['auth', 'tool:conges'])->group(function (): void {
     Route::get('/conges', [LeaveDashboardController::class, 'index'])->name('leaves.index');

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class LeaveRequest extends Model
@@ -41,6 +42,18 @@ class LeaveRequest extends Model
 
     public function document(): HasOne
     {
-        return $this->hasOne(LeaveDocument::class);
+        return $this->hasOne(LeaveDocument::class)
+            ->where('status', LeaveDocument::STATUS_ACTIVE)
+            ->latestOfMany();
+    }
+
+    public function activeDocument(): HasOne
+    {
+        return $this->document();
+    }
+
+    public function documents(): HasMany
+    {
+        return $this->hasMany(LeaveDocument::class)->latest('id');
     }
 }

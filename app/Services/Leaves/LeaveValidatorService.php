@@ -103,4 +103,21 @@ class LeaveValidatorService
             })
             ->get();
     }
+
+    public function userCanAccessDocument(User $user, LeaveRequest $request): bool
+    {
+        if ($user->hasAnyRole([User::ROLE_ADMIN, User::ROLE_FINANCE, User::ROLE_DIRECTION])) {
+            return true;
+        }
+
+        if ($user->canAccessAdmin()) {
+            return true;
+        }
+
+        if ($request->employee_id === $user->employee?->id) {
+            return true;
+        }
+
+        return $this->userCanValidate($user, $request);
+    }
 }

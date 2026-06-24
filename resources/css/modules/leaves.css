@@ -153,6 +153,100 @@
     flex-wrap: wrap;
 }
 
+.leave-verify-grid {
+    align-items: start;
+}
+
+.leave-verify-panel {
+    display: grid;
+    gap: 18px;
+}
+
+.leave-verify-upload {
+    display: grid;
+    gap: 14px;
+}
+
+.leave-verify-facts dd {
+    word-break: break-word;
+}
+
+.leave-verify-private {
+    display: grid;
+    gap: 14px;
+    border-top: 1px solid var(--ip-line);
+    padding-top: 18px;
+}
+
+.leave-verify-private h3 {
+    margin: 0;
+    color: var(--ip-brown);
+}
+
+.verify-status {
+    display: grid;
+    gap: 8px;
+    border: 1px solid var(--ip-line);
+    padding: 16px 18px;
+    background: var(--ip-white);
+}
+
+.verify-status strong {
+    color: var(--ip-brown);
+}
+
+.verify-status p,
+.verify-footnote {
+    margin: 0;
+}
+
+.verify-status--active,
+.verify-status--valid_active {
+    border-color: var(--ip-success-line);
+    background: var(--ip-success-surface);
+}
+
+.verify-status--replaced,
+.verify-status--valid_replaced {
+    border-color: var(--ip-warning-surface);
+    background: #faf1e7;
+}
+
+.verify-status--revoked,
+.verify-status--valid_revoked,
+.verify-status--invalid_format,
+.verify-status--unknown,
+.verify-status--unknown_token {
+    border-color: var(--ip-danger-line);
+    background: var(--ip-danger-surface);
+}
+
+.verify-status--neutral {
+    background: var(--ip-panel);
+}
+
+.verify-inline {
+    display: inline-block;
+    padding: 2px 6px;
+    background: var(--ip-panel);
+    color: var(--ip-brown);
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.leave-document-admin {
+    display: grid;
+    gap: 12px;
+    border-top: 1px solid var(--ip-line);
+    padding-top: 18px;
+    margin-top: 18px;
+}
+
+.leave-document-admin form {
+    display: grid;
+    gap: 10px;
+}
+
 .leave-filter--notifications {
     grid-template-columns: repeat(3, minmax(0, 1fr)) auto;
 }
