@@ -16,6 +16,10 @@
         </p>
     @endif
 
+    <p style="margin:0 0 16px; font-size:14px; line-height:1.7;">
+        Le document PDF authentifie est disponible depuis la fiche de votre demande.
+    </p>
+
     <p style="margin:0 0 24px;">
         <a href="{{ $actionUrl }}" style="display:inline-block; padding:12px 18px; background:#12344d; color:#ffffff; text-decoration:none; border-radius:999px;">Voir ma demande</a>
     </p>

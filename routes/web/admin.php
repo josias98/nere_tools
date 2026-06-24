@@ -6,6 +6,7 @@ use App\Models\NotificationLog;
 use App\Models\TimesheetGeneration;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Leaves\Admin\LeaveAdminController;
+use App\Http\Controllers\Leaves\Admin\LeaveDocumentAdminController;
 use App\Http\Controllers\Leaves\Admin\LeaveImportController;
 use App\Http\Controllers\Leaves\Admin\LeaveValidatorController;
 use App\Models\Tool;
@@ -135,6 +136,8 @@ Route::middleware(['auth', 'admin-area'])->group(function (): void {
     Route::get('/admin/conges', [LeaveAdminController::class, 'index'])->name('admin.leaves.index');
     Route::get('/admin/conges/notifications', [LeaveAdminController::class, 'notifications'])->name('admin.leaves.notifications.index');
     Route::post('/admin/conges/notifications/{notificationLog}/retry', [LeaveAdminController::class, 'retryNotification'])->name('admin.leaves.notifications.retry');
+    Route::post('/admin/conges/documents/{document}/revoke', [LeaveDocumentAdminController::class, 'revoke'])->name('admin.leaves.documents.revoke');
+    Route::post('/admin/conges/{leaveRequest:uuid}/regenerate-document', [LeaveDocumentAdminController::class, 'regenerate'])->name('admin.leaves.documents.regenerate');
     Route::put('/admin/conges/collaborateurs/{employee}', [LeaveAdminController::class, 'updateEmployee'])->name('admin.leaves.employees.update');
     Route::put('/admin/conges/parametres', [LeaveAdminController::class, 'updateSettings'])->name('admin.leaves.settings.update');
     Route::post('/admin/conges/validateurs', [LeaveValidatorController::class, 'store'])->name('admin.leaves.validators.store');

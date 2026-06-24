@@ -105,6 +105,46 @@ Le coeur du module est ici:
 - `app/Services/Leaves/LeaveNotificationService.php`
 - `app/Services/Leaves/LeavePdfService.php`
 
+### Visa electronique et verification des conges
+
+Les demandes de conge approuvees produisent desormais un document PDF final
+avec visa electronique interne Nere Tools.
+
+Le mecanisme repose sur:
+
+- une reference unique du type `NC-CONGES-YYYY-00001` ;
+- un token de verification aleatoire ;
+- un QR code pointant vers la page de verification ;
+- une empreinte SHA-256 du PDF final ;
+- un stockage prive du fichier ;
+- une page publique de verification par lien ou QR code ;
+- une verification complementaire par upload du PDF exact ;
+- des logs d'audit pour generation, consultation, verification, revocation et regeneration.
+
+Routes principales ajoutees:
+
+- `GET /conges/verify`
+- `GET /conges/verify/{token}`
+- `POST /conges/verify/upload`
+- `GET /conges/{leaveRequest}/document`
+- `POST /admin/conges/documents/{document}/revoke`
+- `POST /admin/conges/{leaveRequest:uuid}/regenerate-document`
+
+Fichiers clefs:
+
+- `app/Services/Leaves/LeavePdfRenderer.php`
+- `app/Services/Leaves/LeavePdfService.php`
+- `app/Services/Leaves/LeaveDocumentReferenceService.php`
+- `app/Http/Controllers/Leaves/LeaveDocumentVerificationController.php`
+- `app/Http/Controllers/Leaves/Admin/LeaveDocumentAdminController.php`
+- `database/migrations/2026_06_23_130001_upgrade_leave_documents_for_verification.php`
+
+Stockage:
+
+- les PDFs sont ecrits sur le disque `local` ;
+- dans ce projet, `local` pointe vers `storage/app/private` ;
+- les documents de conges finaux sont ranges sous `storage/app/private/leave-documents/YYYY/`.
+
 ## Prerequis
 
 - PHP 8.4+
@@ -140,6 +180,16 @@ if not exist database\database.sqlite type nul > database\database.sqlite
 php artisan key:generate
 php artisan migrate --seed
 ```
+
+Si le code du module conges est deja a jour mais que la base locale ne l'est
+pas, applique au minimum:
+
+```bash
+php artisan migrate
+```
+
+Sans cette etape, la validation d'une demande approuvee peut echouer avec une
+erreur SQL sur les colonnes documentaires de `leave_documents`.
 
 ## Auth Microsoft et variables utiles
 
@@ -213,7 +263,20 @@ Les tests couvrent deja:
 - l'authentification Microsoft ;
 - les acces aux modules ;
 - le workflow conges ;
-- la generation timesheets et CSV.
+- la generation timesheets et CSV ;
+- la generation du PDF final de conge ;
+- la verification par token ;
+- la verification par upload PDF ;
+- les droits d'acces au document ;
+- la revocation et la regeneration admin.
+
+Verification conseillee apres modification:
+
+```bash
+php artisan migrate
+php artisan test
+npm run build
+```
 
 ## Stockage et fichiers generes
 
@@ -226,6 +289,7 @@ storage/app/private
 On y retrouve notamment:
 
 - les PDF de conges ;
+- les documents verifies `leave-documents/YYYY/*.pdf` ;
 - les PDF de feuilles de temps ;
 - les archives ZIP ;
 - le bundle CA telecharge pour Microsoft si vous utilisez `npm run setup:ca`.
@@ -290,4 +354,6 @@ php artisan queue:work
 - PDF construits sans librairie externe: simple et suffisant, mais a surveiller si les besoins d'impression deviennent plus riches.
 - Le module timesheets est deja bien isole fonctionnellement via `app/Modules/Timesheets/Support`.
 - Le module conges reste organise surtout par services, ce qui est coherent avec son etat actuel.
+- La verification publique n'expose qu'un sous-ensemble d'informations pour eviter de divulguer des donnees RH sensibles.
+- La verification par upload repose sur le hash du fichier exact: un PDF modifie, recomprime ou regenere differemment sera signale comme inconnu meme s'il derive d'un document legitime.
 - Le fichier `README` d'origine Laravel ne decrivait pas l'application ; il a ete remplace par une doc projet.
