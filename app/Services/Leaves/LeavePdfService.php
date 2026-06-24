@@ -98,7 +98,7 @@ class LeavePdfService
                         'document_reference' => $reference,
                         'verification_url' => $verificationUrl,
                         'verification_path' => '/conges/verify/'.$token,
-                        'signed_by_label' => $request->reviewer?->name ?? 'Nere Capital',
+                        'signed_by_label' => $request->reviewer?->name ?? 'Néré Capital',
                         'signed_by_role' => $request->reviewer?->employee?->job_title ?? $this->roleLabel($request->reviewer),
                         'type_choices' => $this->typeChoices($request),
                     ]);
@@ -168,13 +168,13 @@ class LeavePdfService
         $label = Str::lower((string) ($request->leaveType?->name ?? ''));
 
         $choices = [
-            ['label' => 'Conge administratif', 'match' => ['administratif', 'annuel']],
-            ['label' => 'Conge de maternite', 'match' => ['maternite']],
-            ['label' => 'Conge de paternite', 'match' => ['paternite']],
-            ['label' => 'Deces (preciser le lien de parente)', 'match' => ['deces']],
-            ['label' => 'Conge de maladie', 'match' => ['maladie']],
+            ['label' => 'Congé administratif', 'match' => ['administratif', 'annuel']],
+            ['label' => 'Congé de maternité', 'match' => ['maternite']],
+            ['label' => 'Congé de paternité', 'match' => ['paternite']],
+            ['label' => 'Décès (préciser le lien de parenté)', 'match' => ['deces']],
+            ['label' => 'Congé de maladie', 'match' => ['maladie']],
             ['label' => 'Accident de travail', 'match' => ['accident']],
-            ['label' => 'Autre (motif a preciser)', 'match' => []],
+            ['label' => 'Autre (motif à préciser)', 'match' => []],
         ];
 
         $matched = false;
@@ -191,7 +191,7 @@ class LeavePdfService
                 }
             }
 
-            if ($choice['label'] === 'Autre (motif a preciser)' && ! $matched) {
+            if ($choice['label'] === 'Autre (motif à préciser)' && ! $matched) {
                 $checked = true;
                 $note = $request->leaveType?->name;
             }

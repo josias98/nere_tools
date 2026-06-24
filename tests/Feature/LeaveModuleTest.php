@@ -172,6 +172,36 @@ class LeaveModuleTest extends TestCase
         $this->assertSame(64, strlen($document->sha256_hash));
     }
 
+    public function test_generated_pdf_uses_short_verification_hint_without_showing_raw_token_path(): void
+    {
+        Storage::fake('local');
+
+        [$requester, $employee] = $this->userWithEmployee('requester@nere.test', 'Requester');
+        [$validator, $validatorEmployee] = $this->userWithEmployee('validator@nere.test', 'Validator');
+        $leaveRequest = $this->leaveRequestFor($employee, $requester);
+
+        LeaveBalance::query()->create([
+            'employee_id' => $employee->id,
+            'reference_date' => '2026-01-01',
+            'initial_remaining_days' => 30,
+        ]);
+        LeaveValidator::query()->create([
+            'employee_id' => $validatorEmployee->id,
+            'scope' => 'global',
+            'is_active' => true,
+        ]);
+
+        $this->actingAs($validator)->post(route('leaves.validations.approve', $leaveRequest->uuid), [
+            'reviewer_comment' => 'OK',
+        ]);
+
+        $document = $leaveRequest->fresh()->document;
+        $pdf = Storage::disk('local')->get($document->file_path);
+
+        $this->assertStringContainsString('scanner le QR code', $pdf);
+        $this->assertStringNotContainsString('/conges/verify/', $pdf);
+    }
+
     public function test_unauthorized_user_cannot_download_leave_pdf(): void
     {
         Storage::fake('local');
