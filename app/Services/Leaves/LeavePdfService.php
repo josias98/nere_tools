@@ -5,6 +5,7 @@ namespace App\Services\Leaves;
 use App\Models\AuditLog;
 use App\Models\LeaveDocument;
 use App\Models\LeaveRequest;
+use App\Models\LeaveSetting;
 use App\Models\User;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
@@ -94,13 +95,14 @@ class LeavePdfService
                     $fileName = $reference.'.pdf';
                     $filePath = 'leave-documents/'.$referenceYear.'/'.$fileName;
 
+                    [$signatoryName, $signatoryTitle] = $this->signatory($request);
+
                     $output = $this->renderer->render($request, [
                         'document_reference' => $reference,
                         'verification_url' => $verificationUrl,
                         'verification_path' => '/conges/verify/'.$token,
-                        'signed_by_label' => $request->reviewer?->name ?? 'Néré Capital',
-                        'signed_by_role' => $request->reviewer?->employee?->job_title ?? $this->roleLabel($request->reviewer),
-                        'type_choices' => $this->typeChoices($request),
+                        'signed_by_label' => $signatoryName,
+                        'signed_by_role' => $signatoryTitle,
                     ]);
                     $sha256 = hash('sha256', $output);
 
@@ -211,6 +213,30 @@ class LeavePdfService
         } while (LeaveDocument::query()->where('verification_token', $token)->exists());
 
         return $token;
+    }
+
+    /**
+     * @return array{0: string, 1: string}
+     */
+    private function signatory(LeaveRequest $request): array
+    {
+        $dgApproval = $request->approvals()
+            ->with('validatorUser.employee')
+            ->where('step_key', 'dg')
+            ->where('status', 'approved')
+            ->first();
+
+        $user = $dgApproval?->validatorUser ?: $request->reviewer;
+
+        return [
+            $user?->name ?: $this->setting('LEAVE_CERTIFICATE_SIGNATORY_NAME', config('leaves.certificate_signatory_name')),
+            $user?->employee?->job_title ?: $this->setting('LEAVE_CERTIFICATE_SIGNATORY_TITLE', config('leaves.certificate_signatory_title')),
+        ];
+    }
+
+    private function setting(string $key, ?string $fallback): string
+    {
+        return (string) (LeaveSetting::query()->where('key', $key)->value('value') ?: $fallback);
     }
 
     private function roleLabel(?User $user): ?string

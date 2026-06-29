@@ -107,7 +107,7 @@ class DatabaseSeeder extends Seeder
 
             if ($employee) {
                 LeaveValidator::query()->updateOrCreate(
-                    ['employee_id' => $employee->id, 'scope' => 'global'],
+                    ['employee_id' => $employee->id, 'step_key' => $employee->display_name === 'Job ZONGO' ? 'dg' : 'hr', 'scope' => 'global'],
                     ['is_active' => true, 'notify_by_email' => true],
                 );
             }

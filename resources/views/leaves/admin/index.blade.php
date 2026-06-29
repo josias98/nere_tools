@@ -22,10 +22,16 @@
         @if (session('import_report'))
             <section class="nc-alert is-success">
                 @php($report = session('import_report'))
-                Import CSV : {{ $report['read'] }} lignes lues,
-                {{ $report['matched'] }} collaborateurs matches.
+                Import CSV : {{ $report['rows_read'] ?? $report['read'] }} lignes lues,
+                {{ $report['rows_imported'] ?? $report['matched'] }} creees,
+                {{ $report['rows_updated'] ?? 0 }} mises a jour,
+                {{ $report['rows_skipped'] ?? 0 }} ignorees.
                 @if (count($report['errors']))
-                    Erreurs : {{ implode(' | ', $report['errors']) }}
+                    <ul>
+                        @foreach ($report['errors'] as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
                 @endif
             </section>
         @endif
@@ -53,6 +59,15 @@
                             @endforeach
                         </select>
                     </label>
+                    <label class="nc-field">
+                        <span>Signataire fallback</span>
+                        <input type="text" name="LEAVE_CERTIFICATE_SIGNATORY_NAME" value="{{ old('LEAVE_CERTIFICATE_SIGNATORY_NAME', $settings['LEAVE_CERTIFICATE_SIGNATORY_NAME']->value ?? config('leaves.certificate_signatory_name')) }}">
+                    </label>
+                    <label class="nc-field">
+                        <span>Titre fallback</span>
+                        <input type="text" name="LEAVE_CERTIFICATE_SIGNATORY_TITLE" value="{{ old('LEAVE_CERTIFICATE_SIGNATORY_TITLE', $settings['LEAVE_CERTIFICATE_SIGNATORY_TITLE']->value ?? config('leaves.certificate_signatory_title')) }}">
+                    </label>
+                    <p>Signature image : {{ $signatureExists ? 'presente' : 'absente (facultative)' }}</p>
                     <button class="nc-button" type="submit">
                         <i data-lucide="save" class="nc-icon" aria-hidden="true"></i>
                         Enregistrer
@@ -98,7 +113,108 @@
                     <i data-lucide="upload" class="nc-icon" aria-hidden="true"></i>
                     Importer
                 </button>
+                <a href="{{ route('admin.leaves.import.template') }}" class="nc-button is-secondary">
+                    <i data-lucide="download" class="nc-icon" aria-hidden="true"></i>
+                    Modele CSV
+                </a>
             </form>
+            <p>Colonnes recommandees : employee_id, email, display_name, date_embauche, total_acquis, total_pris, solde_restant, notes. Virgule ou point-virgule acceptes.</p>
+        </section>
+
+        <section class="nc-panel">
+            <div class="nc-panel-heading">
+                <div>
+                    <h2>Suivi des demandes</h2>
+                    <p>Etat courant, etape, document final et dernier horodatage de decision.</p>
+                </div>
+            </div>
+            <form method="GET" action="{{ route('admin.leaves.index') }}" class="leave-filter leave-filter--admin">
+                <label class="nc-field">
+                    <span>Statut</span>
+                    <select name="status">
+                        <option value="">Tous</option>
+                        @foreach (['pending_supervisor', 'pending_hr', 'pending_dg', 'approved', 'rejected', 'cancelled'] as $status)
+                            <option value="{{ $status }}" @selected($filters['status'] === $status)>{{ $status }}</option>
+                        @endforeach
+                    </select>
+                </label>
+                <label class="nc-field">
+                    <span>Etape</span>
+                    <select name="step">
+                        <option value="">Toutes</option>
+                        <option value="supervisor" @selected($filters['step'] === 'supervisor')>Superviseur</option>
+                        <option value="hr" @selected($filters['step'] === 'hr')>RH / Admin-Finance</option>
+                        <option value="dg" @selected($filters['step'] === 'dg')>DG / Direction</option>
+                    </select>
+                </label>
+                <label class="nc-field">
+                    <span>Departement</span>
+                    <select name="department_id">
+                        <option value="">Tous</option>
+                        @foreach ($departments as $department)
+                            <option value="{{ $department->id }}" @selected($filters['department_id'] == $department->id)>{{ $department->name }}</option>
+                        @endforeach
+                    </select>
+                </label>
+                <label class="nc-field">
+                    <span>Collaborateur</span>
+                    <select name="employee_id">
+                        <option value="">Tous</option>
+                        @foreach ($employees as $employee)
+                            <option value="{{ $employee->id }}" @selected($filters['employee_id'] == $employee->id)>{{ $employee->name() }}</option>
+                        @endforeach
+                    </select>
+                </label>
+                <label class="nc-field">
+                    <span>Debut apres</span>
+                    <input type="date" name="from" value="{{ $filters['from'] }}">
+                </label>
+                <label class="nc-field">
+                    <span>Fin avant</span>
+                    <input type="date" name="to" value="{{ $filters['to'] }}">
+                </label>
+                <button class="nc-button" type="submit">
+                    <i data-lucide="filter" class="nc-icon" aria-hidden="true"></i>
+                    Filtrer
+                </button>
+            </form>
+
+            <div class="nc-table-wrap">
+                <table class="nc-table">
+                    <thead>
+                        <tr>
+                            <th>Demandeur</th>
+                            <th>Type</th>
+                            <th>Periode</th>
+                            <th>Jours</th>
+                            <th>Statut</th>
+                            <th>Etape</th>
+                            <th>Groupe attendu</th>
+                            <th>Derniere decision</th>
+                            <th>PDF</th>
+                            <th>Audit</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($requests as $request)
+                            @php($lastDecision = $request->approvals->whereNotNull('decided_at')->sortByDesc('decided_at')->first())
+                            <tr>
+                                <td>{{ $request->employee?->name() }}</td>
+                                <td>{{ $request->leaveType?->name ?? '-' }}</td>
+                                <td>{{ $request->start_date->format('d/m/Y') }} au {{ $request->end_date->format('d/m/Y') }}</td>
+                                <td>{{ number_format($request->requested_days, 2) }}</td>
+                                <td><span class="leave-status is-{{ $request->status }}">{{ $request->status }}</span></td>
+                                <td>{{ $request->currentApproval?->step_label ?? '-' }}</td>
+                                <td>{{ $request->currentApproval?->step_label ?? '-' }}</td>
+                                <td>{{ $lastDecision?->decided_at?->format('d/m/Y H:i') ?? '-' }}</td>
+                                <td>{{ $request->document ? 'oui' : 'non' }}</td>
+                                <td><a class="nc-link" href="{{ route('leaves.show', $request->uuid) }}">Ouvrir</a></td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+            {{ $requests->links() }}
         </section>
 
         <section class="nc-panel">
@@ -117,6 +233,14 @@
                         @foreach ($employees as $employee)
                             <option value="{{ $employee->id }}">{{ $employee->name() }}</option>
                         @endforeach
+                    </select>
+                </label>
+                <label class="nc-field">
+                    <span>Etape</span>
+                    <select name="step_key" required>
+                        <option value="supervisor">Superviseur</option>
+                        <option value="hr">RH / Admin-Finance</option>
+                        <option value="dg">DG / Direction</option>
                     </select>
                 </label>
                 <label class="nc-field">
@@ -157,6 +281,7 @@
                     <thead>
                         <tr>
                             <th>Validateur</th>
+                            <th>Etape</th>
                             <th>Perimetre</th>
                             <th>Cible</th>
                             <th>Etat</th>
@@ -167,6 +292,7 @@
                         @foreach ($validators as $validator)
                             <tr>
                                 <td>{{ $validator->employee?->name() }}</td>
+                                <td>{{ $validator->stepLabel() }}</td>
                                 <td>{{ $validator->scope }}</td>
                                 <td>{{ $validator->department?->name ?? $validator->targetEmployee?->name() ?? 'Toutes les demandes' }}</td>
                                 <td><span class="leave-status {{ $validator->is_active ? 'is-approved' : 'is-cancelled' }}">{{ $validator->is_active ? 'actif' : 'inactif' }}</span></td>

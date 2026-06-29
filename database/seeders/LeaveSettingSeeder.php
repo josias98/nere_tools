@@ -18,6 +18,8 @@ class LeaveSettingSeeder extends Seeder
             ['key' => 'day_counting_method', 'value' => 'calendar_days', 'value_type' => 'string'],
             ['key' => 'accrual_policy', 'value' => 'end_of_month', 'value_type' => 'string'],
             ['key' => 'allow_negative_balance_override', 'value' => 'false', 'value_type' => 'boolean'],
+            ['key' => 'LEAVE_CERTIFICATE_SIGNATORY_NAME', 'value' => config('leaves.certificate_signatory_name'), 'value_type' => 'string'],
+            ['key' => 'LEAVE_CERTIFICATE_SIGNATORY_TITLE', 'value' => config('leaves.certificate_signatory_title'), 'value_type' => 'string'],
         ];
 
         foreach ($settings as $setting) {

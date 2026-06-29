@@ -25,9 +25,9 @@ class AdminLeaveNotificationLogTest extends TestCase
         NotificationLog::query()->create([
             'channel' => 'office365_graph',
             'provider' => 'microsoft_graph',
-            'event' => 'leave.submitted',
+            'event' => 'leave.pending_supervisor',
             'to_recipients' => ['validator@nere.test'],
-            'subject' => 'Nouvelle demande de conge a valider',
+            'subject' => 'Demande de conge a valider - Superviseur',
             'status' => 'failed',
             'error_message' => 'Graph said no.',
             'queued_at' => now(),
@@ -72,7 +72,7 @@ class AdminLeaveNotificationLogTest extends TestCase
             'start_date' => '2026-08-01',
             'end_date' => '2026-08-05',
             'requested_days' => 5,
-            'status' => 'submitted',
+            'status' => 'pending_supervisor',
             'submitted_at' => now(),
             'created_by_user_id' => $admin->id,
         ]);
@@ -93,19 +93,26 @@ class AdminLeaveNotificationLogTest extends TestCase
 
         LeaveValidator::query()->create([
             'employee_id' => $validator->id,
+            'step_key' => 'supervisor',
             'scope' => 'global',
             'is_active' => true,
             'notify_by_email' => true,
         ]);
 
+        $leaveRequest->approvals()->createMany([
+            ['step_order' => 1, 'step_key' => 'supervisor', 'step_label' => 'Superviseur', 'status' => 'pending'],
+            ['step_order' => 2, 'step_key' => 'hr', 'step_label' => 'RH / Admin-Finance', 'status' => 'pending'],
+            ['step_order' => 3, 'step_key' => 'dg', 'step_label' => 'DG / Direction', 'status' => 'pending'],
+        ]);
+
         $notification = NotificationLog::query()->create([
             'channel' => 'office365_graph',
             'provider' => 'microsoft_graph',
-            'event' => 'leave.submitted',
+            'event' => 'leave.pending_supervisor',
             'related_type' => LeaveRequest::class,
             'related_id' => $leaveRequest->id,
             'to_recipients' => ['validator@nere.test'],
-            'subject' => 'Nouvelle demande de conge a valider',
+            'subject' => 'Demande de conge a valider - Superviseur',
             'status' => 'failed',
             'error_message' => 'Graph said no.',
             'queued_at' => now(),

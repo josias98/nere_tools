@@ -16,43 +16,109 @@ class LeaveNotificationService
 
     public function requestSubmitted(LeaveRequest $request): void
     {
-        $recipients = $this->validators->validatorsFor($request)
-            ->where('notify_by_email', true)
-            ->pluck('employee.email')
-            ->filter()
-            ->values()
-            ->all();
-
-        $this->queue(
-            action: 'leave.submitted',
-            request: $request,
-            recipients: $recipients,
-            subject: 'Nouvelle demande de conge a valider',
-            html: view('emails.conges.request-submitted', [
-                'leaveRequest' => $request,
-                'actionUrl' => route('leaves.validations.show', $request->uuid),
-            ])->render(),
-            text: "Une demande de conge a ete soumise par {$request->employee?->name()}. Voir la demande: ".route('leaves.validations.show', $request->uuid),
-        );
+        $this->notifyCurrentStepValidators($request);
     }
 
     public function requestDecided(LeaveRequest $request): void
     {
-        $status = $request->status === 'approved' ? 'approved' : 'rejected';
+        $request->status === 'approved'
+            ? $this->notifyFinalApprovalRecipients($request)
+            : $this->notifyRejectionRecipients($request);
+    }
+
+    public function notifyCurrentStepValidators(LeaveRequest $request): void
+    {
+        $request->loadMissing(['employee', 'leaveType', 'currentApproval']);
+        $approval = $request->currentApproval;
+
+        if (! $approval) {
+            return;
+        }
+
+        $recipients = $this->stepRecipientEmails($request, $approval->step_key);
 
         $this->queue(
-            action: 'leave.'.$request->status,
+            action: 'leave.pending_'.$approval->step_key,
             request: $request,
-            recipients: array_values(array_filter([$request->employee?->email])),
-            subject: $status === 'approved'
-                ? 'Votre demande de conge a ete approuvee'
-                : 'Votre demande de conge a ete rejetee',
-            html: view("emails.conges.request-{$status}", [
+            recipients: $recipients,
+            subject: 'Demande de conge a valider - '.$approval->step_label,
+            html: view('emails.conges.request-submitted', [
                 'leaveRequest' => $request,
+                'approval' => $approval,
+                'actionUrl' => route('leaves.validations.show', $request->uuid),
+            ])->render(),
+            text: "Une demande de conge attend l'etape {$approval->step_label}. Voir: ".route('leaves.validations.show', $request->uuid),
+        );
+    }
+
+    public function notifyRejectionRecipients(LeaveRequest $request): void
+    {
+        $request->loadMissing(['employee', 'leaveType', 'approvals.validatorUser.employee']);
+        $approval = $request->approvals->firstWhere('status', 'rejected');
+        $recipients = collect([$request->employee?->email])
+            ->merge($request->approvals->where('status', 'approved')->pluck('validatorUser.email'))
+            ->merge($request->approvals->where('status', 'approved')->pluck('validatorEmployee.email'))
+            ->filter()
+            ->unique()
+            ->values()
+            ->all();
+
+        $this->queue(
+            action: 'leave.rejected',
+            request: $request,
+            recipients: $recipients,
+            subject: 'Demande de conge rejetee',
+            html: view('emails.conges.request-rejected', [
+                'leaveRequest' => $request,
+                'approval' => $approval,
                 'actionUrl' => route('leaves.show', $request->uuid),
             ])->render(),
-            text: "Votre demande de conge est maintenant {$request->status}. Voir la demande: ".route('leaves.show', $request->uuid),
+            text: "Demande rejetee par {$approval?->validatorUser?->name} ({$approval?->step_label}): {$approval?->comment}. Voir: ".route('leaves.show', $request->uuid),
         );
+    }
+
+    public function notifyFinalApprovalRecipients(LeaveRequest $request): void
+    {
+        $request->loadMissing(['employee', 'leaveType', 'document', 'approvals.validatorUser.employee']);
+        $recipients = collect([$request->employee?->email])
+            ->merge($request->approvals->pluck('validatorUser.email'))
+            ->merge($request->approvals->pluck('validatorEmployee.email'))
+            ->filter()
+            ->unique()
+            ->values()
+            ->all();
+
+        $this->queue(
+            action: 'leave.approved',
+            request: $request,
+            recipients: $recipients,
+            subject: 'Demande de conge approuvee',
+            html: view('emails.conges.request-approved', [
+                'leaveRequest' => $request,
+                'actionUrl' => route('leaves.show', $request->uuid),
+                'pdfUrl' => $request->document ? route('leaves.documents.download', $request->document) : null,
+            ])->render(),
+            text: 'Demande approuvee. PDF: '.($request->document ? route('leaves.documents.download', $request->document) : 'indisponible').'. Voir: '.route('leaves.show', $request->uuid),
+        );
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    private function stepRecipientEmails(LeaveRequest $request, string $stepKey): array
+    {
+        $validatorEmails = $this->validators->validatorsForStep($request, $stepKey)
+            ->where('notify_by_email', true)
+            ->pluck('employee.email');
+
+        $roleEmails = $this->validators->usersForStep($request, $stepKey)->pluck('email');
+
+        return $validatorEmails
+            ->merge($roleEmails)
+            ->filter()
+            ->unique()
+            ->values()
+            ->all();
     }
 
     /**
@@ -66,44 +132,17 @@ class LeaveNotificationService
         string $html,
         string $text,
     ): void {
-        if ($recipients === []) {
-            $this->logNotification($action, $request, $subject, $recipients, 'skipped');
-        } elseif (! config('services.graph_mail.enabled')) {
+        if ($recipients === [] || ! config('services.graph_mail.enabled')) {
             $this->logNotification($action, $request, $subject, $recipients, 'skipped');
         } else {
             $notification = $this->logNotification($action, $request, $subject, $recipients, 'queued');
 
             app()->environment('local')
-                ? SendGraphMailJob::dispatchAfterResponse(
-                    to: $recipients,
-                    subject: $subject,
-                    html: $html,
-                    cc: [],
-                    bcc: [],
-                    text: $text,
-                    event: $action,
-                    relatedType: LeaveRequest::class,
-                    relatedId: $request->id,
-                    notificationLogId: $notification->id,
-                )
-                : SendGraphMailJob::dispatch(
-                to: $recipients,
-                subject: $subject,
-                html: $html,
-                cc: [],
-                bcc: [],
-                text: $text,
-                event: $action,
-                relatedType: LeaveRequest::class,
-                relatedId: $request->id,
-                notificationLogId: $notification->id,
-            );
+                ? SendGraphMailJob::dispatchAfterResponse($recipients, $subject, $html, [], [], $text, $action, LeaveRequest::class, $request->id, $notification->id)
+                : SendGraphMailJob::dispatch($recipients, $subject, $html, [], [], $text, $action, LeaveRequest::class, $request->id, $notification->id);
         }
 
-        Log::info($action, [
-            'leave_request_id' => $request->id,
-            'recipients' => $recipients,
-        ]);
+        Log::info($action, ['leave_request_id' => $request->id, 'recipients' => $recipients]);
 
         AuditLog::query()->create([
             'user_id' => auth()->id(),

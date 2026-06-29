@@ -55,7 +55,6 @@ class LeaveModuleTest extends TestCase
         Storage::fake('local');
 
         [$requester, $employee] = $this->userWithEmployee('requester@nere.test', 'Requester');
-        [$validator, $validatorEmployee] = $this->userWithEmployee('validator@nere.test', 'Validator');
         $leaveRequest = $this->leaveRequestFor($employee, $requester);
 
         LeaveBalance::query()->create([
@@ -63,17 +62,7 @@ class LeaveModuleTest extends TestCase
             'reference_date' => '2026-01-01',
             'initial_remaining_days' => 30,
         ]);
-        LeaveValidator::query()->create([
-            'employee_id' => $validatorEmployee->id,
-            'scope' => 'global',
-            'is_active' => true,
-        ]);
-
-        $this->actingAs($validator)
-            ->post(route('leaves.validations.approve', $leaveRequest->uuid), [
-                'reviewer_comment' => 'OK',
-            ])
-            ->assertRedirect(route('leaves.validations.show', $leaveRequest->uuid));
+        $this->approveAll($leaveRequest);
 
         $leaveRequest->refresh();
 
@@ -87,16 +76,11 @@ class LeaveModuleTest extends TestCase
         Storage::fake('local');
 
         [$requester, $employee] = $this->userWithEmployee('requester@nere.test', 'Requester');
-        [$validator, $validatorEmployee] = $this->userWithEmployee('validator@nere.test', 'Validator');
         $leaveRequest = $this->leaveRequestFor($employee, $requester);
 
-        LeaveValidator::query()->create([
-            'employee_id' => $validatorEmployee->id,
-            'scope' => 'global',
-            'is_active' => true,
-        ]);
+        [$supervisor] = $this->approvalTeam();
 
-        $this->actingAs($validator)
+        $this->actingAs($supervisor)
             ->post(route('leaves.validations.reject', $leaveRequest->uuid), [
                 'reviewer_comment' => 'Refus motive',
             ])
@@ -113,7 +97,6 @@ class LeaveModuleTest extends TestCase
         Storage::fake('local');
 
         [$requester, $employee] = $this->userWithEmployee('requester@nere.test', 'Requester');
-        [$validator, $validatorEmployee] = $this->userWithEmployee('validator@nere.test', 'Validator');
         $leaveRequest = $this->leaveRequestFor($employee, $requester);
 
         LeaveBalance::query()->create([
@@ -121,15 +104,7 @@ class LeaveModuleTest extends TestCase
             'reference_date' => '2026-01-01',
             'initial_remaining_days' => 30,
         ]);
-        LeaveValidator::query()->create([
-            'employee_id' => $validatorEmployee->id,
-            'scope' => 'global',
-            'is_active' => true,
-        ]);
-
-        $this->actingAs($validator)->post(route('leaves.validations.approve', $leaveRequest->uuid), [
-            'reviewer_comment' => 'OK',
-        ]);
+        [, , $validator] = $this->approveAll($leaveRequest);
 
         $leaveRequest->refresh();
         $firstDocument = $leaveRequest->document;
@@ -145,7 +120,6 @@ class LeaveModuleTest extends TestCase
         Storage::fake('local');
 
         [$requester, $employee] = $this->userWithEmployee('requester@nere.test', 'Requester');
-        [$validator, $validatorEmployee] = $this->userWithEmployee('validator@nere.test', 'Validator');
         $leaveRequest = $this->leaveRequestFor($employee, $requester);
 
         LeaveBalance::query()->create([
@@ -153,15 +127,7 @@ class LeaveModuleTest extends TestCase
             'reference_date' => '2026-01-01',
             'initial_remaining_days' => 30,
         ]);
-        LeaveValidator::query()->create([
-            'employee_id' => $validatorEmployee->id,
-            'scope' => 'global',
-            'is_active' => true,
-        ]);
-
-        $this->actingAs($validator)->post(route('leaves.validations.approve', $leaveRequest->uuid), [
-            'reviewer_comment' => 'OK',
-        ]);
+        $this->approveAll($leaveRequest);
 
         $document = $leaveRequest->fresh()->document;
 
@@ -177,7 +143,6 @@ class LeaveModuleTest extends TestCase
         Storage::fake('local');
 
         [$requester, $employee] = $this->userWithEmployee('requester@nere.test', 'Requester');
-        [$validator, $validatorEmployee] = $this->userWithEmployee('validator@nere.test', 'Validator');
         $leaveRequest = $this->leaveRequestFor($employee, $requester);
 
         LeaveBalance::query()->create([
@@ -185,20 +150,12 @@ class LeaveModuleTest extends TestCase
             'reference_date' => '2026-01-01',
             'initial_remaining_days' => 30,
         ]);
-        LeaveValidator::query()->create([
-            'employee_id' => $validatorEmployee->id,
-            'scope' => 'global',
-            'is_active' => true,
-        ]);
-
-        $this->actingAs($validator)->post(route('leaves.validations.approve', $leaveRequest->uuid), [
-            'reviewer_comment' => 'OK',
-        ]);
+        $this->approveAll($leaveRequest);
 
         $document = $leaveRequest->fresh()->document;
         $pdf = Storage::disk('local')->get($document->file_path);
 
-        $this->assertStringContainsString('scanner le QR code', $pdf);
+        $this->assertStringContainsString('ATTESTATION DE CONGES', $pdf);
         $this->assertStringNotContainsString('/conges/verify/', $pdf);
     }
 
@@ -207,7 +164,6 @@ class LeaveModuleTest extends TestCase
         Storage::fake('local');
 
         [$requester, $employee] = $this->userWithEmployee('requester@nere.test', 'Requester');
-        [$validator, $validatorEmployee] = $this->userWithEmployee('validator@nere.test', 'Validator');
         [$other] = $this->userWithEmployee('other@nere.test', 'Other');
         $leaveRequest = $this->leaveRequestFor($employee, $requester);
 
@@ -216,15 +172,7 @@ class LeaveModuleTest extends TestCase
             'reference_date' => '2026-01-01',
             'initial_remaining_days' => 30,
         ]);
-        LeaveValidator::query()->create([
-            'employee_id' => $validatorEmployee->id,
-            'scope' => 'global',
-            'is_active' => true,
-        ]);
-
-        $this->actingAs($validator)->post(route('leaves.validations.approve', $leaveRequest->uuid), [
-            'reviewer_comment' => 'OK',
-        ]);
+        $this->approveAll($leaveRequest);
 
         $document = $leaveRequest->fresh()->document;
 
@@ -241,6 +189,7 @@ class LeaveModuleTest extends TestCase
 
         LeaveValidator::query()->create([
             'employee_id' => $validatorEmployee->id,
+            'step_key' => 'supervisor',
             'scope' => 'global',
             'is_active' => true,
         ]);
@@ -266,6 +215,7 @@ class LeaveModuleTest extends TestCase
         $type = LeaveType::query()->create(['name' => 'Conge annuel', 'slug' => 'annual-test']);
         LeaveValidator::query()->create([
             'employee_id' => $validatorEmployee->id,
+            'step_key' => 'supervisor',
             'scope' => 'global',
             'is_active' => true,
         ]);
@@ -278,7 +228,7 @@ class LeaveModuleTest extends TestCase
             ])
             ->assertRedirect();
 
-        Queue::assertPushed(SendGraphMailJob::class);
+        Queue::assertPushed(SendGraphMailJob::class, fn (SendGraphMailJob $job) => $job->to === ['validator@nere.test']);
     }
 
     public function test_admin_can_open_leave_admin(): void
@@ -322,7 +272,7 @@ class LeaveModuleTest extends TestCase
     {
         $type = LeaveType::query()->create(['name' => 'Conge annuel', 'slug' => 'annual-'.Str::random(6)]);
 
-        return LeaveRequest::query()->create([
+        $request = LeaveRequest::query()->create([
             'uuid' => Str::uuid(),
             'employee_id' => $employee->id,
             'leave_type_id' => $type->id,
@@ -333,5 +283,55 @@ class LeaveModuleTest extends TestCase
             'submitted_at' => now(),
             'created_by_user_id' => $user->id,
         ]);
+
+        $request->approvals()->createMany([
+            ['step_order' => 1, 'step_key' => 'supervisor', 'step_label' => 'Superviseur', 'status' => 'pending'],
+            ['step_order' => 2, 'step_key' => 'hr', 'step_label' => 'RH / Admin-Finance', 'status' => 'pending'],
+            ['step_order' => 3, 'step_key' => 'dg', 'step_label' => 'DG / Direction', 'status' => 'pending'],
+        ]);
+
+        $request->forceFill(['status' => 'pending_supervisor'])->save();
+
+        return $request;
+    }
+
+    /**
+     * @return array{0: User, 1: User, 2: User}
+     */
+    private function approvalTeam(): array
+    {
+        [$supervisor, $supervisorEmployee] = $this->userWithEmployee('supervisor-'.Str::random(6).'@nere.test', 'Supervisor');
+        [$hr] = $this->userWithEmployee('hr-'.Str::random(6).'@nere.test', 'HR');
+        [$dg] = $this->userWithEmployee('dg-'.Str::random(6).'@nere.test', 'DG');
+        $hr->forceFill(['role' => User::ROLE_FINANCE])->save();
+        $dg->forceFill(['role' => User::ROLE_DIRECTION])->save();
+
+        LeaveValidator::query()->create([
+            'employee_id' => $supervisorEmployee->id,
+            'step_key' => 'supervisor',
+            'scope' => 'global',
+            'is_active' => true,
+            'notify_by_email' => true,
+        ]);
+
+        return [$supervisor, $hr, $dg];
+    }
+
+    /**
+     * @return array{0: User, 1: User, 2: User}
+     */
+    private function approveAll(LeaveRequest $leaveRequest): array
+    {
+        [$supervisor, $hr, $dg] = $this->approvalTeam();
+
+        foreach ([[$supervisor, 'supervisor'], [$hr, 'hr'], [$dg, 'dg']] as [$user, $step]) {
+            $this->actingAs($user)
+                ->post(route('leaves.validations.approve', $leaveRequest->uuid), [
+                    'reviewer_comment' => 'OK '.$step,
+                ])
+                ->assertRedirect(route('leaves.validations.show', $leaveRequest->uuid));
+        }
+
+        return [$supervisor, $hr, $dg];
     }
 }

@@ -31,7 +31,7 @@ class LeaveValidationController extends Controller
 
     public function show(Request $request, LeaveRequest $leaveRequest): View
     {
-        $leaveRequest->load(['employee.department', 'leaveType', 'document']);
+        $leaveRequest->load(['employee.department', 'leaveType', 'document', 'approvals.validatorUser.employee', 'currentApproval']);
         abort_unless($this->validators->userCanValidate($request->user(), $leaveRequest), 403);
 
         return view('leaves.validations.show', [
@@ -48,7 +48,7 @@ class LeaveValidationController extends Controller
         try {
             $this->workflow->approve($leaveRequest, $request->user(), $request->string('reviewer_comment')->toString());
 
-            return redirect()->route('leaves.validations.show', $leaveRequest->uuid)->with('success', 'Demande approuvée et PDF généré.');
+            return redirect()->route('leaves.validations.show', $leaveRequest->uuid)->with('success', 'Decision enregistree.');
         } catch (\Exception $exception) {
             return back()->with('error', $exception->getMessage());
         }
@@ -66,7 +66,7 @@ class LeaveValidationController extends Controller
         try {
             $this->workflow->reject($leaveRequest, $request->user(), $data['reviewer_comment']);
 
-            return redirect()->route('leaves.validations.show', $leaveRequest->uuid)->with('success', 'Demande rejetée.');
+            return redirect()->route('leaves.validations.show', $leaveRequest->uuid)->with('success', 'Demande rejetee.');
         } catch (\Exception $exception) {
             return back()->withInput()->with('error', $exception->getMessage());
         }

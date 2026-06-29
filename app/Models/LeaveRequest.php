@@ -56,4 +56,16 @@ class LeaveRequest extends Model
     {
         return $this->hasMany(LeaveDocument::class)->latest('id');
     }
+
+    public function approvals(): HasMany
+    {
+        return $this->hasMany(LeaveRequestApproval::class)->orderBy('step_order');
+    }
+
+    public function currentApproval(): HasOne
+    {
+        return $this->hasOne(LeaveRequestApproval::class)
+            ->where('status', LeaveRequestApproval::STATUS_PENDING)
+            ->oldestOfMany('step_order');
+    }
 }

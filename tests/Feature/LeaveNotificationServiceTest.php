@@ -51,16 +51,24 @@ class LeaveNotificationServiceTest extends TestCase
 
         LeaveValidator::query()->create([
             'employee_id' => $validatorEmployee->id,
+            'step_key' => 'supervisor',
             'scope' => 'global',
             'is_active' => true,
             'notify_by_email' => true,
         ]);
 
+        $leaveRequest->approvals()->createMany([
+            ['step_order' => 1, 'step_key' => 'supervisor', 'step_label' => 'Superviseur', 'status' => 'pending'],
+            ['step_order' => 2, 'step_key' => 'hr', 'step_label' => 'RH / Admin-Finance', 'status' => 'pending'],
+            ['step_order' => 3, 'step_key' => 'dg', 'step_label' => 'DG / Direction', 'status' => 'pending'],
+        ]);
+        $leaveRequest->forceFill(['status' => 'pending_supervisor'])->save();
+
         app(LeaveNotificationService::class)->requestSubmitted($leaveRequest);
 
         Queue::assertPushed(SendGraphMailJob::class, function (SendGraphMailJob $job): bool {
             return $job->to === ['validator@nere.test']
-                && $job->event === 'leave.submitted';
+                && $job->event === 'leave.pending_supervisor';
         });
 
         $notification = NotificationLog::query()->latest('id')->first();

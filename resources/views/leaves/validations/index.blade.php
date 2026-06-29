@@ -31,6 +31,7 @@
                             <th>Periode</th>
                             <th>Jours</th>
                             <th>Statut</th>
+                            <th>Etape</th>
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -42,6 +43,7 @@
                                 <td>{{ $request->start_date->format('d/m/Y') }} au {{ $request->end_date->format('d/m/Y') }}</td>
                                 <td>{{ number_format($request->requested_days, 2) }}</td>
                                 <td><span class="leave-status is-{{ $request->status }}">{{ $request->status }}</span></td>
+                                <td>{{ $request->currentApproval?->step_label ?? '-' }}</td>
                                 <td>
                                     <a href="{{ route('leaves.validations.show', $request->uuid) }}" class="nc-link">
                                         <i data-lucide="eye" class="nc-icon" aria-hidden="true"></i>

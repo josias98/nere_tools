@@ -17,6 +17,15 @@ class LeaveValidator extends Model
         ];
     }
 
+    public function stepLabel(): string
+    {
+        return match ($this->step_key) {
+            'hr' => 'RH / Admin-Finance',
+            'dg' => 'DG / Direction',
+            default => 'Superviseur',
+        };
+    }
+
     public function employee(): BelongsTo
     {
         return $this->belongsTo(Employee::class);

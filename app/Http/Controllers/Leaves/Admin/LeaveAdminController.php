@@ -16,13 +16,37 @@ use Illuminate\View\View;
 
 class LeaveAdminController extends Controller
 {
-    public function index(): View
+    public function index(Request $request): View
     {
+        $filters = [
+            'status' => (string) $request->string('status'),
+            'step' => (string) $request->string('step'),
+            'department_id' => (string) $request->string('department_id'),
+            'employee_id' => (string) $request->string('employee_id'),
+            'from' => (string) $request->string('from'),
+            'to' => (string) $request->string('to'),
+        ];
+
+        $requests = LeaveRequest::query()
+            ->with(['employee.department', 'leaveType', 'currentApproval', 'document', 'approvals.validatorUser.employee'])
+            ->when($filters['status'] !== '', fn ($query) => $query->where('status', $filters['status']))
+            ->when($filters['step'] !== '', fn ($query) => $query->where('status', 'pending_'.$filters['step']))
+            ->when($filters['department_id'] !== '', fn ($query) => $query->whereHas('employee', fn ($employee) => $employee->where('department_id', $filters['department_id'])))
+            ->when($filters['employee_id'] !== '', fn ($query) => $query->where('employee_id', $filters['employee_id']))
+            ->when($filters['from'] !== '', fn ($query) => $query->whereDate('start_date', '>=', $filters['from']))
+            ->when($filters['to'] !== '', fn ($query) => $query->whereDate('end_date', '<=', $filters['to']))
+            ->latest('submitted_at')
+            ->paginate(15)
+            ->withQueryString();
+
         return view('leaves.admin.index', [
             'employees' => Employee::query()->with('department')->orderBy('display_name')->get(),
             'departments' => Department::query()->orderBy('name')->get(),
             'settings' => LeaveSetting::query()->orderBy('key')->get()->keyBy('key'),
             'validators' => LeaveValidator::query()->with(['employee', 'department', 'targetEmployee'])->latest()->get(),
+            'requests' => $requests,
+            'filters' => $filters,
+            'signatureExists' => is_file(storage_path('app/signatures/dg-signature.png')) || is_file(public_path('brand/dg-signature.png')),
         ]);
     }
 
@@ -93,14 +117,14 @@ class LeaveAdminController extends Controller
 
         $event = $notificationLog->event;
 
-        if ($event === 'leave.submitted') {
-            if (! in_array($leaveRequest->status, ['submitted', 'under_review'], true)) {
+        if ($event === 'leave.submitted' || str_starts_with((string) $event, 'leave.pending_')) {
+            if (! in_array($leaveRequest->status, ['pending_supervisor', 'pending_hr', 'pending_dg'], true)) {
                 return back()->withErrors([
                     'notification' => "La demande n'est plus en attente: relance bloquee pour eviter un envoi obsolete.",
                 ]);
             }
 
-            $notificationService->requestSubmitted($leaveRequest);
+            $notificationService->notifyCurrentStepValidators($leaveRequest);
         } elseif ($event === 'leave.approved' || $event === 'leave.rejected') {
             if ($leaveRequest->status !== str_replace('leave.', '', $event)) {
                 return back()->withErrors([
@@ -137,6 +161,8 @@ class LeaveAdminController extends Controller
         $data = $request->validate([
             'monthly_accrual_days' => ['required', 'numeric', 'min:0'],
             'accrual_policy' => ['required', 'in:end_of_month,start_of_month,prorated'],
+            'LEAVE_CERTIFICATE_SIGNATORY_NAME' => ['nullable', 'string', 'max:255'],
+            'LEAVE_CERTIFICATE_SIGNATORY_TITLE' => ['nullable', 'string', 'max:255'],
         ]);
 
         foreach ($data as $key => $value) {

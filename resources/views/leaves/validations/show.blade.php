@@ -36,12 +36,26 @@
                     <div><dt>En attente</dt><dd>{{ number_format($balance['pending_days'], 2) }}</dd></div>
                     <div><dt>Solde projete</dt><dd>{{ number_format($balance['projected_balance'], 2) }}</dd></div>
                     <div><dt>Commentaire</dt><dd>{{ $leaveRequest->requester_comment ?: '-' }}</dd></div>
+                    <div><dt>Etape courante</dt><dd>{{ $leaveRequest->currentApproval?->step_label ?? '-' }}</dd></div>
                 </dl>
+
+                <div class="leave-timeline">
+                    @foreach ($leaveRequest->approvals as $approval)
+                        <div class="leave-timeline-item">
+                            <span class="leave-status is-{{ $approval->status }}">{{ $approval->status }}</span>
+                            <strong>{{ $approval->step_order }}. {{ $approval->step_label }}</strong>
+                            <span>{{ $approval->validatorUser?->name ?? 'En attente' }}{{ $approval->decided_at ? ' - '.$approval->decided_at->format('d/m/Y H:i') : '' }}</span>
+                            @if ($approval->comment)
+                                <p>{{ $approval->comment }}</p>
+                            @endif
+                        </div>
+                    @endforeach
+                </div>
             </section>
 
             <aside class="nc-panel leave-decision">
                 <h2>Decision</h2>
-                @if (in_array($leaveRequest->status, ['submitted', 'under_review'], true))
+                @if (in_array($leaveRequest->status, ['pending_supervisor', 'pending_hr', 'pending_dg'], true))
                     <form method="POST" action="{{ route('leaves.validations.approve', $leaveRequest->uuid) }}">
                         @csrf
                         <label class="nc-field">

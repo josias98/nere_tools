@@ -53,8 +53,9 @@ class LeaveRequestWorkflowTest extends TestCase
 
         $request = $this->service->submitRequest($employee, $data, $user->id);
 
-        $this->assertEquals('submitted', $request->status);
+        $this->assertEquals('pending_supervisor', $request->status);
         $this->assertEquals(5, $request->requested_days);
+        $this->assertCount(3, $request->approvals);
     }
 
     public function test_overlapping_request_is_blocked()

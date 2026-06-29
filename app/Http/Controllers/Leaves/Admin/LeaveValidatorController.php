@@ -14,6 +14,7 @@ class LeaveValidatorController extends Controller
         LeaveValidator::query()->updateOrCreate(
             $request->validate([
                 'employee_id' => ['required', 'exists:employees,id'],
+                'step_key' => ['required', 'in:supervisor,hr,dg'],
                 'scope' => ['required', 'in:global,department,employee'],
                 'department_id' => ['nullable', 'exists:departments,id'],
                 'target_employee_id' => ['nullable', 'exists:employees,id'],

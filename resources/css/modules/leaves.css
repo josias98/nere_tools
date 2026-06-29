@@ -97,7 +97,11 @@
 }
 
 .leave-status.is-submitted,
-.leave-status.is-under_review {
+.leave-status.is-under_review,
+.leave-status.is-pending,
+.leave-status.is-pending_supervisor,
+.leave-status.is-pending_hr,
+.leave-status.is-pending_dg {
     color: var(--ip-warning-surface);
     background: var(--ip-rust);
 }
@@ -129,6 +133,27 @@
     margin: 4px 0 0;
     color: var(--ip-brown-dark);
     font-weight: 750;
+}
+
+.leave-timeline {
+    display: grid;
+    gap: 10px;
+    margin-top: 18px;
+    border-top: 1px solid var(--ip-line);
+    padding-top: 18px;
+}
+
+.leave-timeline-item {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) minmax(0, 1fr);
+    gap: 10px;
+    align-items: start;
+}
+
+.leave-timeline-item p {
+    grid-column: 2 / -1;
+    margin: 0;
+    color: var(--ip-grey);
 }
 
 .leave-decision {
@@ -251,6 +276,10 @@
     grid-template-columns: repeat(3, minmax(0, 1fr)) auto;
 }
 
+.leave-filter--admin {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) auto;
+}
+
 .notification-table td {
     vertical-align: top;
 }
@@ -297,6 +326,14 @@
     .leave-split,
     .leave-filter {
         grid-template-columns: 1fr;
+    }
+
+    .leave-timeline-item {
+        grid-template-columns: 1fr;
+    }
+
+    .leave-timeline-item p {
+        grid-column: auto;
     }
 
     .leave-summary {

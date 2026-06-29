@@ -128,8 +128,6 @@ class LeaveDocumentVerificationTest extends TestCase
         string $endDate = '2026-08-05',
     ): LeaveDocument {
         [$requester, $employee] = $this->userWithEmployee($email, Str::before($email, '@'));
-        $validatorKey = Str::random(6);
-        [$validator, $validatorEmployee] = $this->userWithEmployee("validator-{$validatorKey}@nere.test", 'Validator '.$validatorKey);
         $leaveRequest = $this->leaveRequestFor($employee, $requester, $startDate, $endDate);
 
         LeaveBalance::query()->create([
@@ -137,15 +135,24 @@ class LeaveDocumentVerificationTest extends TestCase
             'reference_date' => '2026-01-01',
             'initial_remaining_days' => 30,
         ]);
+        [$supervisor, $supervisorEmployee] = $this->userWithEmployee('supervisor-'.Str::random(6).'@nere.test', 'Supervisor');
+        [$hr] = $this->userWithEmployee('hr-'.Str::random(6).'@nere.test', 'HR');
+        [$dg] = $this->userWithEmployee('dg-'.Str::random(6).'@nere.test', 'DG');
+        $hr->forceFill(['role' => User::ROLE_FINANCE])->save();
+        $dg->forceFill(['role' => User::ROLE_DIRECTION])->save();
+
         LeaveValidator::query()->create([
-            'employee_id' => $validatorEmployee->id,
+            'employee_id' => $supervisorEmployee->id,
+            'step_key' => 'supervisor',
             'scope' => 'global',
             'is_active' => true,
         ]);
 
-        $this->actingAs($validator)->post(route('leaves.validations.approve', $leaveRequest->uuid), [
-            'reviewer_comment' => 'OK',
-        ])->assertRedirect();
+        foreach ([$supervisor, $hr, $dg] as $validator) {
+            $this->actingAs($validator)->post(route('leaves.validations.approve', $leaveRequest->uuid), [
+                'reviewer_comment' => 'OK',
+            ])->assertRedirect();
+        }
 
         return $leaveRequest->fresh()->document;
     }
@@ -181,7 +188,7 @@ class LeaveDocumentVerificationTest extends TestCase
     {
         $type = LeaveType::query()->create(['name' => 'Conge annuel', 'slug' => 'annual-'.Str::random(6)]);
 
-        return LeaveRequest::query()->create([
+        $request = LeaveRequest::query()->create([
             'uuid' => Str::uuid(),
             'employee_id' => $employee->id,
             'leave_type_id' => $type->id,
@@ -192,5 +199,14 @@ class LeaveDocumentVerificationTest extends TestCase
             'submitted_at' => now(),
             'created_by_user_id' => $user->id,
         ]);
+
+        $request->approvals()->createMany([
+            ['step_order' => 1, 'step_key' => 'supervisor', 'step_label' => 'Superviseur', 'status' => 'pending'],
+            ['step_order' => 2, 'step_key' => 'hr', 'step_label' => 'RH / Admin-Finance', 'status' => 'pending'],
+            ['step_order' => 3, 'step_key' => 'dg', 'step_label' => 'DG / Direction', 'status' => 'pending'],
+        ]);
+        $request->forceFill(['status' => 'pending_supervisor'])->save();
+
+        return $request;
     }
 }

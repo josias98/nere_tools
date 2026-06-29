@@ -143,5 +143,6 @@ Route::middleware(['auth', 'admin-area'])->group(function (): void {
     Route::post('/admin/conges/validateurs', [LeaveValidatorController::class, 'store'])->name('admin.leaves.validators.store');
     Route::put('/admin/conges/validateurs/{validator}', [LeaveValidatorController::class, 'update'])->name('admin.leaves.validators.update');
     Route::delete('/admin/conges/validateurs/{validator}', [LeaveValidatorController::class, 'destroy'])->name('admin.leaves.validators.destroy');
+    Route::get('/admin/conges/import/template', [LeaveImportController::class, 'template'])->name('admin.leaves.import.template');
     Route::post('/admin/conges/import', LeaveImportController::class)->name('admin.leaves.import');
 });

@@ -39,7 +39,7 @@ class LeaveBalanceService
         $availableBalance = $initialRemaining + $accruedSinceReference + $adjustments - $approvedDaysSinceReference;
 
         $pendingDays = (float) LeaveRequest::where('employee_id', $employee->id)
-            ->whereIn('status', ['submitted', 'under_review'])
+            ->whereIn('status', ['submitted', 'under_review', 'pending_supervisor', 'pending_hr', 'pending_dg'])
             ->sum('requested_days');
 
         $projectedBalance = $availableBalance - $pendingDays;

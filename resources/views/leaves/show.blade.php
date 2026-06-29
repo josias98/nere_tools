@@ -35,18 +35,32 @@
                 <div><dt>Decision</dt><dd>{{ $leaveRequest->reviewed_at?->format('d/m/Y H:i') ?? 'En attente' }}</dd></div>
                 <div><dt>Commentaire demandeur</dt><dd>{{ $leaveRequest->requester_comment ?: '-' }}</dd></div>
                 <div><dt>Commentaire validateur</dt><dd>{{ $leaveRequest->reviewer_comment ?: '-' }}</dd></div>
+                <div><dt>Etape courante</dt><dd>{{ $leaveRequest->currentApproval?->step_label ?? '-' }}</dd></div>
                 @if ($leaveRequest->document)
                     <div><dt>Reference document</dt><dd>{{ $leaveRequest->document->document_reference ?: '-' }}</dd></div>
                     <div><dt>Statut documentaire</dt><dd>{{ $leaveRequest->document->status }}</dd></div>
                 @endif
             </dl>
 
+            <div class="leave-timeline">
+                @foreach ($leaveRequest->approvals as $approval)
+                    <div class="leave-timeline-item">
+                        <span class="leave-status is-{{ $approval->status }}">{{ $approval->status }}</span>
+                        <strong>{{ $approval->step_order }}. {{ $approval->step_label }}</strong>
+                        <span>{{ $approval->validatorUser?->name ?? 'En attente' }}{{ $approval->decided_at ? ' - '.$approval->decided_at->format('d/m/Y H:i') : '' }}</span>
+                        @if ($approval->comment)
+                            <p>{{ $approval->comment }}</p>
+                        @endif
+                    </div>
+                @endforeach
+            </div>
+
             <div class="nc-actions">
                 <a href="{{ route('leaves.index') }}" class="nc-ghost">
                     <i data-lucide="arrow-left" class="nc-icon" aria-hidden="true"></i>
                     Retour
                 </a>
-                @if ($leaveRequest->document)
+                @if ($leaveRequest->status === 'approved' && $leaveRequest->document)
                     <a href="{{ route('leaves.documents.download', $leaveRequest->document) }}" class="nc-button">
                         <i data-lucide="download" class="nc-icon" aria-hidden="true"></i>
                         Telecharger le PDF
