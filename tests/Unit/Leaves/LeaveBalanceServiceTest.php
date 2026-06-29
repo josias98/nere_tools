@@ -72,27 +72,26 @@ class LeaveBalanceServiceTest extends TestCase
             'created_by_user_id' => $user->id,
         ]);
 
-        // Mock 1 pending request (should be deducted from projected only)
-        LeaveRequest::create([
-            'uuid' => \Illuminate\Support\Str::uuid(),
-            'employee_id' => $employee->id,
-            'leave_type_id' => $leaveType->id,
-            'start_date' => '2026-03-01',
-            'end_date' => '2026-03-02',
-            'requested_days' => 2.0,
-            'status' => 'submitted',
-            'created_by_user_id' => $user->id,
-        ]);
+        foreach (['submitted', 'pending_supervisor', 'pending_hr', 'pending_dg'] as $index => $status) {
+            LeaveRequest::create([
+                'uuid' => \Illuminate\Support\Str::uuid(),
+                'employee_id' => $employee->id,
+                'leave_type_id' => $leaveType->id,
+                'start_date' => '2026-03-'.str_pad((string) ($index + 1), 2, '0', STR_PAD_LEFT),
+                'end_date' => '2026-03-'.str_pad((string) ($index + 1), 2, '0', STR_PAD_LEFT),
+                'requested_days' => 2.0,
+                'status' => $status,
+                'created_by_user_id' => $user->id,
+            ]);
+        }
 
         $balance = $this->service->getBalance($employee, Carbon::parse('2026-03-15'));
 
         // Expected available = 10 (initial) + 5 (mock accrued) - 3 (approved) = 12
         $this->assertEquals(12.0, $balance['available_balance']);
         
-        // Expected pending = 2
-        $this->assertEquals(2.0, $balance['pending_days']);
+        $this->assertEquals(8.0, $balance['pending_days']);
 
-        // Expected projected = 12 - 2 = 10
-        $this->assertEquals(10.0, $balance['projected_balance']);
+        $this->assertEquals(4.0, $balance['projected_balance']);
     }
 }

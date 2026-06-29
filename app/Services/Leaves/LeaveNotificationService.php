@@ -28,8 +28,11 @@ class LeaveNotificationService
 
     public function notifyCurrentStepValidators(LeaveRequest $request): void
     {
-        $request->loadMissing(['employee', 'leaveType', 'currentApproval']);
-        $approval = $request->currentApproval;
+        $request->loadMissing(['employee', 'leaveType']);
+        $approval = $request->approvals()
+            ->where('status', 'pending')
+            ->orderBy('step_order')
+            ->first();
 
         if (! $approval) {
             return;
