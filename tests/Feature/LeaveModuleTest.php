@@ -84,7 +84,7 @@ class LeaveModuleTest extends TestCase
             ->post(route('leaves.validations.reject', $leaveRequest->uuid), [
                 'reviewer_comment' => 'Refus motive',
             ])
-            ->assertRedirect(route('leaves.validations.show', $leaveRequest->uuid));
+            ->assertRedirect(route('leaves.validations.index'));
 
         $leaveRequest->refresh();
 
@@ -329,7 +329,7 @@ class LeaveModuleTest extends TestCase
                 ->post(route('leaves.validations.approve', $leaveRequest->uuid), [
                     'reviewer_comment' => 'OK '.$step,
                 ])
-                ->assertRedirect(route('leaves.validations.show', $leaveRequest->uuid));
+                ->assertRedirect(route('leaves.validations.index'));
         }
 
         return [$supervisor, $hr, $dg];

@@ -3,13 +3,16 @@
 namespace App\Http\Controllers\Leaves;
 
 use App\Http\Controllers\Controller;
+use App\Models\AuditLog;
 use App\Models\LeaveRequest;
 use App\Services\Leaves\LeaveBalanceService;
 use App\Services\Leaves\LeaveRequestWorkflowService;
 use App\Services\Leaves\LeaveValidatorService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
+use Throwable;
 
 class LeaveValidationController extends Controller
 {
@@ -17,8 +20,7 @@ class LeaveValidationController extends Controller
         private LeaveValidatorService $validators,
         private LeaveRequestWorkflowService $workflow,
         private LeaveBalanceService $balances
-    ) {
-    }
+    ) {}
 
     public function index(Request $request): View
     {
@@ -48,9 +50,11 @@ class LeaveValidationController extends Controller
         try {
             $this->workflow->approve($leaveRequest, $request->user(), $request->string('reviewer_comment')->toString());
 
-            return redirect()->route('leaves.validations.show', $leaveRequest->uuid)->with('success', 'Decision enregistree.');
-        } catch (\Exception $exception) {
-            return back()->with('error', $exception->getMessage());
+            return redirect()->route('leaves.validations.index')->with('success', 'Decision enregistree.');
+        } catch (Throwable $exception) {
+            $this->logDecisionFailure('leave.validation.approve_failed', $leaveRequest, $request, $exception);
+
+            return redirect()->route('leaves.validations.index')->with('error', $exception->getMessage());
         }
     }
 
@@ -66,9 +70,34 @@ class LeaveValidationController extends Controller
         try {
             $this->workflow->reject($leaveRequest, $request->user(), $data['reviewer_comment']);
 
-            return redirect()->route('leaves.validations.show', $leaveRequest->uuid)->with('success', 'Demande rejetee.');
-        } catch (\Exception $exception) {
-            return back()->withInput()->with('error', $exception->getMessage());
+            return redirect()->route('leaves.validations.index')->with('success', 'Demande rejetee.');
+        } catch (Throwable $exception) {
+            $this->logDecisionFailure('leave.validation.reject_failed', $leaveRequest, $request, $exception);
+
+            return redirect()->route('leaves.validations.index')->withInput()->with('error', $exception->getMessage());
         }
+    }
+
+    private function logDecisionFailure(string $action, LeaveRequest $leaveRequest, Request $request, Throwable $exception): void
+    {
+        Log::warning($action, [
+            'leave_request_id' => $leaveRequest->id,
+            'leave_request_uuid' => $leaveRequest->uuid,
+            'user_id' => $request->user()?->id,
+            'exception' => $exception::class,
+            'message' => $exception->getMessage(),
+        ]);
+
+        AuditLog::query()->create([
+            'user_id' => $request->user()?->id,
+            'action' => $action,
+            'auditable_type' => LeaveRequest::class,
+            'auditable_id' => $leaveRequest->id,
+            'metadata' => [
+                'exception' => $exception::class,
+                'message' => $exception->getMessage(),
+                'status' => $leaveRequest->fresh()?->status,
+            ],
+        ]);
     }
 }

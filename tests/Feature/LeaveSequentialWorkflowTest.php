@@ -44,10 +44,14 @@ class LeaveSequentialWorkflowTest extends TestCase
         $this->assertSame('pending_hr', $leaveRequest->fresh()->status);
         $this->assertNotification('leave.pending_hr', ['hr@nere.test']);
 
-        $this->actingAs($hr)->post(route('leaves.validations.approve', $leaveRequest->uuid))->assertRedirect();
+        $this->actingAs($hr)
+            ->post(route('leaves.validations.approve', $leaveRequest->uuid))
+            ->assertRedirect(route('leaves.validations.index'));
         $this->assertNotification('leave.pending_dg', ['dg@nere.test']);
 
-        $this->actingAs($dg)->post(route('leaves.validations.approve', $leaveRequest->uuid))->assertRedirect();
+        $this->actingAs($dg)
+            ->post(route('leaves.validations.approve', $leaveRequest->uuid))
+            ->assertRedirect(route('leaves.validations.index'));
         $this->assertNotification('leave.approved', ['requester@nere.test', 'supervisor@nere.test', 'hr@nere.test', 'dg@nere.test']);
         $this->assertSame('approved', $leaveRequest->fresh()->status);
         $this->assertNotNull($leaveRequest->fresh()->document);
@@ -203,7 +207,7 @@ class LeaveSequentialWorkflowTest extends TestCase
     }
 
     /**
-     * @param array<int, string> $recipients
+     * @param  array<int, string>  $recipients
      */
     private function assertNotification(string $event, array $recipients): void
     {
