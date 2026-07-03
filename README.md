@@ -278,6 +278,64 @@ php artisan test
 npm run build
 ```
 
+## Monitoring Laravel Pulse
+
+Laravel Pulse est installe pour le monitoring applicatif interne.
+
+Installation et mise a jour des dependances:
+
+```bash
+composer require laravel/pulse
+php artisan vendor:publish --tag=pulse-config --tag=pulse-migrations
+php artisan migrate
+```
+
+En deploiement:
+
+```bash
+composer install --no-dev --optimize-autoloader
+php artisan migrate --force
+```
+
+Le dashboard est disponible sur `/pulse`. Il passe par l'authentification Laravel
+et par la Gate `viewPulse`; seuls les utilisateurs actifs avec le role `admin`
+ou `finance` peuvent y acceder.
+
+Pulse reste configure avec le stockage base de donnees par defaut:
+
+```env
+PULSE_ENABLED=true
+PULSE_PATH=pulse
+PULSE_STORAGE_DRIVER=database
+PULSE_INGEST_DRIVER=storage
+PULSE_STORAGE_KEEP="7 days"
+```
+
+Pour desactiver l'enregistrement Pulse en production, mettre:
+
+```env
+PULSE_ENABLED=false
+```
+
+Pour restreindre l'URL sans changer le code, modifier `PULSE_PATH` dans `.env`
+puis vider le cache de configuration/routes si necessaire.
+
+### Notes hebergement mutualise
+
+Aucun process manager, Docker, Supervisor ou systemd n'est requis. Pulse ingere
+les donnees pendant le cycle de vie des requetes/commandes Laravel.
+
+Si l'hebergement propose deja une tache cron, les commandes optionnelles
+compatibles sont:
+
+```bash
+php artisan pulse:check
+php artisan queue:work --stop-when-empty
+```
+
+`pulse:work` est utile avec un worker persistant, mais il n'est pas requis pour
+cette installation mutualisee.
+
 ## Stockage et fichiers generes
 
 Les fichiers applicatifs sont stockes sur le disque `local`, qui pointe vers:
@@ -342,10 +400,10 @@ php artisan view:cache
 - `storage/`
 - `bootstrap/cache/`
 
-6. Lancer un worker si vous gardez la queue `database` en production:
+6. Sur hebergement mutualise, traiter la queue par cron si vous gardez la queue `database` en production:
 
 ```bash
-php artisan queue:work
+php artisan queue:work --stop-when-empty
 ```
 
 ## Limites et observations utiles
