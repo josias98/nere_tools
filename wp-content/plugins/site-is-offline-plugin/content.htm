@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Site Is Offline</title>
+        <style type="text/css">
+            body
+            {
+                font-size:16px;
+                font-family: 'Kameron', Georgia,serif;
+            }
+            #cont
+            {
+                position:relative;
+                width:100%;
+                margin-top:20%;
+            }
+            .align-center{
+                text-align:center;
+            }
+            .center-msg-box{
+                max-width: 600px;
+                margin-left: auto !important;
+                margin-right: auto !important;
+            }
+            .blue-box{
+                margin: 10px 0 15px;
+                background-color: #F0F9FF;
+                border-color: #1166BB;
+                color: #1166BB;
+                border-radius: 3px 3px 3px 3px;
+                border-style: solid;
+                border-width: 1px;   
+                padding: 0 0 0 1em;
+                line-height: 20px;
+            }
+
+            div#list .green,div#list .red
+            {
+                width:400px;
+            }
+        </style>
+
+        <script type="text/javascript">
+            WebFontConfig = {
+                google: {families: ['Kameron:400,700']}
+            };
+            (function() {
+                var wf = document.createElement('script');
+                wf.src = ('https:' == document.location.protocol ? 'https' : 'http') +
+                        '://ajax.googleapis.com/ajax/libs/webfont/1/webfont.js';
+                wf.type = 'text/javascript';
+                wf.async = 'true';
+                var s = document.getElementsByTagName('script')[0];
+                s.parentNode.insertBefore(wf, s);
+            })();
+        </script>
+    </head>
+    <body>
+        <div id="cont">
+            <div class="content">
+                <h1 class="align-center">Site is offline for maintenance</h1>
+                <div class="blue-box center-msg-box">
+                    <p class="align-center">We are currently undergoing scheduled maintenance</p>
+                    <p class="align-center">Sorry for the inconvenience.</p>
+                    <p class="align-center">Please try back soon.</p>
+                </div>                
+            </div>
+
+        </div>
+    </body>
+</html>
+
+

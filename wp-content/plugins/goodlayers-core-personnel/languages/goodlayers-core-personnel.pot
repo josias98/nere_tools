@@ -1,0 +1,361 @@
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Goodlayers Core Personnel\n"
+"POT-Creation-Date: 2018-12-24 15:49+0700\n"
+"PO-Revision-Date: 2016-06-25 01:22+0700\n"
+"Last-Translator: \n"
+"Language-Team: Goodlayers\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.8.11\n"
+"X-Poedit-Basepath: ..\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Language: en_US\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-KeywordsList: __;__(;esc_html__;esc_html_e\n"
+"X-Poedit-SearchPath-0: .\n"
+
+#: goodlayers-core-personnel.php:24 goodlayers-core-personnel.php:25
+#: goodlayers-core-personnel.php:26 goodlayers-core-personnel.php:27
+#: pb-element-personnel.php:24
+msgid "Personnel"
+msgstr ""
+
+#: goodlayers-core-personnel.php:28
+msgid "Add New"
+msgstr ""
+
+#: goodlayers-core-personnel.php:29
+msgid "Add New Personnel"
+msgstr ""
+
+#: goodlayers-core-personnel.php:30
+msgid "New Personnel"
+msgstr ""
+
+#: goodlayers-core-personnel.php:31
+msgid "Edit Personnel"
+msgstr ""
+
+#: goodlayers-core-personnel.php:32
+msgid "View Personnel"
+msgstr ""
+
+#: goodlayers-core-personnel.php:33
+msgid "All Personnel"
+msgstr ""
+
+#: goodlayers-core-personnel.php:34
+msgid "Search Personnel"
+msgstr ""
+
+#: goodlayers-core-personnel.php:35
+msgid "Parent Personnel:"
+msgstr ""
+
+#: goodlayers-core-personnel.php:36
+msgid "No personnel found."
+msgstr ""
+
+#: goodlayers-core-personnel.php:37
+msgid "No personnel found in Trash."
+msgstr ""
+
+#: goodlayers-core-personnel.php:41
+msgid "Description."
+msgstr ""
+
+#: goodlayers-core-personnel.php:71
+msgid "Personnel Category"
+msgstr ""
+
+#: goodlayers-core-personnel.php:148 pb-element-personnel.php:34
+msgid "General"
+msgstr ""
+
+#: goodlayers-core-personnel.php:151
+msgid "Enable Page Title"
+msgstr ""
+
+#: goodlayers-core-personnel.php:156
+msgid "Caption"
+msgstr ""
+
+#: goodlayers-core-personnel.php:161
+msgid "Page Title Background"
+msgstr ""
+
+#: goodlayers-core-personnel.php:166
+msgid "Position"
+msgstr ""
+
+#: goodlayers-core-personnel.php:170
+msgid "Excerpt"
+msgstr ""
+
+#: goodlayers-core-personnel.php:174
+msgid "Social Shortcode"
+msgstr ""
+
+#: pb-element-personnel.php:37
+msgid "Category"
+msgstr ""
+
+#: pb-element-personnel.php:40
+msgid "You can use Ctrl/Command button to select multiple items or remove the selected item. Leave this field blank to select all items in the list."
+msgstr ""
+
+#: pb-element-personnel.php:43
+msgid "Num Fetch"
+msgstr ""
+
+#: pb-element-personnel.php:47
+msgid "The number of posts showing on the personnel item"
+msgstr ""
+
+#: pb-element-personnel.php:50
+msgid "Order By"
+msgstr ""
+
+#: pb-element-personnel.php:53
+msgid "Publish Date"
+msgstr ""
+
+#: pb-element-personnel.php:54
+msgid "Title"
+msgstr ""
+
+#: pb-element-personnel.php:55
+msgid "Random"
+msgstr ""
+
+#: pb-element-personnel.php:56
+msgid "Menu Order"
+msgstr ""
+
+#: pb-element-personnel.php:60
+msgid "Order"
+msgstr ""
+
+#: pb-element-personnel.php:63
+msgid "Descending Order"
+msgstr ""
+
+#: pb-element-personnel.php:64
+msgid "Ascending Order"
+msgstr ""
+
+#: pb-element-personnel.php:70
+msgid "Style"
+msgstr ""
+
+#: pb-element-personnel.php:73
+msgid "Text Align"
+msgstr ""
+
+#: pb-element-personnel.php:79
+msgid "Personnel Style"
+msgstr ""
+
+#: pb-element-personnel.php:93
+msgid "Enable Position"
+msgstr ""
+
+#: pb-element-personnel.php:98
+msgid "Disable Link To Single Personnel"
+msgstr ""
+
+#: pb-element-personnel.php:103
+msgid "Enable Divider"
+msgstr ""
+
+#: pb-element-personnel.php:109
+msgid "Enable Excerpt"
+msgstr ""
+
+#: pb-element-personnel.php:115
+msgid "Enable Social Shortcode"
+msgstr ""
+
+#: pb-element-personnel.php:120
+msgid "Column Size"
+msgstr ""
+
+#: pb-element-personnel.php:127
+msgid "Thumbnail Size"
+msgstr ""
+
+#: pb-element-personnel.php:132
+msgid "Thumbnail Opacity on Hover"
+msgstr ""
+
+#: pb-element-personnel.php:137
+msgid "Thumbnail Zoom on Hover"
+msgstr ""
+
+#: pb-element-personnel.php:142
+msgid "Enable Thumbnail Grayscale Effect"
+msgstr ""
+
+#: pb-element-personnel.php:145
+msgid "Only works with browser that supports css3 filter ( http://caniuse.com/#feat=css-filters )."
+msgstr ""
+
+#: pb-element-personnel.php:148
+msgid "Enable Carousel"
+msgstr ""
+
+#: pb-element-personnel.php:154
+msgid "Autoslide Carousel"
+msgstr ""
+
+#: pb-element-personnel.php:160
+msgid "Carousel Scrolling Item Amount"
+msgstr ""
+
+#: pb-element-personnel.php:166
+msgid "Carousel Navigation"
+msgstr ""
+
+#: pb-element-personnel.php:169 pb-element-personnel.php:211
+#: pb-element-personnel.php:247
+msgid "None"
+msgstr ""
+
+#: pb-element-personnel.php:170
+msgid "Only Navigation"
+msgstr ""
+
+#: pb-element-personnel.php:171
+msgid "Only Bullet"
+msgstr ""
+
+#: pb-element-personnel.php:172
+msgid "Both Navigation and Bullet"
+msgstr ""
+
+#: pb-element-personnel.php:178
+msgid "Carousel Bullet Style"
+msgstr ""
+
+#: pb-element-personnel.php:181
+msgid "Default"
+msgstr ""
+
+#: pb-element-personnel.php:182
+msgid "Cylinder"
+msgstr ""
+
+#: pb-element-personnel.php:189
+msgid "Typography"
+msgstr ""
+
+#: pb-element-personnel.php:192
+msgid "Personnel Title Font Size"
+msgstr ""
+
+#: pb-element-personnel.php:197
+msgid "Personnel Title Font Weight"
+msgstr ""
+
+#: pb-element-personnel.php:199 pb-element-personnel.php:226
+msgid "Eg. lighter, bold, normal, 300, 400, 600, 700, 800"
+msgstr ""
+
+#: pb-element-personnel.php:202
+msgid "Personnel Title Letter Spacing"
+msgstr ""
+
+#: pb-element-personnel.php:207
+msgid "Personnel Title Text Transform"
+msgstr ""
+
+#: pb-element-personnel.php:212 pb-element-personnel.php:248
+msgid "Uppercase"
+msgstr ""
+
+#: pb-element-personnel.php:213 pb-element-personnel.php:249
+msgid "Lowercase"
+msgstr ""
+
+#: pb-element-personnel.php:214 pb-element-personnel.php:250
+msgid "Capitalize"
+msgstr ""
+
+#: pb-element-personnel.php:219
+msgid "Personnel Position Font Size"
+msgstr ""
+
+#: pb-element-personnel.php:224
+msgid "Personnel Position Font Weight"
+msgstr ""
+
+#: pb-element-personnel.php:229
+msgid "Personnel Position Font Style"
+msgstr ""
+
+#: pb-element-personnel.php:232
+msgid "Normal"
+msgstr ""
+
+#: pb-element-personnel.php:233
+msgid "Italic"
+msgstr ""
+
+#: pb-element-personnel.php:238
+msgid "Personnel Position Letter Spacing"
+msgstr ""
+
+#: pb-element-personnel.php:243
+msgid "Personnel Position Text Transform"
+msgstr ""
+
+#: pb-element-personnel.php:257
+msgid "Shadow"
+msgstr ""
+
+#: pb-element-personnel.php:260
+msgid "Shadow Size ( Thumbnail, Frame Style )"
+msgstr ""
+
+#: pb-element-personnel.php:267
+msgid "Shadow Color ( Thumbnail, Frame Style )"
+msgstr ""
+
+#: pb-element-personnel.php:271
+msgid "Shadow Opacity ( Thumbnail, Frame Style )"
+msgstr ""
+
+#: pb-element-personnel.php:274
+msgid "Fill the number between 0.01 to 1"
+msgstr ""
+
+#: pb-element-personnel.php:279
+msgid "Spacing"
+msgstr ""
+
+#: pb-element-personnel.php:282
+msgid "Personnel Thumbnail Bottom Margin"
+msgstr ""
+
+#: pb-element-personnel.php:287
+msgid "Personnel Title Bottom Margin"
+msgstr ""
+
+#: pb-element-personnel.php:292
+msgid "Personnel Content Bottom Spaces ( For Image Style )"
+msgstr ""
+
+#: pb-element-personnel.php:297
+msgid "Padding Bottom ( Item )"
+msgstr ""
+
+#: pb-element-personnel.php:305
+msgid "Item Title"
+msgstr ""
+
+#: pb-element-personnel.php:458
+msgid "No personnel found, please create the personnel post to use the item."
+msgstr ""

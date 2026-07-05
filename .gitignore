@@ -1,0 +1,31 @@
+# Local secrets and database dumps
+wp-config.php
+*.sql
+*.sql.gz
+*.wpress
+.env
+
+# WordPress generated content
+wp-content/uploads/
+wp-content/cache/
+wp-content/upgrade/
+wp-content/upgrade-temp-backup/
+wp-content/ai1wm-backups/
+wp-content/updraft/
+wp-content/backup-db/
+wp-content/backups/
+wp-content/wp-cache-config.php
+wp-content/autoptimize_404_handler.php
+
+# Hosting and machine artifacts
+.ftpquota
+.tmb/
+.wp-cli/cache/
+cgi-bin/
+.well-known/acme-challenge/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

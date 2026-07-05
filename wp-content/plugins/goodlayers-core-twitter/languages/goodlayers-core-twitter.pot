@@ -1,0 +1,151 @@
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Goodlayers Core Twitter\n"
+"POT-Creation-Date: 2018-12-24 15:49+0700\n"
+"PO-Revision-Date: 2016-06-25 01:22+0700\n"
+"Last-Translator: \n"
+"Language-Team: Goodlayers\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.8.11\n"
+"X-Poedit-Basepath: ..\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Language: en_US\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-KeywordsList: __;__(;esc_html__;esc_html_e\n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Poedit-SearchPath-1: .\n"
+
+#: goodlayers-core-twitter.php:68
+msgid "Error :"
+msgstr ""
+
+#: goodlayers-core-twitter.php:69
+msgid "Cannot retrieve tweets, please verify your twitter infomation"
+msgstr ""
+
+#: goodlayers-core-twitter.php:117
+msgid "right now"
+msgstr ""
+
+#: goodlayers-core-twitter.php:120
+msgid "seconds ago"
+msgstr ""
+
+#: goodlayers-core-twitter.php:123
+msgid "about 1 minute ago"
+msgstr ""
+
+#: goodlayers-core-twitter.php:126
+msgid "minutes ago"
+msgstr ""
+
+#: goodlayers-core-twitter.php:129
+msgid "about 1 hour ago"
+msgstr ""
+
+#: goodlayers-core-twitter.php:132
+msgid "hours ago"
+msgstr ""
+
+#: goodlayers-core-twitter.php:135
+msgid "yesterday"
+msgstr ""
+
+#: goodlayers-core-twitter.php:138
+msgid "days ago"
+msgstr ""
+
+#: goodlayers-core-twitter.php:141
+msgid "over a year ago"
+msgstr ""
+
+#: pb-element-twitter.php:22
+msgid "Twitter"
+msgstr ""
+
+#: pb-element-twitter.php:32
+msgid "General"
+msgstr ""
+
+#: pb-element-twitter.php:35
+msgid "Twitter Style"
+msgstr ""
+
+#: pb-element-twitter.php:38
+msgid "List"
+msgstr ""
+
+#: pb-element-twitter.php:39
+msgid "Carousel"
+msgstr ""
+
+#: pb-element-twitter.php:43 twitter-widget.php:84
+msgid "Twitter Username"
+msgstr ""
+
+#: pb-element-twitter.php:45
+msgid "You can see how to obtain the twitter api key here."
+msgstr ""
+
+#: pb-element-twitter.php:49 twitter-widget.php:91
+msgid "Consumer Key"
+msgstr ""
+
+#: pb-element-twitter.php:53 twitter-widget.php:98
+msgid "Consumer Secret"
+msgstr ""
+
+#: pb-element-twitter.php:57 twitter-widget.php:105
+msgid "Access Token"
+msgstr ""
+
+#: pb-element-twitter.php:61 twitter-widget.php:112
+msgid "Access Token Secret"
+msgstr ""
+
+#: pb-element-twitter.php:65 twitter-widget.php:119
+msgid "Display Number"
+msgstr ""
+
+#: pb-element-twitter.php:70 twitter-widget.php:126
+msgid "Cache Time (Hours)"
+msgstr ""
+
+#: pb-element-twitter.php:75
+msgid "Autoslide Carousel"
+msgstr ""
+
+#: pb-element-twitter.php:85
+msgid "Font Size"
+msgstr ""
+
+#: pb-element-twitter.php:89
+msgid "Leaving this field blank will display the default font size from theme options"
+msgstr ""
+
+#: pb-element-twitter.php:97
+msgid "Padding Bottom ( Item )"
+msgstr ""
+
+#: pb-element-twitter.php:209
+msgid "Cannot retrieve tweets data, please check your twitter access info and try this again."
+msgstr ""
+
+#: pb-element-twitter.php:215
+msgid "Cannot retrieve tweets data, please fill in all twitter access informations."
+msgstr ""
+
+#: twitter-widget.php:21
+msgid "Twitter Widget ( Goodlayers )"
+msgstr ""
+
+#: twitter-widget.php:22
+msgid "A widget that show latest twitter feed"
+msgstr ""
+
+#: twitter-widget.php:77
+msgid "Title"
+msgstr ""

@@ -1,0 +1,1407 @@
+# Translation of Plugins - Slider, Gallery, and Carousel by MetaSlider &#8211; Image Slider, Video Slider - Stable (latest release) in German
+# This file is distributed under the same license as the Plugins - Slider, Gallery, and Carousel by MetaSlider &#8211; Image Slider, Video Slider - Stable (latest release) package.
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2026-04-12 02:29:41+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: GlotPress/4.0.3\n"
+"Language: de\n"
+"Project-Id-Version: Plugins - Slider, Gallery, and Carousel by MetaSlider &#8211; Image Slider, Video Slider - Stable (latest release)\n"
+
+#: admin/Pages.php:182 themes/radix/customize.php:42
+#: themes/radix/customize.php:55
+msgid "Text Color"
+msgstr "Textfarbe"
+
+#: themes/architekt/customize.php:127 themes/bitono/customize.php:127
+#: themes/bitono/customize.php:389 themes/blend/customize.php:127
+#: themes/bubble/customize.php:111 themes/bubble/customize.php:372
+#: themes/clarity/customize.php:126 themes/clarity/customize.php:388
+#: themes/cubic/customize.php:127 themes/databold/customize.php:127
+#: themes/databold/customize.php:388 themes/default-base/customize.php:138
+#: themes/default-base/customize.php:405 themes/disjoint/customize.php:127
+#: themes/disjoint/customize.php:364 themes/draxler/customize.php:127
+#: themes/draxler/customize.php:357 themes/highway/customize.php:126
+#: themes/highway/customize.php:388 themes/jenga/customize.php:111
+#: themes/jenga/customize.php:276 themes/nexus/customize.php:111
+#: themes/nexus/customize.php:373 themes/outline/customize.php:126
+#: themes/precognition/customize.php:127 themes/precognition/customize.php:377
+#: themes/radix/customize.php:153 themes/simply-dark/customize.php:127
+#: themes/simply-dark/customize.php:377
+msgid "Border Style"
+msgstr "Randstil"
+
+#: inc/slide/metaslide.image.class.php:574
+msgid "Device"
+msgstr "Gerät"
+
+#: admin/Table.php:437
+msgid "Option"
+msgstr "Option"
+
+#: themes/architekt/customize.php:141 themes/bitono/customize.php:141
+#: themes/bitono/customize.php:403 themes/blend/customize.php:141
+#: themes/blend/customize.php:367 themes/bubble/customize.php:125
+#: themes/bubble/customize.php:386 themes/clarity/customize.php:140
+#: themes/clarity/customize.php:402 themes/cubic/customize.php:141
+#: themes/cubic/customize.php:387 themes/databold/customize.php:141
+#: themes/databold/customize.php:402 themes/default-base/customize.php:152
+#: themes/default-base/customize.php:419 themes/disjoint/customize.php:141
+#: themes/disjoint/customize.php:378 themes/draxler/customize.php:141
+#: themes/draxler/customize.php:371 themes/highway/customize.php:140
+#: themes/highway/customize.php:402 themes/jenga/customize.php:125
+#: themes/jenga/customize.php:290 themes/nexus/customize.php:125
+#: themes/nexus/customize.php:387 themes/outline/customize.php:140
+#: themes/outline/customize.php:401 themes/precognition/customize.php:141
+#: themes/precognition/customize.php:391 themes/radix/customize.php:167
+#: themes/simply-dark/customize.php:141 themes/simply-dark/customize.php:391
+msgid "Dashed"
+msgstr "Gestrichelt"
+
+#: themes/architekt/customize.php:137 themes/bitono/customize.php:137
+#: themes/bitono/customize.php:399 themes/blend/customize.php:137
+#: themes/blend/customize.php:363 themes/bubble/customize.php:121
+#: themes/bubble/customize.php:382 themes/clarity/customize.php:136
+#: themes/clarity/customize.php:398 themes/cubic/customize.php:137
+#: themes/cubic/customize.php:383 themes/databold/customize.php:137
+#: themes/databold/customize.php:398 themes/default-base/customize.php:148
+#: themes/default-base/customize.php:415 themes/disjoint/customize.php:137
+#: themes/disjoint/customize.php:374 themes/draxler/customize.php:137
+#: themes/draxler/customize.php:367 themes/highway/customize.php:136
+#: themes/highway/customize.php:398 themes/jenga/customize.php:121
+#: themes/jenga/customize.php:286 themes/nexus/customize.php:121
+#: themes/nexus/customize.php:383 themes/outline/customize.php:136
+#: themes/outline/customize.php:397 themes/precognition/customize.php:137
+#: themes/precognition/customize.php:387 themes/radix/customize.php:163
+#: themes/simply-dark/customize.php:137 themes/simply-dark/customize.php:387
+msgid "Dotted"
+msgstr "Gepunktet"
+
+#: themes/architekt/customize.php:133 themes/bitono/customize.php:133
+#: themes/bitono/customize.php:395 themes/blend/customize.php:133
+#: themes/blend/customize.php:359 themes/bubble/customize.php:117
+#: themes/bubble/customize.php:378 themes/clarity/customize.php:132
+#: themes/clarity/customize.php:394 themes/cubic/customize.php:133
+#: themes/cubic/customize.php:379 themes/databold/customize.php:133
+#: themes/databold/customize.php:394 themes/default-base/customize.php:144
+#: themes/default-base/customize.php:411 themes/disjoint/customize.php:133
+#: themes/disjoint/customize.php:370 themes/draxler/customize.php:133
+#: themes/draxler/customize.php:363 themes/highway/customize.php:132
+#: themes/highway/customize.php:394 themes/jenga/customize.php:117
+#: themes/jenga/customize.php:282 themes/nexus/customize.php:117
+#: themes/nexus/customize.php:379 themes/outline/customize.php:132
+#: themes/outline/customize.php:393 themes/precognition/customize.php:133
+#: themes/precognition/customize.php:383 themes/radix/customize.php:159
+#: themes/simply-dark/customize.php:133 themes/simply-dark/customize.php:383
+msgid "Solid"
+msgstr "Durchgezogen"
+
+#: themes/architekt/customize.php:628 themes/bitono/customize.php:183
+#: themes/bitono/customize.php:426 themes/bitono/customize.php:597
+#: themes/bitono/customize.php:805 themes/blend/customize.php:164
+#: themes/blend/customize.php:423 themes/blend/customize.php:626
+#: themes/blend/customize.php:834 themes/bubble/customize.php:167
+#: themes/bubble/customize.php:442 themes/bubble/customize.php:613
+#: themes/bubble/customize.php:821 themes/clarity/customize.php:182
+#: themes/clarity/customize.php:425 themes/clarity/customize.php:593
+#: themes/clarity/customize.php:759 themes/cubic/customize.php:183
+#: themes/cubic/customize.php:410 themes/cubic/customize.php:581
+#: themes/cubic/customize.php:789 themes/databold/customize.php:183
+#: themes/databold/customize.php:425 themes/databold/customize.php:596
+#: themes/databold/customize.php:804 themes/default-base/customize.php:198
+#: themes/default-base/customize.php:446 themes/default-base/customize.php:622
+#: themes/default-base/customize.php:839 themes/disjoint/customize.php:164
+#: themes/disjoint/customize.php:401 themes/disjoint/customize.php:572
+#: themes/disjoint/customize.php:780 themes/draxler/customize.php:164
+#: themes/draxler/customize.php:394 themes/draxler/customize.php:573
+#: themes/draxler/customize.php:781 themes/highway/customize.php:182
+#: themes/highway/customize.php:425 themes/highway/customize.php:585
+#: themes/highway/customize.php:792 themes/jenga/customize.php:396
+#: themes/jenga/customize.php:604 themes/nexus/customize.php:167
+#: themes/nexus/customize.php:410 themes/nexus/customize.php:581
+#: themes/nexus/customize.php:817 themes/outline/customize.php:182
+#: themes/outline/customize.php:424 themes/outline/customize.php:595
+#: themes/outline/customize.php:803 themes/precognition/customize.php:183
+#: themes/precognition/customize.php:498 themes/precognition/customize.php:706
+#: themes/radix/customize.php:194 themes/radix/customize.php:330
+#: themes/radix/customize.php:476 themes/radix/customize.php:683
+#: themes/simply-dark/customize.php:183 themes/simply-dark/customize.php:414
+#: themes/simply-dark/customize.php:589 themes/simply-dark/customize.php:798
+msgid "Bottom"
+msgstr "Unten"
+
+#: themes/architekt/customize.php:624 themes/bitono/customize.php:179
+#: themes/bitono/customize.php:422 themes/bitono/customize.php:593
+#: themes/bitono/customize.php:801 themes/blend/customize.php:160
+#: themes/blend/customize.php:419 themes/blend/customize.php:622
+#: themes/blend/customize.php:830 themes/bubble/customize.php:163
+#: themes/bubble/customize.php:438 themes/bubble/customize.php:609
+#: themes/bubble/customize.php:817 themes/clarity/customize.php:178
+#: themes/clarity/customize.php:421 themes/clarity/customize.php:597
+#: themes/clarity/customize.php:755 themes/cubic/customize.php:179
+#: themes/cubic/customize.php:406 themes/cubic/customize.php:577
+#: themes/cubic/customize.php:785 themes/databold/customize.php:179
+#: themes/databold/customize.php:421 themes/databold/customize.php:592
+#: themes/databold/customize.php:800 themes/default-base/customize.php:194
+#: themes/default-base/customize.php:442 themes/default-base/customize.php:618
+#: themes/default-base/customize.php:835 themes/disjoint/customize.php:160
+#: themes/disjoint/customize.php:397 themes/disjoint/customize.php:568
+#: themes/disjoint/customize.php:776 themes/draxler/customize.php:160
+#: themes/draxler/customize.php:390 themes/draxler/customize.php:569
+#: themes/draxler/customize.php:777 themes/highway/customize.php:178
+#: themes/highway/customize.php:421 themes/highway/customize.php:581
+#: themes/highway/customize.php:788 themes/jenga/customize.php:392
+#: themes/jenga/customize.php:600 themes/nexus/customize.php:163
+#: themes/nexus/customize.php:406 themes/nexus/customize.php:577
+#: themes/nexus/customize.php:813 themes/outline/customize.php:178
+#: themes/outline/customize.php:420 themes/outline/customize.php:591
+#: themes/outline/customize.php:799 themes/precognition/customize.php:179
+#: themes/precognition/customize.php:494 themes/precognition/customize.php:702
+#: themes/radix/customize.php:190 themes/radix/customize.php:326
+#: themes/radix/customize.php:472 themes/radix/customize.php:679
+#: themes/simply-dark/customize.php:179 themes/simply-dark/customize.php:410
+#: themes/simply-dark/customize.php:585 themes/simply-dark/customize.php:794
+msgid "Top"
+msgstr "Oben"
+
+#: themes/clarity/customize.php:586
+msgid "Position"
+msgstr "Position"
+
+#: admin/views/pages/start.php:151 inc/metaslider.quickstart.class.php:551
+#: inc/metaslider.quickstart.class.php:659 ml-slider.php:793
+msgid "Custom HTML"
+msgstr "Individuelles HTML"
+
+#: admin/views/pages/parts/slider-settings.php:1214
+msgid "Drag-and-drop"
+msgstr "Drag-and-drop"
+
+#: admin/views/pages/start.php:149 inc/metaslider.quickstart.class.php:529
+#: inc/metaslider.quickstart.class.php:650 ml-slider.php:791
+msgid "External Image"
+msgstr "Externes Bild"
+
+#: themes/bitono/customize.php:461 themes/blend/customize.php:458
+#: themes/bubble/customize.php:477 themes/clarity/customize.php:460
+#: themes/cubic/customize.php:445 themes/databold/customize.php:460
+#: themes/default-base/customize.php:482 themes/disjoint/customize.php:436
+#: themes/draxler/customize.php:429 themes/nexus/customize.php:445
+#: themes/outline/customize.php:459 themes/simply-dark/customize.php:449
+msgid "Alignment"
+msgstr "Ausrichtung"
+
+#: themes/architekt/customize.php:68 themes/bitono/customize.php:68
+#: themes/blend/customize.php:68 themes/clarity/customize.php:68
+#: themes/cubic/customize.php:68 themes/databold/customize.php:68
+#: themes/default-base/customize.php:79 themes/disjoint/customize.php:68
+#: themes/draxler/customize.php:68 themes/highway/customize.php:68
+#: themes/outline/customize.php:68 themes/precognition/customize.php:68
+#: themes/radix/customize.php:94 themes/simply-dark/customize.php:68
+msgid "Icon Size"
+msgstr "Icon-Größe"
+
+#: themes/architekt/customize.php:509 themes/bitono/customize.php:686
+#: themes/blend/customize.php:715 themes/bubble/customize.php:702
+#: themes/clarity/customize.php:640 themes/cubic/customize.php:670
+#: themes/databold/customize.php:685 themes/default-base/customize.php:720
+#: themes/disjoint/customize.php:661 themes/draxler/customize.php:662
+#: themes/highway/customize.php:673 themes/jenga/customize.php:485
+#: themes/nexus/customize.php:670 themes/outline/customize.php:684
+#: themes/precognition/customize.php:587 themes/radix/customize.php:564
+#: themes/simply-dark/customize.php:679
+msgid "Text Align"
+msgstr "Textausrichtung"
+
+#: themes/architekt/customize.php:498 themes/bitono/customize.php:675
+#: themes/blend/customize.php:704 themes/bubble/customize.php:691
+#: themes/clarity/customize.php:629 themes/cubic/customize.php:659
+#: themes/databold/customize.php:674 themes/default-base/customize.php:709
+#: themes/disjoint/customize.php:650 themes/draxler/customize.php:651
+#: themes/highway/customize.php:662 themes/jenga/customize.php:474
+#: themes/nexus/customize.php:659 themes/outline/customize.php:673
+#: themes/precognition/customize.php:576 themes/radix/customize.php:553
+#: themes/simply-dark/customize.php:668
+msgid "Line Height"
+msgstr "Zeilenhöhe"
+
+#: themes/architekt/customize.php:487 themes/bitono/customize.php:664
+#: themes/blend/customize.php:693 themes/bubble/customize.php:680
+#: themes/clarity/customize.php:618 themes/cubic/customize.php:648
+#: themes/databold/customize.php:663 themes/default-base/customize.php:698
+#: themes/disjoint/customize.php:639 themes/draxler/customize.php:640
+#: themes/highway/customize.php:651 themes/jenga/customize.php:463
+#: themes/nexus/customize.php:648 themes/outline/customize.php:662
+#: themes/precognition/customize.php:565 themes/radix/customize.php:542
+#: themes/simply-dark/customize.php:657
+msgid "Font Size"
+msgstr "Schriftgröße"
+
+#: themes/architekt/customize.php:239 themes/architekt/customize.php:588
+#: themes/bitono/customize.php:250 themes/bitono/customize.php:765
+#: themes/blend/customize.php:215 themes/blend/customize.php:794
+#: themes/bubble/customize.php:234 themes/bubble/customize.php:781
+#: themes/clarity/customize.php:249 themes/clarity/customize.php:719
+#: themes/cubic/customize.php:234 themes/cubic/customize.php:749
+#: themes/databold/customize.php:250 themes/databold/customize.php:764
+#: themes/default-base/customize.php:266 themes/default-base/customize.php:799
+#: themes/disjoint/customize.php:226 themes/disjoint/customize.php:740
+#: themes/draxler/customize.php:215 themes/draxler/customize.php:461
+#: themes/draxler/customize.php:741 themes/highway/customize.php:249
+#: themes/highway/customize.php:752 themes/jenga/customize.php:138
+#: themes/jenga/customize.php:564 themes/nexus/customize.php:234
+#: themes/nexus/customize.php:777 themes/outline/customize.php:249
+#: themes/outline/customize.php:763 themes/precognition/customize.php:250
+#: themes/precognition/customize.php:666 themes/radix/customize.php:245
+#: themes/radix/customize.php:643 themes/simply-dark/customize.php:238
+#: themes/simply-dark/customize.php:758
+msgid "Border Radius"
+msgstr "Eckenradius"
+
+#: themes/architekt/customize.php:450 themes/bitono/customize.php:560
+#: themes/blend/customize.php:589 themes/bubble/customize.php:576
+#: themes/clarity/customize.php:559 themes/cubic/customize.php:544
+#: themes/databold/customize.php:559 themes/default-base/customize.php:581
+#: themes/disjoint/customize.php:535 themes/draxler/customize.php:536
+#: themes/highway/customize.php:548 themes/jenga/customize.php:359
+#: themes/nexus/customize.php:544 themes/outline/customize.php:558
+#: themes/precognition/customize.php:461 themes/radix/customize.php:439
+#: themes/simply-dark/customize.php:548
+msgid "Colors"
+msgstr "Farben"
+
+#: themes/architekt/customize.php:523 themes/bitono/customize.php:475
+#: themes/bitono/customize.php:700 themes/blend/customize.php:472
+#: themes/blend/customize.php:729 themes/bubble/customize.php:491
+#: themes/bubble/customize.php:716 themes/clarity/customize.php:474
+#: themes/clarity/customize.php:654 themes/cubic/customize.php:459
+#: themes/cubic/customize.php:684 themes/databold/customize.php:474
+#: themes/databold/customize.php:699 themes/default-base/customize.php:496
+#: themes/default-base/customize.php:734 themes/disjoint/customize.php:450
+#: themes/disjoint/customize.php:675 themes/draxler/customize.php:443
+#: themes/draxler/customize.php:676 themes/highway/customize.php:687
+#: themes/jenga/customize.php:499 themes/nexus/customize.php:459
+#: themes/nexus/customize.php:684 themes/outline/customize.php:473
+#: themes/outline/customize.php:698 themes/precognition/customize.php:601
+#: themes/radix/customize.php:578 themes/simply-dark/customize.php:463
+#: themes/simply-dark/customize.php:693
+msgid "Center"
+msgstr "Zentriert"
+
+#: themes/architekt/customize.php:519 themes/architekt/customize.php:657
+#: themes/bitono/customize.php:471 themes/bitono/customize.php:627
+#: themes/bitono/customize.php:696 themes/bitono/customize.php:834
+#: themes/blend/customize.php:468 themes/blend/customize.php:656
+#: themes/blend/customize.php:725 themes/blend/customize.php:863
+#: themes/bubble/customize.php:487 themes/bubble/customize.php:643
+#: themes/bubble/customize.php:712 themes/bubble/customize.php:850
+#: themes/clarity/customize.php:470 themes/clarity/customize.php:650
+#: themes/clarity/customize.php:788 themes/cubic/customize.php:455
+#: themes/cubic/customize.php:611 themes/cubic/customize.php:680
+#: themes/cubic/customize.php:818 themes/databold/customize.php:470
+#: themes/databold/customize.php:626 themes/databold/customize.php:695
+#: themes/databold/customize.php:833 themes/default-base/customize.php:492
+#: themes/default-base/customize.php:661 themes/default-base/customize.php:730
+#: themes/default-base/customize.php:868 themes/disjoint/customize.php:446
+#: themes/disjoint/customize.php:602 themes/disjoint/customize.php:671
+#: themes/disjoint/customize.php:809 themes/draxler/customize.php:439
+#: themes/draxler/customize.php:603 themes/draxler/customize.php:672
+#: themes/draxler/customize.php:810 themes/highway/customize.php:614
+#: themes/highway/customize.php:683 themes/highway/customize.php:821
+#: themes/jenga/customize.php:426 themes/jenga/customize.php:495
+#: themes/jenga/customize.php:633 themes/nexus/customize.php:455
+#: themes/nexus/customize.php:611 themes/nexus/customize.php:680
+#: themes/nexus/customize.php:846 themes/outline/customize.php:469
+#: themes/outline/customize.php:625 themes/outline/customize.php:694
+#: themes/outline/customize.php:832 themes/precognition/customize.php:528
+#: themes/precognition/customize.php:597 themes/precognition/customize.php:735
+#: themes/radix/customize.php:505 themes/radix/customize.php:574
+#: themes/radix/customize.php:712 themes/simply-dark/customize.php:459
+#: themes/simply-dark/customize.php:620 themes/simply-dark/customize.php:689
+#: themes/simply-dark/customize.php:827
+msgid "Right"
+msgstr "Rechts"
+
+#: themes/architekt/customize.php:515 themes/architekt/customize.php:661
+#: themes/bitono/customize.php:467 themes/bitono/customize.php:631
+#: themes/bitono/customize.php:692 themes/bitono/customize.php:838
+#: themes/blend/customize.php:464 themes/blend/customize.php:660
+#: themes/blend/customize.php:721 themes/blend/customize.php:867
+#: themes/bubble/customize.php:483 themes/bubble/customize.php:647
+#: themes/bubble/customize.php:708 themes/bubble/customize.php:854
+#: themes/clarity/customize.php:466 themes/clarity/customize.php:646
+#: themes/clarity/customize.php:792 themes/cubic/customize.php:451
+#: themes/cubic/customize.php:615 themes/cubic/customize.php:676
+#: themes/cubic/customize.php:822 themes/databold/customize.php:466
+#: themes/databold/customize.php:630 themes/databold/customize.php:691
+#: themes/databold/customize.php:837 themes/default-base/customize.php:488
+#: themes/default-base/customize.php:665 themes/default-base/customize.php:726
+#: themes/default-base/customize.php:872 themes/disjoint/customize.php:442
+#: themes/disjoint/customize.php:606 themes/disjoint/customize.php:667
+#: themes/disjoint/customize.php:813 themes/draxler/customize.php:435
+#: themes/draxler/customize.php:607 themes/draxler/customize.php:668
+#: themes/draxler/customize.php:814 themes/highway/customize.php:618
+#: themes/highway/customize.php:679 themes/highway/customize.php:825
+#: themes/jenga/customize.php:430 themes/jenga/customize.php:491
+#: themes/jenga/customize.php:637 themes/nexus/customize.php:451
+#: themes/nexus/customize.php:615 themes/nexus/customize.php:676
+#: themes/nexus/customize.php:850 themes/outline/customize.php:465
+#: themes/outline/customize.php:629 themes/outline/customize.php:690
+#: themes/outline/customize.php:836 themes/precognition/customize.php:532
+#: themes/precognition/customize.php:593 themes/precognition/customize.php:739
+#: themes/radix/customize.php:509 themes/radix/customize.php:570
+#: themes/radix/customize.php:716 themes/simply-dark/customize.php:455
+#: themes/simply-dark/customize.php:624 themes/simply-dark/customize.php:685
+#: themes/simply-dark/customize.php:831
+msgid "Left"
+msgstr "Links"
+
+#: themes/architekt/customize.php:42 themes/architekt/customize.php:568
+#: themes/bitono/customize.php:42 themes/bitono/customize.php:745
+#: themes/blend/customize.php:42 themes/blend/customize.php:774
+#: themes/bubble/customize.php:42 themes/bubble/customize.php:761
+#: themes/clarity/customize.php:42 themes/clarity/customize.php:699
+#: themes/cubic/customize.php:42 themes/cubic/customize.php:729
+#: themes/databold/customize.php:42 themes/databold/customize.php:744
+#: themes/default-base/customize.php:53 themes/default-base/customize.php:779
+#: themes/disjoint/customize.php:42 themes/disjoint/customize.php:720
+#: themes/draxler/customize.php:42 themes/draxler/customize.php:721
+#: themes/highway/customize.php:42 themes/highway/customize.php:732
+#: themes/jenga/customize.php:42 themes/jenga/customize.php:544
+#: themes/nexus/customize.php:42 themes/nexus/customize.php:757
+#: themes/outline/customize.php:42 themes/outline/customize.php:743
+#: themes/precognition/customize.php:42 themes/precognition/customize.php:646
+#: themes/radix/customize.php:68 themes/radix/customize.php:623
+#: themes/simply-dark/customize.php:42 themes/simply-dark/customize.php:738
+msgid "Icon Colors"
+msgstr "Icon-Farben"
+
+#: themes/architekt/customize.php:111 themes/bitono/customize.php:111
+#: themes/bitono/customize.php:373 themes/blend/customize.php:111
+#: themes/bubble/customize.php:95 themes/clarity/customize.php:110
+#: themes/clarity/customize.php:372 themes/cubic/customize.php:111
+#: themes/databold/customize.php:111 themes/default-base/customize.php:122
+#: themes/default-base/customize.php:389 themes/disjoint/customize.php:111
+#: themes/draxler/customize.php:111 themes/draxler/customize.php:341
+#: themes/highway/customize.php:110 themes/highway/customize.php:372
+#: themes/jenga/customize.php:95 themes/jenga/customize.php:260
+#: themes/nexus/customize.php:95 themes/nexus/customize.php:357
+#: themes/outline/customize.php:110 themes/precognition/customize.php:111
+#: themes/precognition/customize.php:358 themes/radix/customize.php:137
+#: themes/simply-dark/customize.php:111 themes/simply-dark/customize.php:361
+msgid "Border Width"
+msgstr "Randbreite"
+
+#: themes/architekt/customize.php:84 themes/bitono/customize.php:84
+#: themes/bitono/customize.php:339 themes/blend/customize.php:84
+#: themes/bubble/customize.php:68 themes/bubble/customize.php:323
+#: themes/clarity/customize.php:84 themes/clarity/customize.php:338
+#: themes/cubic/customize.php:84 themes/cubic/customize.php:323
+#: themes/databold/customize.php:84 themes/databold/customize.php:339
+#: themes/default-base/customize.php:95 themes/default-base/customize.php:355
+#: themes/disjoint/customize.php:84 themes/disjoint/customize.php:315
+#: themes/draxler/customize.php:84 themes/draxler/customize.php:307
+#: themes/highway/customize.php:84 themes/highway/customize.php:338
+#: themes/jenga/customize.php:68 themes/jenga/customize.php:227
+#: themes/nexus/customize.php:68 themes/nexus/customize.php:323
+#: themes/outline/customize.php:84 themes/outline/customize.php:338
+#: themes/precognition/customize.php:84 themes/precognition/customize.php:339
+#: themes/radix/customize.php:110 themes/simply-dark/customize.php:84
+#: themes/simply-dark/customize.php:327
+msgid "Border Color"
+msgstr "Randfarbe"
+
+#: admin/views/pages/parts/slider-settings.php:1145 themes/customize.php:34
+msgid "Progress Bar"
+msgstr "Fortschrittsbalken"
+
+#: themes/radix/customize.php:305
+msgid "Color"
+msgstr "Farbe"
+
+#: themes/precognition/customize.php:343
+msgid "Border"
+msgstr "Rand"
+
+#: themes/architekt/customize.php:468 themes/bitono/customize.php:578
+#: themes/blend/customize.php:607 themes/bubble/customize.php:594
+#: themes/clarity/customize.php:577 themes/cubic/customize.php:562
+#: themes/databold/customize.php:577 themes/default-base/customize.php:599
+#: themes/disjoint/customize.php:553 themes/draxler/customize.php:554
+#: themes/highway/customize.php:566 themes/jenga/customize.php:377
+#: themes/nexus/customize.php:562 themes/outline/customize.php:576
+#: themes/precognition/customize.php:479 themes/radix/customize.php:457
+#: themes/simply-dark/customize.php:566
+msgid "Links"
+msgstr "Links"
+
+#: themes/architekt/customize.php:461 themes/bitono/customize.php:571
+#: themes/blend/customize.php:600 themes/bubble/customize.php:587
+#: themes/clarity/customize.php:570 themes/cubic/customize.php:555
+#: themes/databold/customize.php:570 themes/default-base/customize.php:592
+#: themes/disjoint/customize.php:546 themes/draxler/customize.php:547
+#: themes/highway/customize.php:559 themes/jenga/customize.php:370
+#: themes/nexus/customize.php:555 themes/outline/customize.php:569
+#: themes/precognition/customize.php:472 themes/radix/customize.php:450
+#: themes/simply-dark/customize.php:559
+msgid "Text"
+msgstr "Text"
+
+#: themes/architekt/customize.php:16 themes/architekt/customize.php:295
+#: themes/architekt/customize.php:454 themes/architekt/customize.php:548
+#: themes/bitono/customize.php:16 themes/bitono/customize.php:306
+#: themes/bitono/customize.php:564 themes/bitono/customize.php:725
+#: themes/blend/customize.php:16 themes/blend/customize.php:271
+#: themes/blend/customize.php:593 themes/blend/customize.php:754
+#: themes/bubble/customize.php:16 themes/bubble/customize.php:290
+#: themes/bubble/customize.php:580 themes/bubble/customize.php:741
+#: themes/clarity/customize.php:16 themes/clarity/customize.php:305
+#: themes/clarity/customize.php:563 themes/clarity/customize.php:679
+#: themes/cubic/customize.php:16 themes/cubic/customize.php:290
+#: themes/cubic/customize.php:548 themes/cubic/customize.php:709
+#: themes/customize.php:26 themes/databold/customize.php:16
+#: themes/databold/customize.php:306 themes/databold/customize.php:563
+#: themes/databold/customize.php:724 themes/default-base/customize.php:27
+#: themes/default-base/customize.php:322 themes/default-base/customize.php:585
+#: themes/default-base/customize.php:759 themes/disjoint/customize.php:16
+#: themes/disjoint/customize.php:282 themes/disjoint/customize.php:539
+#: themes/disjoint/customize.php:700 themes/draxler/customize.php:16
+#: themes/draxler/customize.php:274 themes/draxler/customize.php:540
+#: themes/draxler/customize.php:701 themes/highway/customize.php:16
+#: themes/highway/customize.php:305 themes/highway/customize.php:552
+#: themes/highway/customize.php:712 themes/jenga/customize.php:16
+#: themes/jenga/customize.php:194 themes/jenga/customize.php:363
+#: themes/jenga/customize.php:524 themes/nexus/customize.php:16
+#: themes/nexus/customize.php:290 themes/nexus/customize.php:548
+#: themes/nexus/customize.php:709 themes/nexus/customize.php:737
+#: themes/outline/customize.php:16 themes/outline/customize.php:305
+#: themes/outline/customize.php:562 themes/outline/customize.php:723
+#: themes/precognition/customize.php:16 themes/precognition/customize.php:306
+#: themes/precognition/customize.php:465 themes/precognition/customize.php:626
+#: themes/radix/customize.php:16 themes/radix/customize.php:443
+#: themes/radix/customize.php:603 themes/simply-dark/customize.php:16
+#: themes/simply-dark/customize.php:294 themes/simply-dark/customize.php:552
+#: themes/simply-dark/customize.php:718
+msgid "Background"
+msgstr "Hintergrund"
+
+#: themes/architekt/customize.php:313 themes/architekt/customize.php:346
+#: themes/architekt/customize.php:379 themes/bitono/customize.php:324
+#: themes/bitono/customize.php:357 themes/blend/customize.php:289
+#: themes/blend/customize.php:322 themes/blend/customize.php:398
+#: themes/bubble/customize.php:308 themes/bubble/customize.php:341
+#: themes/bubble/customize.php:417 themes/clarity/customize.php:323
+#: themes/clarity/customize.php:356 themes/cubic/customize.php:308
+#: themes/cubic/customize.php:341 themes/databold/customize.php:324
+#: themes/databold/customize.php:357 themes/default-base/customize.php:340
+#: themes/default-base/customize.php:373 themes/disjoint/customize.php:300
+#: themes/disjoint/customize.php:333 themes/draxler/customize.php:292
+#: themes/draxler/customize.php:325 themes/highway/customize.php:323
+#: themes/highway/customize.php:356 themes/jenga/customize.php:212
+#: themes/jenga/customize.php:245 themes/nexus/customize.php:308
+#: themes/nexus/customize.php:341 themes/outline/customize.php:323
+#: themes/outline/customize.php:356 themes/precognition/customize.php:324
+#: themes/precognition/customize.php:422 themes/simply-dark/customize.php:312
+#: themes/simply-dark/customize.php:345
+msgid "Active"
+msgstr "Aktiv"
+
+#: themes/architekt/customize.php:27 themes/architekt/customize.php:53
+#: themes/architekt/customize.php:95 themes/architekt/customize.php:306
+#: themes/architekt/customize.php:332 themes/architekt/customize.php:339
+#: themes/architekt/customize.php:372 themes/architekt/customize.php:559
+#: themes/architekt/customize.php:579 themes/bitono/customize.php:27
+#: themes/bitono/customize.php:53 themes/bitono/customize.php:95
+#: themes/bitono/customize.php:317 themes/bitono/customize.php:350
+#: themes/bitono/customize.php:736 themes/bitono/customize.php:756
+#: themes/blend/customize.php:27 themes/blend/customize.php:53
+#: themes/blend/customize.php:95 themes/blend/customize.php:282
+#: themes/blend/customize.php:315 themes/blend/customize.php:391
+#: themes/blend/customize.php:765 themes/blend/customize.php:785
+#: themes/bubble/customize.php:27 themes/bubble/customize.php:53
+#: themes/bubble/customize.php:79 themes/bubble/customize.php:301
+#: themes/bubble/customize.php:334 themes/bubble/customize.php:410
+#: themes/bubble/customize.php:752 themes/bubble/customize.php:772
+#: themes/clarity/customize.php:27 themes/clarity/customize.php:53
+#: themes/clarity/customize.php:95 themes/clarity/customize.php:316
+#: themes/clarity/customize.php:349 themes/clarity/customize.php:690
+#: themes/clarity/customize.php:710 themes/cubic/customize.php:27
+#: themes/cubic/customize.php:53 themes/cubic/customize.php:95
+#: themes/cubic/customize.php:301 themes/cubic/customize.php:334
+#: themes/cubic/customize.php:720 themes/cubic/customize.php:740
+#: themes/databold/customize.php:27 themes/databold/customize.php:53
+#: themes/databold/customize.php:95 themes/databold/customize.php:317
+#: themes/databold/customize.php:350 themes/databold/customize.php:735
+#: themes/databold/customize.php:755 themes/default-base/customize.php:38
+#: themes/default-base/customize.php:64 themes/default-base/customize.php:106
+#: themes/default-base/customize.php:333 themes/default-base/customize.php:366
+#: themes/default-base/customize.php:770 themes/default-base/customize.php:790
+#: themes/disjoint/customize.php:27 themes/disjoint/customize.php:53
+#: themes/disjoint/customize.php:95 themes/disjoint/customize.php:293
+#: themes/disjoint/customize.php:326 themes/disjoint/customize.php:711
+#: themes/disjoint/customize.php:731 themes/draxler/customize.php:27
+#: themes/draxler/customize.php:53 themes/draxler/customize.php:95
+#: themes/draxler/customize.php:285 themes/draxler/customize.php:318
+#: themes/draxler/customize.php:712 themes/draxler/customize.php:732
+#: themes/highway/customize.php:27 themes/highway/customize.php:53
+#: themes/highway/customize.php:95 themes/highway/customize.php:316
+#: themes/highway/customize.php:349 themes/highway/customize.php:723
+#: themes/highway/customize.php:743 themes/jenga/customize.php:27
+#: themes/jenga/customize.php:53 themes/jenga/customize.php:79
+#: themes/jenga/customize.php:205 themes/jenga/customize.php:238
+#: themes/jenga/customize.php:535 themes/jenga/customize.php:555
+#: themes/nexus/customize.php:27 themes/nexus/customize.php:53
+#: themes/nexus/customize.php:79 themes/nexus/customize.php:301
+#: themes/nexus/customize.php:334 themes/nexus/customize.php:720
+#: themes/nexus/customize.php:748 themes/nexus/customize.php:768
+#: themes/outline/customize.php:27 themes/outline/customize.php:53
+#: themes/outline/customize.php:95 themes/outline/customize.php:316
+#: themes/outline/customize.php:349 themes/outline/customize.php:734
+#: themes/outline/customize.php:754 themes/precognition/customize.php:27
+#: themes/precognition/customize.php:53 themes/precognition/customize.php:95
+#: themes/precognition/customize.php:317 themes/precognition/customize.php:415
+#: themes/precognition/customize.php:637 themes/precognition/customize.php:657
+#: themes/radix/customize.php:27 themes/radix/customize.php:79
+#: themes/radix/customize.php:121 themes/radix/customize.php:614
+#: themes/radix/customize.php:634 themes/simply-dark/customize.php:27
+#: themes/simply-dark/customize.php:53 themes/simply-dark/customize.php:95
+#: themes/simply-dark/customize.php:305 themes/simply-dark/customize.php:338
+#: themes/simply-dark/customize.php:729 themes/simply-dark/customize.php:749
+msgid "Hover"
+msgstr "Bei Mauszeigerkontakt"
+
+#: themes/nexus/customize.php:703
+msgid "Button"
+msgstr "Button"
+
+#: admin/Table.php:174
+msgid "Number of Slides"
+msgstr "Anzahl der Slides"
+
+#: admin/views/pages/start.php:148 inc/metaslider.quickstart.class.php:656
+#: ml-slider.php:790
+msgid "TikTok"
+msgstr "TikTok"
+
+#: admin/views/pages/parts/slider-settings.php:754
+msgid "Image Animation"
+msgstr "Bildanimation"
+
+#: themes/nexus/v1.0.0/theme.php:53
+msgid "Click Here"
+msgstr "Hier klicken"
+
+#: admin/views/pages/parts/slider-settings.php:93
+msgid "Visible"
+msgstr "Sichtbar"
+
+#: admin/views/pages/parts/slider-settings.php:96
+msgid "Visible On Hover"
+msgstr "Sichtbar bei Mauszeigerkontakt"
+
+#: themes/manifest-premium.php:15
+msgid "2 columns"
+msgstr "2 Spalten"
+
+#: themes/manifest-premium.php:27
+msgid "videos"
+msgstr "Videos"
+
+#: inc/slide/metaslide.image.class.php:555
+msgid "Link"
+msgstr "Link"
+
+#: admin/views/pages/upgrade.php:20
+msgid "Free"
+msgstr "Kostenlos"
+
+#: admin/views/pages/parts/slider-settings.php:1068
+msgid "Advanced Options"
+msgstr "Erweiterte Optionen"
+
+#: admin/views/pages/start.php:150 inc/metaslider.quickstart.class.php:540
+#: inc/metaslider.quickstart.class.php:653 ml-slider.php:792
+msgid "External Video"
+msgstr "Externes Video"
+
+#: admin/views/pages/parts/slider-settings.php:138
+#: admin/assets/dist/js/app.js:2
+msgid "Filmstrip (Pro)"
+msgstr "Filmstreifen (Pro)"
+
+#: admin/views/pages/parts/slider-settings.php:1171
+msgid "Loop"
+msgstr "Schleife"
+
+#: admin/Table.php:175 admin/views/pages/parts/slider-settings.php:439
+msgid "Theme"
+msgstr "Theme"
+
+#: admin/views/pages/parts/slider-settings.php:44
+msgid "Main Options"
+msgstr "Hauptoptionen"
+
+#: admin/views/pages/start.php:339
+msgctxt "Uploader: Drop files to upload - or - Select Files"
+msgid "or"
+msgstr "oder"
+
+#: admin/views/pages/start.php:155 inc/metaslider.quickstart.class.php:496
+#: inc/metaslider.quickstart.class.php:647 ml-slider.php:799
+msgid "Local Video"
+msgstr "Lokales Video"
+
+#: ml-slider.php:2633
+msgid "Allowed Files"
+msgstr "Erlaubte Dateien"
+
+#: admin/views/pages/start.php:341
+msgid "Select Files"
+msgstr "Dateien auswählen"
+
+#: admin/Table.php:176
+msgid "Created"
+msgstr "Erstellt"
+
+#: inc/slide/metaslide.image.class.php:411
+msgid "Access denied"
+msgstr "Zugriff verweigert"
+
+#: admin/Notices.php:402 admin/Notices.php:649
+#: inc/slide/metaslide.class.php:161 inc/slide/metaslide.image.class.php:144
+#: inc/slide/metaslide.image.class.php:248
+#: inc/slide/metaslide.image.class.php:302
+#: inc/slide/metaslide.image.class.php:421 ml-slider.php:909 ml-slider.php:991
+#: ml-slider.php:1103 ml-slider.php:2738 ml-slider.php:2781 ml-slider.php:2856
+msgid "Bad request"
+msgstr "Ungültige Anfrage"
+
+#: ml-slider.php:539
+msgid "Upgrade to Pro"
+msgstr "Auf Pro upgraden"
+
+#: inc/metaslider.quickstart.class.php:122
+msgid "Images"
+msgstr "Bilder"
+
+#: admin/views/pages/upgrade.php:21
+msgid "Pro"
+msgstr "Pro"
+
+#: admin/Table.php:328
+msgid "Edit"
+msgstr "Bearbeiten"
+
+#: admin/views/pages/start.php:285
+msgid "Cancel"
+msgstr "Abbrechen"
+
+#: ml-slider.php:535
+msgid "Settings & Help"
+msgstr "Einstellungen und Hilfe"
+
+#: admin/views/pages/settings.php:58 admin/assets/dist/js/app.js:2
+msgid "Help Center"
+msgstr "Hilfe-Center"
+
+#: admin/views/pages/parts/slider-settings.php:170
+#: admin/assets/dist/js/app.js:2
+msgid "100% Width"
+msgstr "100% Breite"
+
+#: admin/views/pages/parts/ie-warning.php:8
+msgid "IE11"
+msgstr "IE11"
+
+#: admin/views/pages/parts/ie-warning.php:8
+msgid "Microsoft Internet Explorer 11"
+msgstr "Microsoft Internet Explorer 11"
+
+#: admin/routes/api.php:556
+msgid "Nothing to import."
+msgstr "Nichts zu importieren."
+
+#: admin/views/pages/settings.php:89 admin/assets/dist/js/app.js:2
+msgid "Export"
+msgstr "Export"
+
+#: admin/views/pages/settings.php:74 admin/assets/dist/js/app.js:2
+msgid "Import"
+msgstr "Import"
+
+#: admin/views/pages/dashboard.php:8 admin/assets/dist/js/app.js:2
+msgid "Slideshows"
+msgstr "Slideshows"
+
+#: admin/routes/api.php:929
+msgid "The title cannot be empty."
+msgstr "Der Titel kann nicht leer sein."
+
+#: admin/routes/api.php:933 admin/routes/api.php:1102
+msgid "The field (%s) cannot be empty"
+msgstr "Das Feld (%s) kann nicht leer sein"
+
+#: admin/views/pages/parts/ie-warning.php:4
+msgid "Browser upgrade required"
+msgstr "Ein Upgrade deines Browsers ist erforderlich"
+
+#: admin/views/pages/parts/ie-warning.php:12
+msgid "Update Internet Explorer"
+msgstr "Internet Explorer aktualisieren"
+
+#: ml-slider.php:1934
+msgid "Add slideshow"
+msgstr "Slideshow hinzufügen"
+
+#: inc/metaslider.systemcheck.class.php:216
+msgid "Warning:"
+msgstr "Warnung:"
+
+#: inc/metaslider.systemcheck.class.php:94
+msgid "this article"
+msgstr "dieser Beitrag"
+
+#: themes/simply-dark/v1.0.0/theme.php:58
+msgid "Next Slide"
+msgstr "Nächster Slide"
+
+#: themes/simply-dark/v1.0.0/theme.php:57
+msgid "Previous Slide"
+msgstr "Vorheriger Slide"
+
+#: admin/routes/api.php:821
+msgid "This was not a slideshow, so we cannot update the setting."
+msgstr "Dies war keine Slideshow, deshalb können wir die Einstellung nicht aktualisieren."
+
+#: admin/views/pages/parts/toolbar.php:91
+msgid "Add CSS"
+msgstr "CSS hinzufügen"
+
+#: admin/views/pages/parts/toolbar.php:81
+msgid "Duplicate"
+msgstr "Duplizieren"
+
+#: admin/views/pages/upgrade.php:134
+msgid "Add custom CSS"
+msgstr "Individuelles CSS hinzufügen"
+
+#: admin/views/pages/parts/toolbar.php:64
+msgid "New"
+msgstr "Neu"
+
+#: admin/views/pages/parts/toolbar.php:69
+msgid "Duplicate this slideshow"
+msgstr "Diese Slideshow duplizieren"
+
+#: admin/views/pages/parts/slider-settings.php:38
+#: inc/slider/metaslider.flex.class.php:421 admin/assets/dist/js/app.js:2
+msgid "Loading..."
+msgstr "Wird geladen …"
+
+#: admin/Pages.php:175
+msgid "Close"
+msgstr "Schließen"
+
+#: admin/slideshows/Themes.php:449
+msgid "We removed your selected theme as it could not be found. Was the folder deleted?"
+msgstr "Wir haben dein ausgewähltes Theme entfernt, da es nicht gefunden werden konnte. Wurde der Ordner gelöscht?"
+
+#: admin/views/pages/start.php:106 ml-slider.php:534
+msgid "Quick Start"
+msgstr "Schnellstart"
+
+#: admin/Pages.php:141
+msgid "Please confirm that you would like to delete this slideshow."
+msgstr "Bitte bestätige, dass die Slideshow gelöscht werden soll."
+
+#: admin/routes/api.php:608
+msgid "This was not a slideshow, so we cannot delete it."
+msgstr "Dies war keine Slideshow, deshalb können wir sie nicht löschen."
+
+#: admin/views/pages/parts/toolbar.php:99
+msgid "Save slideshow"
+msgstr "Slideshow speichern"
+
+#: admin/views/pages/parts/slider-settings.php:638
+#: admin/views/pages/parts/slider-settings.php:658
+#: admin/views/pages/parts/slider-settings.php:1293
+#: admin/views/pages/parts/slider-settings.php:1327
+msgctxt "Short for milliseconds"
+msgid "ms"
+msgstr "ms"
+
+#: admin/slideshows/Themes.php:60
+msgid "No themes found."
+msgstr "Es wurden keine Themes gefunden."
+
+#: admin/views/pages/parts/slider-settings.php:784
+msgid "Fade In"
+msgstr "Einblenden"
+
+#: admin/views/slides/tabs/seo.php:13
+msgid "Use the image title"
+msgstr "Bildunterschrift verwenden"
+
+#: admin/views/slides/tabs/seo.php:39
+msgid "Use the image alt text"
+msgstr "Alt-Text des Bildes verwenden"
+
+#: admin/Pages.php:180
+msgid "Open in new window"
+msgstr "In einem neuen Fenster öffnen"
+
+#: admin/Notices.php:618 admin/views/notices/header-notice.php:23
+msgid "Dismiss"
+msgstr "Verwerfen"
+
+#: ml-slider.php:2550
+msgid "Support"
+msgstr "Support"
+
+#: admin/Table.php:171 admin/views/pages/parts/toolbar.php:44
+#: admin/assets/dist/js/app.js:2
+msgid "Preview"
+msgstr "Vorschau"
+
+#: admin/slideshows/Settings.php:59
+msgid "New Slideshow"
+msgstr "Neue Slideshow"
+
+#: admin/Table.php:155 admin/Table.php:314 inc/slide/metaslide.class.php:409
+msgid "Restore"
+msgstr "Wiederherstellen"
+
+#: ml-slider.php:2559
+msgid "Leave a review"
+msgstr "Eine Rezension schreiben"
+
+#: admin/views/pages/upgrade.php:62
+msgid "Thumbnail navigation"
+msgstr "Vorschaubild-Navigation"
+
+#: ml-slider.php:2540
+msgid "Premium Support"
+msgstr "Premium-Support"
+
+#: admin/views/pages/upgrade.php:182
+msgid "Premium support"
+msgstr "Premium-Support"
+
+#: admin/Table.php:160 admin/Table.php:329
+msgid "Trash"
+msgstr "Papierkorb"
+
+#: admin/Table.php:156 admin/Table.php:315 inc/slide/metaslide.class.php:419
+msgid "Delete Permanently"
+msgstr "Endgültig löschen"
+
+#: admin/views/notices/header-notice.php:8
+msgid "Logo"
+msgstr "Logo"
+
+#: admin/Notices.php:340
+msgid "weeks"
+msgstr "Wochen"
+
+#: admin/views/pages/upgrade.php:25 admin/views/pages/upgrade.php:192
+msgid "Installed"
+msgstr "Installiert"
+
+#: admin/views/pages/upgrade.php:13
+msgid "Comparison Chart"
+msgstr "Vergleichstabelle"
+
+#: admin/Notices.php:372
+msgid "Read more"
+msgstr "Weiterlesen"
+
+#: admin/Notices.php:423
+msgid "The option was successfully updated"
+msgstr "Die Option wurde erfolgreich aktualisiert"
+
+#: admin/Notices.php:489
+msgid "The requested data does not exist."
+msgstr "Die angeforderten Daten existieren nicht."
+
+#: admin/Pages.php:143
+msgid "Slide restored"
+msgstr "Slide wiederhergestellt"
+
+#: admin/Pages.php:144
+msgid "Slide deleted"
+msgstr "Slide gelöscht"
+
+#: admin/views/pages/start.php:306 admin/views/pages/theme-editor.php:36
+#: admin/views/pages/upgrade.php:26 admin/views/pages/upgrade.php:193
+#: admin/assets/dist/js/app.js:2
+msgid "Upgrade now"
+msgstr "Jetzt upgraden"
+
+#: admin/views/pages/start.php:147 inc/metaslider.quickstart.class.php:452
+#: inc/metaslider.quickstart.class.php:644 ml-slider.php:789
+msgid "YouTube"
+msgstr "YouTube"
+
+#: admin/views/pages/start.php:146 inc/metaslider.quickstart.class.php:485
+#: inc/metaslider.quickstart.class.php:641 ml-slider.php:788
+msgid "Vimeo"
+msgstr "Vimeo"
+
+#: admin/views/pages/start.php:154 inc/metaslider.quickstart.class.php:662
+#: ml-slider.php:798
+msgid "Layer Slide"
+msgstr "Schicht-Dia"
+
+#: admin/views/pages/start.php:153 inc/metaslider.quickstart.class.php:518
+#: inc/metaslider.quickstart.class.php:665 ml-slider.php:797
+msgid "Post Feed"
+msgstr "Beitrags-Feed"
+
+#: admin/views/pages/parts/slider-settings.php:1480
+msgid "Print CSS"
+msgstr "CSS einfügen"
+
+#: admin/views/pages/parts/slider-settings.php:1493
+msgid "Print JS"
+msgstr "JS einfügen"
+
+#: admin/Table.php:182
+msgid "Usage"
+msgstr "Anwendung"
+
+#: admin/Table.php:177 admin/views/pages/parts/slider-settings.php:1527
+msgid "Shortcode"
+msgstr "Shortcode"
+
+#: ml-slider.php:1970
+msgid "Choose slideshow"
+msgstr "Diashow auswählen"
+
+#: ml-slider.php:1980
+msgid "Insert slideshow"
+msgstr "Diashow einfügen"
+
+#. Plugin URI of the plugin
+#. Author URI of the plugin
+#: ml-slider.php
+msgid "https://www.metaslider.com"
+msgstr "https://www.metaslider.com"
+
+#: admin/views/pages/parts/slider-settings.php:1467
+msgid "CSS Classes"
+msgstr "CSS-Klassen"
+
+#: admin/views/pages/parts/slider-settings.php:1455
+msgid "Developer Options"
+msgstr "Entwickler-Optionen"
+
+#: admin/Pages.php:168 admin/views/pages/parts/slider-settings.php:1304
+#: themes/architekt/customize.php:530 themes/bitono/customize.php:707
+#: themes/blend/customize.php:736 themes/bubble/customize.php:723
+#: themes/clarity/customize.php:661 themes/cubic/customize.php:691
+#: themes/databold/customize.php:706 themes/default-base/customize.php:741
+#: themes/disjoint/customize.php:682 themes/draxler/customize.php:683
+#: themes/highway/customize.php:694 themes/jenga/customize.php:506
+#: themes/nexus/customize.php:691 themes/outline/customize.php:705
+#: themes/precognition/customize.php:608 themes/radix/customize.php:585
+#: themes/simply-dark/customize.php:700
+msgid "Opacity"
+msgstr "Deckkraft"
+
+#: ml-slider.php:2555
+msgid "Documentation"
+msgstr "Dokumentation"
+
+#: admin/Pages.php:138 admin/Pages.php:177
+msgid "URL"
+msgstr "URL"
+
+#: admin/Pages.php:140
+msgid "New Window"
+msgstr "Neues Fenster"
+
+#: admin/Pages.php:160
+msgid "Caution: This setting is for advanced developers only. If you're unsure, leave it checked."
+msgstr "Achtung: Diese Einstellung ist nur für fortgeschrittene Entwickler. Wenn Sie unsicher sind, lassen Sie es sein."
+
+#: admin/views/pages/start.php:145 inc/metaslider.quickstart.class.php:638
+#: ml-slider.php:747
+msgid "Image"
+msgstr "Bild"
+
+#: admin/views/pages/parts/toolbar.php:29 inc/slider/metaslider.class.php:920
+msgid "Add Slide"
+msgstr "Dia hinzufügen"
+
+#: admin/views/pages/settings.php:42
+msgid "Settings"
+msgstr "Einstellungen"
+
+#: admin/views/pages/parts/toolbar.php:113 admin/assets/dist/js/app.js:2
+msgid "Save"
+msgstr "Speichern"
+
+#: admin/views/pages/parts/slider-settings.php:60
+#: admin/views/pages/parts/slider-settings.php:688
+#: themes/architekt/customize.php:207 themes/architekt/customize.php:477
+#: themes/bitono/customize.php:218 themes/bitono/customize.php:654
+#: themes/blend/customize.php:683 themes/bubble/customize.php:202
+#: themes/bubble/customize.php:670 themes/clarity/customize.php:217
+#: themes/clarity/customize.php:608 themes/cubic/customize.php:638
+#: themes/databold/customize.php:234 themes/databold/customize.php:653
+#: themes/default-base/customize.php:234 themes/default-base/customize.php:688
+#: themes/disjoint/customize.php:629 themes/draxler/customize.php:630
+#: themes/highway/customize.php:217 themes/highway/customize.php:641
+#: themes/jenga/customize.php:453 themes/nexus/customize.php:202
+#: themes/nexus/customize.php:638 themes/outline/customize.php:217
+#: themes/outline/customize.php:652 themes/precognition/customize.php:218
+#: themes/precognition/customize.php:555 themes/radix/customize.php:532
+#: themes/simply-dark/customize.php:647
+msgid "Width"
+msgstr "Breite"
+
+#: admin/views/pages/parts/slider-settings.php:62
+#: admin/assets/js/gutenberg/components/block-edit.js:57
+#: admin/assets/js/gutenberg/components/block-edit.js:82
+msgid "Slideshow width"
+msgstr "Diashow Breite"
+
+#: admin/views/pages/parts/slider-settings.php:63
+#: admin/views/pages/parts/slider-settings.php:76
+#: admin/views/pages/parts/slider-settings.php:891
+msgid "px"
+msgstr "px"
+
+#: admin/views/pages/parts/slider-settings.php:73
+#: admin/views/pages/parts/slider-settings.php:705
+#: themes/architekt/customize.php:223 themes/bitono/customize.php:234
+#: themes/blend/customize.php:199 themes/bubble/customize.php:218
+#: themes/clarity/customize.php:233 themes/cubic/customize.php:218
+#: themes/databold/customize.php:218 themes/default-base/customize.php:250
+#: themes/disjoint/customize.php:210 themes/draxler/customize.php:199
+#: themes/highway/customize.php:233 themes/nexus/customize.php:218
+#: themes/outline/customize.php:233 themes/precognition/customize.php:234
+#: themes/radix/customize.php:229
+msgid "Height"
+msgstr "Höhe"
+
+#: admin/views/pages/parts/slider-settings.php:75
+msgid "Slideshow height"
+msgstr "Diashow Höhe"
+
+#: admin/views/pages/parts/slider-settings.php:539
+#: admin/views/pages/parts/slider-settings.php:1217
+msgid "Random"
+msgstr "Zufällig"
+
+#: admin/views/pages/parts/slider-settings.php:544
+msgid "Swirl"
+msgstr "Wirbel"
+
+#: admin/views/pages/parts/slider-settings.php:549
+msgid "Rain"
+msgstr "Regen"
+
+#: admin/views/pages/parts/slider-settings.php:554
+msgid "Straight"
+msgstr "Gerade"
+
+#: admin/views/pages/parts/slider-settings.php:564
+msgid "Slice Up"
+msgstr "Teilen nach oben"
+
+#: admin/views/pages/parts/slider-settings.php:584
+msgid "Fold"
+msgstr "Falten"
+
+#: admin/views/pages/parts/slider-settings.php:523
+#: admin/views/pages/start.php:172
+msgid "Fade"
+msgstr "Überblenden"
+
+#: admin/views/pages/parts/slider-settings.php:599
+msgid "Box Random"
+msgstr "Zufällige Kästchen"
+
+#: admin/views/pages/parts/slider-settings.php:604
+msgid "Box Rain"
+msgstr "Kästchen-Regen"
+
+#: admin/views/pages/parts/slider-settings.php:609
+msgid "Box Rain Reverse"
+msgstr "Kästchen-Regen umgekehrt"
+
+#: admin/views/pages/parts/slider-settings.php:619
+msgid "Box Rain Grow Reverse"
+msgstr "Kästchen-Regen wachsend umgekehrt"
+
+#: admin/views/pages/parts/slider-settings.php:527
+#: admin/views/pages/start.php:171
+msgid "Slide"
+msgstr "Gleiten"
+
+#: admin/views/pages/parts/slider-settings.php:81
+#: themes/architekt/customize.php:10 themes/bitono/customize.php:10
+#: themes/blend/customize.php:10 themes/bubble/customize.php:10
+#: themes/clarity/customize.php:10 themes/cubic/customize.php:10
+#: themes/databold/customize.php:10 themes/default-base/customize.php:21
+#: themes/disjoint/customize.php:10 themes/draxler/customize.php:10
+#: themes/highway/customize.php:10 themes/jenga/customize.php:10
+#: themes/nexus/customize.php:10 themes/outline/customize.php:10
+#: themes/precognition/customize.php:10 themes/radix/customize.php:10
+#: themes/simply-dark/customize.php:10
+msgid "Arrows"
+msgstr "Pfeile"
+
+#: themes/architekt/customize.php:20 themes/architekt/customize.php:46
+#: themes/architekt/customize.php:88 themes/architekt/customize.php:299
+#: themes/architekt/customize.php:365 themes/architekt/customize.php:552
+#: themes/architekt/customize.php:572 themes/bitono/customize.php:20
+#: themes/bitono/customize.php:46 themes/bitono/customize.php:88
+#: themes/bitono/customize.php:310 themes/bitono/customize.php:343
+#: themes/bitono/customize.php:729 themes/bitono/customize.php:749
+#: themes/blend/customize.php:20 themes/blend/customize.php:46
+#: themes/blend/customize.php:88 themes/blend/customize.php:275
+#: themes/blend/customize.php:308 themes/blend/customize.php:384
+#: themes/blend/customize.php:758 themes/blend/customize.php:778
+#: themes/bubble/customize.php:20 themes/bubble/customize.php:46
+#: themes/bubble/customize.php:72 themes/bubble/customize.php:294
+#: themes/bubble/customize.php:327 themes/bubble/customize.php:403
+#: themes/bubble/customize.php:745 themes/bubble/customize.php:765
+#: themes/clarity/customize.php:20 themes/clarity/customize.php:46
+#: themes/clarity/customize.php:88 themes/clarity/customize.php:309
+#: themes/clarity/customize.php:342 themes/clarity/customize.php:683
+#: themes/clarity/customize.php:703 themes/cubic/customize.php:20
+#: themes/cubic/customize.php:46 themes/cubic/customize.php:88
+#: themes/cubic/customize.php:294 themes/cubic/customize.php:327
+#: themes/cubic/customize.php:713 themes/cubic/customize.php:733
+#: themes/databold/customize.php:20 themes/databold/customize.php:46
+#: themes/databold/customize.php:88 themes/databold/customize.php:310
+#: themes/databold/customize.php:343 themes/databold/customize.php:728
+#: themes/databold/customize.php:748 themes/default-base/customize.php:31
+#: themes/default-base/customize.php:57 themes/default-base/customize.php:99
+#: themes/default-base/customize.php:326 themes/default-base/customize.php:359
+#: themes/default-base/customize.php:763 themes/default-base/customize.php:783
+#: themes/disjoint/customize.php:20 themes/disjoint/customize.php:46
+#: themes/disjoint/customize.php:88 themes/disjoint/customize.php:286
+#: themes/disjoint/customize.php:319 themes/disjoint/customize.php:704
+#: themes/disjoint/customize.php:724 themes/draxler/customize.php:20
+#: themes/draxler/customize.php:46 themes/draxler/customize.php:88
+#: themes/draxler/customize.php:278 themes/draxler/customize.php:311
+#: themes/draxler/customize.php:705 themes/draxler/customize.php:725
+#: themes/highway/customize.php:20 themes/highway/customize.php:46
+#: themes/highway/customize.php:88 themes/highway/customize.php:309
+#: themes/highway/customize.php:342 themes/highway/customize.php:716
+#: themes/highway/customize.php:736 themes/jenga/customize.php:20
+#: themes/jenga/customize.php:46 themes/jenga/customize.php:72
+#: themes/jenga/customize.php:198 themes/jenga/customize.php:231
+#: themes/jenga/customize.php:528 themes/jenga/customize.php:548
+#: themes/nexus/customize.php:20 themes/nexus/customize.php:46
+#: themes/nexus/customize.php:72 themes/nexus/customize.php:294
+#: themes/nexus/customize.php:327 themes/nexus/customize.php:713
+#: themes/nexus/customize.php:741 themes/nexus/customize.php:761
+#: themes/outline/customize.php:20 themes/outline/customize.php:46
+#: themes/outline/customize.php:88 themes/outline/customize.php:309
+#: themes/outline/customize.php:342 themes/outline/customize.php:727
+#: themes/outline/customize.php:747 themes/precognition/customize.php:20
+#: themes/precognition/customize.php:46 themes/precognition/customize.php:88
+#: themes/precognition/customize.php:310 themes/precognition/customize.php:408
+#: themes/precognition/customize.php:630 themes/precognition/customize.php:650
+#: themes/radix/customize.php:20 themes/radix/customize.php:72
+#: themes/radix/customize.php:114 themes/radix/customize.php:607
+#: themes/radix/customize.php:627 themes/simply-dark/customize.php:20
+#: themes/simply-dark/customize.php:46 themes/simply-dark/customize.php:88
+#: themes/simply-dark/customize.php:298 themes/simply-dark/customize.php:331
+#: themes/simply-dark/customize.php:722 themes/simply-dark/customize.php:742
+msgid "Default"
+msgstr "Standard"
+
+#: admin/views/pages/parts/slider-settings.php:112
+#: themes/architekt/customize.php:289 themes/bitono/customize.php:300
+#: themes/blend/customize.php:265 themes/bubble/customize.php:284
+#: themes/clarity/customize.php:299 themes/cubic/customize.php:284
+#: themes/databold/customize.php:300 themes/default-base/customize.php:316
+#: themes/disjoint/customize.php:276 themes/draxler/customize.php:268
+#: themes/highway/customize.php:299 themes/jenga/customize.php:188
+#: themes/nexus/customize.php:284 themes/outline/customize.php:299
+#: themes/precognition/customize.php:300 themes/radix/customize.php:295
+#: themes/simply-dark/customize.php:288
+msgid "Navigation"
+msgstr "Navigation"
+
+#: admin/views/pages/parts/slider-settings.php:124
+#: admin/assets/dist/js/app.js:2
+msgid "Dots"
+msgstr "Punkte"
+
+#: admin/Table.php:172 admin/assets/dist/js/app.js:2
+msgid "Title"
+msgstr "Titel"
+
+#: admin/views/pages/parts/slider-settings.php:1080
+#: admin/assets/dist/js/app.js:2
+msgid "Auto Play"
+msgstr "Automatische Wiedergabe"
+
+#: admin/views/pages/parts/slider-settings.php:965
+msgid "Image Crop"
+msgstr "Bild zuschneiden"
+
+#: admin/views/pages/parts/slider-settings.php:977
+msgid "Standard"
+msgstr "Standard"
+
+#: admin/views/pages/parts/slider-settings.php:887
+msgid "Pixel margin between slides in carousel."
+msgstr "Pixelabstand zwischen den Dias im Carousel."
+
+#: admin/views/pages/parts/slider-settings.php:1163
+msgid "Pause the slideshow when hovering over slider, then resume when no longer hovering."
+msgstr "Diashow bei Bewegen der Maus über das Bild anhalten, sobald die Maus das Bild verlässt geht die Animation weiter."
+
+#: admin/views/pages/parts/slider-settings.php:741
+msgid "Reverse"
+msgstr "Rückwärts"
+
+#: admin/views/pages/parts/slider-settings.php:690
+#: admin/views/pages/parts/slider-settings.php:707
+msgid "Number of squares"
+msgstr "Anzahl der Quadrate"
+
+#: admin/views/pages/parts/slider-settings.php:723
+msgid "Horizontal"
+msgstr "Horizontal"
+
+#: admin/views/pages/parts/slider-settings.php:730
+#: admin/views/pages/start.php:176
+msgid "Vertical"
+msgstr "Vertikal"
+
+#: inc/metaslider.widget.class.php:125 ml-slider.php:1985
+#: admin/assets/dist/js/app.js:2
+msgid "No slideshows found"
+msgstr "Keine Diashows gefunden"
+
+#: inc/metaslider.widget.class.php:112
+msgid "Title:"
+msgstr "Titel:"
+
+#: inc/metaslider.widget.class.php:115
+msgid "Select Slider:"
+msgstr "Diashow wählen:"
+
+#: inc/slide/metaslide.image.class.php:450
+msgid "Image Slide"
+msgstr "Bild"
+
+#: admin/views/slides/tabs/seo.php:7
+msgid "Image Title Text"
+msgstr "Bild Titel"
+
+#: inc/slide/metaslide.image.class.php:551
+msgid "General"
+msgstr "Allgemein"
+
+#: inc/slide/metaslide.image.class.php:559
+msgid "SEO"
+msgstr "SEO"
+
+#: admin/views/slides/tabs/crop.php:14
+msgid "Crop Position"
+msgstr "Zuschneideposition"
+
+#: admin/views/slides/tabs/crop.php:19
+msgid "Top Left"
+msgstr "Oben links"
+
+#: admin/views/slides/tabs/crop.php:20
+msgid "Top Center"
+msgstr "Oben mittig"
+
+#: admin/views/slides/tabs/crop.php:21
+msgid "Top Right"
+msgstr "Oben rechts"
+
+#: admin/views/slides/tabs/crop.php:22
+msgid "Center Left"
+msgstr "Mittig links"
+
+#: admin/views/slides/tabs/crop.php:23
+msgid "Center Center"
+msgstr "Mittig mittig"
+
+#: admin/views/slides/tabs/crop.php:24
+msgid "Center Right"
+msgstr "Mittig rechts"
+
+#: admin/views/slides/tabs/crop.php:25
+msgid "Bottom Left"
+msgstr "Unten links"
+
+#: admin/views/slides/tabs/crop.php:26
+msgid "Bottom Center"
+msgstr "Unten mittig"
+
+#: admin/views/slides/tabs/crop.php:27
+msgid "Bottom Right"
+msgstr "Unten rechts"
+
+#: inc/slide/metaslide.image.class.php:591
+msgid "Crop"
+msgstr "Zuschneiden"
+
+#: admin/Pages.php:150
+msgid "Select replacement image"
+msgstr "Ersatzbild auswählen"
+
+#: admin/views/pages/parts/slider-settings.php:970
+msgid "Smart Crop"
+msgstr "Intelligentes Zuschneiden"
+
+#: admin/views/pages/parts/slider-settings.php:991
+msgid "Disabled (Smart Pad)"
+msgstr "Deaktiviert (Smart Pad)"
+
+#. Plugin Name of the plugin
+#. Author of the plugin
+#: ml-slider.php ml-slider.php:570
+msgid "MetaSlider"
+msgstr "MetaSlider"
+
+#: admin/views/pages/parts/toolbar.php:60
+msgid "Add a new slideshow"
+msgstr "Neue Slideshow hinzufügen"
+
+#: inc/slide/metaslide.image.class.php:536
+msgid "Warning: The image data does not exist. Please re-upload the image."
+msgstr "Warnung: Die Bild-Daten existiert leider nicht. Bitte lade das Bild erneut hoch."
+
+#: admin/views/pages/parts/slider-settings.php:984
+msgid "Disabled"
+msgstr "Deaktiviert"
+
+#: admin/Pages.php:139 themes/architekt/customize.php:444
+#: themes/bitono/customize.php:554 themes/blend/customize.php:583
+#: themes/bubble/customize.php:570 themes/clarity/customize.php:553
+#: themes/cubic/customize.php:538 themes/databold/customize.php:553
+#: themes/default-base/customize.php:575 themes/disjoint/customize.php:529
+#: themes/draxler/customize.php:530 themes/highway/customize.php:542
+#: themes/jenga/customize.php:353 themes/nexus/customize.php:538
+#: themes/outline/customize.php:552 themes/precognition/customize.php:455
+#: themes/radix/customize.php:433 themes/simply-dark/customize.php:542
+#: admin/assets/dist/js/app.js:2
+msgid "Caption"
+msgstr "Untertitel"
+
+#: admin/views/pages/parts/slider-settings.php:90
+#: admin/views/pages/parts/slider-settings.php:121
+#: admin/assets/dist/js/app.js:2
+msgid "Hidden"
+msgstr "Ausgeblendet"
+
+#: admin/views/slides/tabs/seo.php:33
+msgid "Image Alt Text"
+msgstr "Bild-Alternativtext"

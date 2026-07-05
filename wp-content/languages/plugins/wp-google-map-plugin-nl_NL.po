@@ -1,0 +1,1310 @@
+# Translation of Plugins - WP Maps &#8211; Store Locator,Google Maps,OpenStreetMap,Mapbox,Listing,Directory &amp; Filters - Stable (latest release) in Dutch
+# This file is distributed under the same license as the Plugins - WP Maps &#8211; Store Locator,Google Maps,OpenStreetMap,Mapbox,Listing,Directory &amp; Filters - Stable (latest release) package.
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2025-07-11 13:06:26+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: GlotPress/4.0.3\n"
+"Language: nl\n"
+"Project-Id-Version: Plugins - WP Maps &#8211; Store Locator,Google Maps,OpenStreetMap,Mapbox,Listing,Directory &amp; Filters - Stable (latest release)\n"
+
+#: modules/settings/views/manage.php:32
+msgid "Google Maps"
+msgstr "Google Maps"
+
+#: modules/map/views/form.php:64
+msgid "Filters"
+msgstr "Filters"
+
+#: modules/settings/views/manage.php:18 modules/settings/views/manage.php:22
+msgid "General Setting(s)"
+msgstr "Algemene instellingen"
+
+#: modules/settings/views/manage.php:236
+msgid "guides."
+msgstr "gidsen."
+
+#: modules/settings/views/manage.php:686
+msgid "Maps will remain hidden until the visitor accepts the cookie policy. This feature is intended for developers who wish to monitor cookies access and limit map access."
+msgstr "Kaarten blijven verborgen totdat de bezoeker het cookiebeleid accepteert. Deze functie is bedoeld voor ontwikkelaars die de toegang tot cookies willen controleren en de toegang tot kaarten willen beperken."
+
+#: modules/settings/views/manage.php:696
+msgid "Please accept cookies to show google maps."
+msgstr "Accepteer cookies om Google Maps weer te geven."
+
+#: modules/settings/views/manage.php:707
+msgid "Until you accept cookies, show a map image along with a consent message in place of Google Maps"
+msgstr "Totdat je cookies accepteert, toon een kaartafbeelding samen met een toestemmingsbericht in plaats van Google Maps."
+
+#: modules/settings/views/manage.php:621
+msgid "Auto Fix"
+msgstr "Automatische reparatie"
+
+#: modules/settings/views/manage.php:624
+msgid "If map is not visible somehow, turn on auto fix and check the map."
+msgstr "Als de kaart op de een of andere manier niet zichtbaar is, schakel dan automatisch repareren in en controleer de kaart."
+
+#: modules/settings/views/manage.php:684
+msgid "Enable Cookies Acceptance"
+msgstr "Acceptatie van cookies inschakelen"
+
+#: modules/settings/views/manage.php:695
+msgid "Show message instead of map until visitor accept the cookies policy. HTML Tags are allowed. Leave it blank for no message."
+msgstr "Toon bericht in plaats van kaart totdat bezoeker het cookiesbeleid accepteert. HTML tags zijn toegestaan. Laat het leeg als er geen bericht is."
+
+#: modules/settings/views/manage.php:632
+msgid "Turn On Debug Mode"
+msgstr "Foutopsporingsmodus inschakelen"
+
+#: modules/settings/views/manage.php:635
+msgid "If map is not visible somehow even auto fix in turned on, please turn on debug mode and contact support team to analysis javascript console output."
+msgstr "Als de kaart op de een of andere manier niet zichtbaar is, zelfs als automatische correctie is ingeschakeld, schakel dan de foutopsporingsmodus in en neem contact op met het ondersteuningsteam om de uitvoer van de JavaScript console te analyseren."
+
+#: classes/wpgmp-helper.php:241 wp-google-map-plugin.php:1166
+msgid "All"
+msgstr "Alle"
+
+#: modules/map/views/map-forms/infowindow-settings.php:112
+msgid "Select Animation"
+msgstr "Selecteer animatie"
+
+#: modules/map/views/map-forms/infowindow-settings.php:15
+msgid "Infowindow Settings"
+msgstr "Infowindow instellingen"
+
+#: modules/settings/views/manage.php:254
+msgid "Header"
+msgstr "Header"
+
+#: modules/group_map/views/manage.php:87
+msgid "Updated On"
+msgstr "Bijgewerkt op"
+
+#: modules/settings/views/manage.php:180
+msgid "KANNADA"
+msgstr "KANNADA"
+
+#: modules/settings/views/manage.php:183
+msgid "LATVIAN"
+msgstr "LETLANDS"
+
+#: modules/settings/views/manage.php:159
+msgid "CATALAN"
+msgstr "CATALAAN"
+
+#: wp-google-map-plugin.php:925
+msgid "Choose icon"
+msgstr "Kies pictogram"
+
+#: wp-google-map-plugin.php:851
+msgid "Choose Icons"
+msgstr "Kies pictogrammen"
+
+#: modules/settings/views/manage.php:206
+msgid "CHINESE (SIMPLIFIED)"
+msgstr "CHINEES (VERSIMPELD)"
+
+#: modules/settings/views/manage.php:207
+msgid "CHINESE (TRADITIONAL)"
+msgstr "CHINEES (TRADITIONEEL)"
+
+#: modules/settings/views/manage.php:156
+msgid "BASQUE"
+msgstr "BASKISCH"
+
+#: modules/settings/views/manage.php:155
+msgid "ARABIC"
+msgstr "ARABISCH"
+
+#: modules/settings/views/manage.php:171
+msgid "GALICIAN"
+msgstr "GALICIAN"
+
+#: modules/settings/views/manage.php:172
+msgid "GUJARATI"
+msgstr "GUJARATI"
+
+#: modules/settings/views/manage.php:174
+msgid "CROATIAN"
+msgstr "KROATISCH"
+
+#: modules/settings/views/manage.php:173
+msgid "HINDI"
+msgstr "HINDI"
+
+#: modules/settings/views/manage.php:184
+msgid "MALAYALAM"
+msgstr "MALAYALAM"
+
+#: modules/settings/views/manage.php:186
+msgid "MARATHI"
+msgstr "MARATHI"
+
+#: modules/settings/views/manage.php:194
+msgid "RUSSIAN"
+msgstr "RUSSISCH"
+
+#: modules/settings/views/manage.php:199
+msgid "TAGALOG"
+msgstr "TAGALOG"
+
+#: modules/settings/views/manage.php:200
+msgid "TAMIL"
+msgstr "TAMIL"
+
+#: modules/settings/views/manage.php:201
+msgid "TELUGU"
+msgstr "TELUGU"
+
+#: modules/settings/views/manage.php:204
+msgid "UKRAINIAN"
+msgstr "OEKRAÏENS"
+
+#: modules/settings/views/manage.php:195
+msgid "SLOVAK"
+msgstr "SLOVAAKS"
+
+#: modules/settings/views/manage.php:167
+msgid "FARSI"
+msgstr "FARSI"
+
+#: modules/settings/views/manage.php:176
+msgid "INDONESIAN"
+msgstr "INDONESISCH"
+
+#: modules/settings/views/manage.php:193
+msgid "ROMANIAN"
+msgstr "ROEMEENS"
+
+#: wp-google-map-plugin.php:925 wp-google-map-plugin.php:1161
+msgid "Search icons"
+msgstr "Zoek pictogrammen"
+
+#: classes/wpgmp-map-widget.php:103
+msgid "Title:"
+msgstr "Titel:"
+
+#: modules/location/views/form.php:155
+msgid "Country"
+msgstr "Land"
+
+#: modules/location/views/form.php:228
+msgid "YES"
+msgstr "JA"
+
+#: classes/wpgmp-map-widget.php:30
+msgid "A widget to display google maps"
+msgstr "Een widget om Google Maps weer te geven"
+
+#: classes/wpgmp-map-widget.php:112
+msgid "Select map"
+msgstr "Selecteer kaart"
+
+#: classes/wpgmp-template.php:40
+msgid "Installed version :"
+msgstr "Geïnstalleerde versie:"
+
+#: classes/wpgmp-template.php:42
+msgid "Update Available"
+msgstr "Update beschikbaar"
+
+#: classes/wpgmp-template.php:46 modules/overview/views/view.php:146
+msgid "Subscribe Now"
+msgstr "Abonneer nu"
+
+#: classes/wpgmp-template.php:47 modules/overview/views/view.php:153
+msgid "Receive updates on our new product features and new products effortlessly."
+msgstr "Ontvang moeiteloos updates over onze nieuwe productfuncties en nieuwe producten."
+
+#: classes/wpgmp-template.php:52
+msgid "Product Support"
+msgstr "Product ondersteuning"
+
+#: classes/wpgmp-template.php:105 modules/overview/views/view.php:217
+msgid "Create Support Ticket"
+msgstr "Ondersteuningsticket maken"
+
+#: classes/wpgmp-template.php:108 modules/overview/views/view.php:230
+msgid "Create Ticket"
+msgstr "Ticket aanmaken"
+
+#: classes/wpgmp-template.php:119
+msgid "Request a quotation"
+msgstr "Vraag een offerte aan"
+
+#: modules/drawing/model.drawing.php:34
+msgid "Map Drawing"
+msgstr "Kaarttekening"
+
+#: modules/extentions/views/manage.php:202 modules/overview/views/view.php:41
+msgid "Buy Now"
+msgstr "Koop nu"
+
+#: modules/overview/views/view.php:37
+msgid "View Demo"
+msgstr "Bekijk de demo"
+
+#: modules/permissions/views/manage.php:25
+msgid "Add Marker Category"
+msgstr "Markeringscategorie toevoegen"
+
+#: modules/group_map/model.group_map.php:175
+#: modules/location/model.location.php:165
+#: modules/location/model.location.php:404 modules/map/model.map.php:392
+#: modules/tools/model.tools.php:95 modules/tools/model.tools.php:341
+msgid "Something went wrong. Please try again."
+msgstr "Er is iets fout gegaan. Probeer het opnieuw."
+
+#: modules/group_map/model.group_map.php:179
+#: modules/group_map/views/manage.php:113
+msgid "Marker category was added successfully."
+msgstr "Markeringscategorie is succesvol toegevoegd."
+
+#: modules/group_map/views/form.php:39 modules/group_map/views/form.php:42
+#: modules/route/views/form.php:275
+msgid "Marker Category"
+msgstr "Markeringscategorie"
+
+#: modules/group_map/views/form.php:39 modules/group_map/views/manage.php:109
+msgid "Manage Marker Categories"
+msgstr "Beheer markeringscategorieën"
+
+#: modules/group_map/views/form.php:88 modules/location/views/form.php:246
+#: modules/map/views/map-forms/infowindow-settings.php:83
+#: modules/map/views/map-forms/locations-form.php:71
+#: modules/map/views/map-forms/map-center-settings.php:200
+#: modules/route/views/form.php:258
+msgid "Choose"
+msgstr "Kiezen"
+
+#: modules/group_map/views/form.php:89 modules/location/views/form.php:247
+#: modules/map/views/map-forms/infowindow-settings.php:84
+#: modules/map/views/map-forms/map-center-settings.php:201
+msgid "Remove"
+msgstr "Verwijderen"
+
+#: modules/group_map/views/manage.php:84
+msgid "Marker Image"
+msgstr "Markeringsafbeelding"
+
+#: modules/group_map/views/manage.php:107 modules/location/views/manage.php:65
+#: modules/map/views/manage.php:82 modules/route/views/manage.php:81
+msgid "Delete"
+msgstr "Verwijderen"
+
+#: modules/group_map/views/manage.php:111
+msgid "Marker category was deleted successfully."
+msgstr "Markeringscategorie is succesvol verwijderd."
+
+#: modules/group_map/views/manage.php:118
+msgid "No marker categories were found."
+msgstr "Er zijn geen markercategorieën gevonden."
+
+#: modules/location/model.location.php:408 modules/location/views/manage.php:74
+msgid "Location was added successfully."
+msgstr "Locatie is succesvol toegevoegd."
+
+#: modules/location/views/form.php:61 modules/map/views/form.php:94
+msgid "create google maps api key"
+msgstr "maak een google maps API-sleutel"
+
+#: modules/debug/views/form.php:40 modules/location/views/form.php:62
+#: modules/location/views/form.php:372 modules/map/views/form.php:95
+#: modules/map/views/map-forms/infowindow-settings.php:22
+msgid "here"
+msgstr "hier"
+
+#: modules/location/views/form.php:97 modules/route/views/form.php:275
+msgid "Location Address"
+msgstr "Locatie adres"
+
+#: modules/location/views/form.php:103
+msgid "Type Location Address"
+msgstr "Typ locatieadres"
+
+#: modules/location/views/form.php:109
+msgid "Latitude and Longitude"
+msgstr "Breedtegraad en lengtegraad"
+
+#: modules/location/views/form.php:113 modules/location/views/manage.php:44
+msgid "Latitude"
+msgstr "Breedtegraad"
+
+#: modules/location/views/form.php:123 modules/location/views/manage.php:45
+msgid "Longitude"
+msgstr "Lengtegraad"
+
+#: modules/location/views/form.php:134 modules/location/views/manage.php:43
+msgid "City"
+msgstr "Stad"
+
+#: modules/location/views/form.php:144
+msgid "State"
+msgstr "Staat"
+
+#: modules/location/views/form.php:151
+msgid "Country & Postal Code"
+msgstr "Land en postcode"
+
+#: modules/location/views/form.php:165
+msgid "Postal Code"
+msgstr "Postcode"
+
+#: modules/location/views/form.php:173
+msgid "Current Location"
+msgstr "Huidige locatie"
+
+#: modules/location/views/form.php:185
+msgid "On Click"
+msgstr "Bij klikken"
+
+#: modules/location/views/form.php:188
+msgid "Redirect"
+msgstr "Omleiden"
+
+#: modules/location/views/form.php:229
+msgid "NO"
+msgstr "NEE"
+
+#: modules/location/views/form.php:233
+msgid "Open a new window tab."
+msgstr "Open een nieuw venstertabblad."
+
+#: modules/location/views/form.php:243
+msgid "Location Image"
+msgstr "Locatie afbeelding"
+
+#: modules/location/views/form.php:277
+msgid "Marker Draggable"
+msgstr "Markering versleepbaar"
+
+#: modules/location/views/form.php:293
+msgid "DROP"
+msgstr "DRUPPEL"
+
+#: modules/location/views/form.php:302
+msgid "Extra Fields Values"
+msgstr "Extra veldwaarden"
+
+#: modules/location/views/form.php:396
+msgid "Save Location"
+msgstr "Locatie opslaan"
+
+#: modules/location/views/import.php:17 modules/location/views/import.php:20
+msgid "Step 1 - Upload CSV"
+msgstr "Stap 1 - Upload CSV"
+
+#: modules/location/views/import.php:36
+msgid "Choose File"
+msgstr "Kies bestand"
+
+#: modules/location/views/import.php:37
+msgid "Choose a File"
+msgstr "Kies een bestand"
+
+#: modules/location/views/import.php:48
+msgid "Continue"
+msgstr "Doorgaan"
+
+#: modules/location/views/manage.php:42
+#: modules/map/views/map-forms/listing-setting-form.php:305
+#: modules/map/views/map-forms/locations-form.php:88
+msgid "Address"
+msgstr "Adres"
+
+#: modules/location/views/form.php:362
+#: modules/map/views/map-forms/listing-setting-form.php:306
+#: modules/map/views/map-forms/locations-form.php:88
+msgid "Category"
+msgstr "Categorie"
+
+#: modules/location/model.location.php:41
+#: modules/permissions/views/manage.php:21
+msgid "Import Locations"
+msgstr "Locaties importeren"
+
+#: modules/location/views/manage.php:72
+msgid "Location was deleted successfully."
+msgstr "Locatie is succesvol verwijderd."
+
+#: modules/location/views/manage.php:80
+msgid "No locations were found."
+msgstr "Er zijn geen locaties gevonden."
+
+#: modules/map/model.map.php:61 modules/map/views/manage.php:87
+msgid "Add Map"
+msgstr "Kaart toevoegen"
+
+#: modules/map/model.map.php:62 modules/map/views/form.php:68
+#: modules/map/views/manage.php:86
+msgid "Manage Maps"
+msgstr "Beheer kaarten"
+
+#: modules/map/model.map.php:430
+msgid "Copy"
+msgstr "Kopiëren"
+
+#: modules/map/views/form.php:146
+msgid "Save Map"
+msgstr "Kaart opslaan"
+
+#: modules/map/views/manage.php:58
+#: modules/map/views/map-forms/general-setting-form.php:14
+msgid "Map Title"
+msgstr "Kaarttitel"
+
+#: modules/map/views/manage.php:59
+#: modules/map/views/map-forms/general-setting-form.php:23
+#: modules/map/views/map-forms/mobile-specific-settings.php:50
+msgid "Map Width"
+msgstr "Kaartbreedte"
+
+#: modules/map/views/manage.php:60
+#: modules/map/views/map-forms/general-setting-form.php:31
+#: modules/map/views/map-forms/mobile-specific-settings.php:58
+msgid "Map Height"
+msgstr "Kaart hoogte"
+
+#: modules/map/views/map-forms/mobile-specific-settings.php:67
+msgid "Map Zoom Level"
+msgstr "Zoomniveau van de kaart"
+
+#: modules/map/views/manage.php:63
+msgid "Map Shortcode"
+msgstr "Kaart Shortcode"
+
+#: modules/map/views/manage.php:95
+msgid "No maps were found."
+msgstr "Er zijn geen kaarten gevonden."
+
+#: modules/map/views/map-forms/control-position-style-form.php:14
+msgid "Top Left"
+msgstr "Linksboven"
+
+#: modules/map/views/map-forms/control-position-style-form.php:15
+msgid "Top Right"
+msgstr "Rechtsboven"
+
+#: modules/map/views/map-forms/control-position-style-form.php:16
+msgid "Left Top"
+msgstr "Bovenaan links"
+
+#: modules/map/views/map-forms/control-position-style-form.php:17
+msgid "Right Top"
+msgstr "Rechtsboven"
+
+#: modules/map/views/map-forms/control-position-style-form.php:19
+msgid "Left Center"
+msgstr "Links midden"
+
+#: modules/map/views/map-forms/control-position-style-form.php:20
+msgid "Right Center"
+msgstr "Rechts midden"
+
+#: modules/map/views/map-forms/control-position-style-form.php:24
+msgid "Bottom Center"
+msgstr "Middenonder"
+
+#: modules/map/views/map-forms/control-position-style-form.php:25
+msgid "Bottom Left"
+msgstr "Linksonder"
+
+#: modules/map/views/map-forms/control-position-style-form.php:40
+msgid "Zoom Control"
+msgstr "Zoomregeling"
+
+#: modules/map/views/map-forms/control-position-style-form.php:42
+msgid "Please select position of zoom control."
+msgstr "Selecteer de positie van de zoombediening."
+
+#: modules/map/views/map-forms/control-position-style-form.php:54
+msgid "Please select style of zoom control."
+msgstr "Selecteer de stijl van de zoombediening."
+
+#: modules/map/views/map-forms/control-position-style-form.php:89
+msgid "Please select position of full screen control."
+msgstr "Selecteer de positie van de volledige schermbediening."
+
+#: modules/map/views/map-forms/control-position-style-form.php:114
+msgid "Search Control"
+msgstr "Zoekcontrole"
+
+#: modules/map/views/map-forms/control-setting-form.php:23
+msgid "Turn Off Zoom Control"
+msgstr "Schakel zoombediening uit"
+
+#: modules/map/views/map-forms/control-setting-form.php:35
+msgid "Turn Off Full Screen Control"
+msgstr "Schakel Volledig schermbeheer uit"
+
+#: modules/map/views/map-forms/control-setting-form.php:47
+msgid "Turn Off Map Type Control"
+msgstr "Schakel kaarttypebeheer uit"
+
+#: modules/map/views/map-forms/control-setting-form.php:99
+msgid "Turn On Search Control"
+msgstr "Schakel zoekbeheer in"
+
+#: modules/map/views/map-forms/listing-setting-form.php:265
+msgid "Map Locations"
+msgstr "Kaartlocaties"
+
+#: modules/map/views/map-forms/listing-setting-form.php:157
+msgid "Display Category Filter"
+msgstr "Categoriefilter weergeven"
+
+#: modules/map/views/map-forms/listing-setting-form.php:161
+msgid "Check to display category filter."
+msgstr "Vink aan om het categoriefilter weer te geven."
+
+#: modules/map/views/map-forms/general-setting-form.php:16
+msgid "Enter map name / title here."
+msgstr "Voer hier de kaartnaam/titel in."
+
+#: modules/map/views/map-forms/general-setting-form.php:33
+msgid "Enter map height in pixel. For eg. 450"
+msgstr "Voer de kaarthoogte in pixels in. Voor bijv. 450"
+
+#: modules/map/views/map-forms/general-setting-form.php:100
+#: modules/map/views/map-forms/mobile-specific-settings.php:89
+msgid "Turn Off Scrolling Wheel"
+msgstr "Schakel het scrollwiel uit"
+
+#: modules/map/views/map-forms/general-setting-form.php:122
+#: modules/map/views/map-forms/mobile-specific-settings.php:77
+msgid "Map Draggable"
+msgstr "Kaart versleepbaar"
+
+#: modules/map/views/map-forms/general-setting-form.php:126
+msgid "Please check to disable map draggable."
+msgstr "Vink dit aan om het verslepen van de kaart uit te schakelen."
+
+#: modules/map/views/map-forms/import-maps.php:16
+msgid "Import Settings"
+msgstr "Instellingen importeren"
+
+#: modules/map/views/map-forms/infowindow-settings.php:113
+msgid "Mouse Click"
+msgstr "Muis klik"
+
+#: modules/map/views/map-forms/infowindow-settings.php:73
+msgid "Open infowindow on Mouse Click or Mouse Hover."
+msgstr "Open het infovenster via muisklik of muisbeweging."
+
+#: modules/map/views/map-forms/infowindow-settings.php:91
+msgid "InfoWindow Open"
+msgstr "Infovenster openen"
+
+#: modules/map/views/map-forms/infowindow-settings.php:95
+msgid "Please check to enable infowindow default open."
+msgstr "Controleer of het infovenster standaard geopend is."
+
+#: modules/map/views/map-forms/infowindow-settings.php:102
+msgid "Close InfoWindow"
+msgstr "Sluit InfoWindow"
+
+#: modules/map/views/map-forms/infowindow-settings.php:120
+msgid "Apply bounce animation on mousehover or mouse click. BOUNCE indicates that the marker should bounce in place."
+msgstr "Pas stuiteranimatie toe bij muisbeweging of muisklik. BOUNCE geeft aan dat de marker op zijn plaats moet stuiteren."
+
+#: modules/map/views/map-forms/infowindow-settings.php:127
+msgid "Apply Drop Animation"
+msgstr "Druppelanimatie toepassen"
+
+#: modules/map/views/map-forms/infowindow-settings.php:221
+msgid "Infowindow Message for Locations"
+msgstr "Infovensterbericht voor locaties"
+
+#: modules/map/views/map-forms/infowindow-settings.php:257
+msgid "Infowindow Message for Posts"
+msgstr "Infovensterbericht voor berichten"
+
+#: modules/map/views/map-forms/extra-settings.php:8
+msgid "Map Layers Settings"
+msgstr "Instellingen kaartlagen"
+
+#: modules/map/views/map-forms/extra-settings.php:41
+msgid "Traffic Layer"
+msgstr "Verkeerslaag"
+
+#: modules/map/views/map-forms/extra-settings.php:64
+msgid "Bicycling Layer"
+msgstr "Fietsen laag"
+
+#: modules/map/views/map-forms/listing-setting-form.php:404
+#: modules/overview/views/view.php:65
+msgid "Custom Filters"
+msgstr "Aangepaste filters"
+
+#: modules/map/views/map-forms/listing-setting-form.php:16
+msgid "Listing Settings"
+msgstr "Lijstinstellingen"
+
+#: modules/map/views/map-forms/listing-setting-form.php:440
+msgid "Map Filter Settings"
+msgstr "Kaartfilterinstellingen"
+
+#: classes/wpgmp-helper.php:239
+#: modules/map/views/map-forms/locations-form.php:72
+#: modules/route/views/form.php:259
+msgid "Select All"
+msgstr "Selecteer alles"
+
+#: modules/map/views/map-forms/locations-form.php:73
+#: modules/route/views/form.php:260
+msgid "Deselect All"
+msgstr "Deselecteer alles"
+
+#: modules/map/views/map-forms/map-center-settings.php:14
+msgid "Map's Center"
+msgstr "Kaartcentrum"
+
+#: modules/map/views/map-forms/map-center-settings.php:23
+msgid "Center Latitude"
+msgstr "Centrum breedtegraad"
+
+#: modules/map/views/map-forms/map-center-settings.php:31
+msgid "Center Longitude"
+msgstr "Centrum lengtegraad"
+
+#: modules/map/views/map-forms/map-center-settings.php:53
+msgid "Center by Assigned Locations"
+msgstr "Centreren op toegewezen locaties"
+
+#: modules/map/views/map-forms/map-center-settings.php:58
+msgid "Center the map based on locations assigned to the map to show all locations at once."
+msgstr "Centreer de kaart op basis van locaties die aan de kaart zijn toegewezen, zodat alle locaties in één keer worden weergegeven."
+
+#: modules/map/views/map-forms/map-center-settings.php:58
+msgid "( Most recommended way for centering the map according to assigned locations. )"
+msgstr "(Meest aanbevolen manier om de kaart te centreren op basis van toegewezen locaties.)"
+
+#: modules/map/views/map-forms/map-ui.php:16
+msgid "Map Theme Settings"
+msgstr "Instellingen kaartthema"
+
+#: modules/map/views/map-forms/marker-cluster-setting-form.php:15
+msgid "Marker Cluster Settings"
+msgstr "Markeringsclusterinstellingen"
+
+#: modules/map/views/map-forms/marker-cluster-setting-form.php:24
+msgid "Apply Marker Cluster"
+msgstr "Markeringscluster toepassen"
+
+#: modules/map/views/map-forms/marker-cluster-setting-form.php:52
+msgid "Max Zoom Level"
+msgstr "Maximaal zoomniveau"
+
+#: modules/map/views/map-forms/marker-cluster-setting-form.php:54
+msgid "Available options 1 to 19."
+msgstr "Beschikbare opties 1 t/m 19."
+
+#: modules/map/views/map-forms/marker-cluster-setting-form.php:65
+msgid "Marker Zoom Level"
+msgstr "Marker zoomniveau"
+
+#: modules/map/views/map-forms/marker-cluster-setting-form.php:67
+msgid "Set zoom level on marker or location click. Available options 1 to 19."
+msgstr "Stel het zoomniveau in op markering of locatieklik. Beschikbare opties 1 t/m 19."
+
+#: modules/map/views/map-forms/marker-cluster-setting-form.php:79
+msgid "Apply Style(s)"
+msgstr "Stijl(en) toepassen"
+
+#: modules/map/views/map-forms/marker-cluster-setting-form.php:83
+msgid "Apply styles to marker clusters?"
+msgstr "Stijlen toepassen op markeringsclusters?"
+
+#: modules/map/views/map-forms/marker-cluster-setting-form.php:106
+msgid "Cluster Color"
+msgstr "Clusterkleur"
+
+#: modules/map/views/map-forms/mobile-specific-settings.php:14
+msgid "Screen Specific Settings"
+msgstr "Schermspecifieke instellingen"
+
+#: modules/map/views/map-forms/route-direction-form.php:15
+msgid "Route Direction Settings"
+msgstr "Instellingen routerichting"
+
+#: modules/permissions/views/manage.php:23
+msgid "Manage Map"
+msgstr "Beheer kaart"
+
+#: modules/permissions/model.permissions.php:34
+msgid "Manage Permissions"
+msgstr "Machtigingen beheren"
+
+#: modules/route/model.route.php:26 modules/route/views/form.php:110
+msgid "Please enter route title."
+msgstr "Voer de routetitel in."
+
+#: modules/permissions/views/manage.php:27 modules/route/model.route.php:34
+#: modules/route/views/manage.php:84
+msgid "Add Route"
+msgstr "Route toevoegen"
+
+#: modules/permissions/views/manage.php:28 modules/route/views/form.php:80
+#: modules/route/views/manage.php:83
+msgid "Manage Routes"
+msgstr "Beheer routes"
+
+#: modules/settings/views/manage.php:90
+msgid "( Try this if above doesn't work )"
+msgstr "(Probeer dit als bovenstaande niet werkt)"
+
+#: modules/settings/views/manage.php:90
+msgid "View Tutorial"
+msgstr "Bekijk de handleiding"
+
+#: modules/settings/views/manage.php:106
+msgid "Google Maps API Key"
+msgstr "Google Maps API-sleutel"
+
+#: modules/settings/views/manage.php:120
+msgid "Generate API Key"
+msgstr "Genereer API-sleutel"
+
+#: modules/settings/views/manage.php:135
+msgid "Test API Key"
+msgstr "API-sleutel testen"
+
+#: modules/settings/views/manage.php:154
+msgid "ENGLISH"
+msgstr "ENGELS"
+
+#: modules/settings/views/manage.php:157
+msgid "BULGARIAN"
+msgstr "BULGAARS"
+
+#: modules/settings/views/manage.php:158
+msgid "BENGALI"
+msgstr "BENGALIS"
+
+#: modules/settings/views/manage.php:160
+msgid "CZECH"
+msgstr "TSJECHISCH"
+
+#: modules/settings/views/manage.php:161
+msgid "DANISH"
+msgstr "DEENS"
+
+#: modules/settings/views/manage.php:162
+msgid "GERMAN"
+msgstr "DUITS"
+
+#: modules/settings/views/manage.php:163
+msgid "GREEK"
+msgstr "GRIEKS"
+
+#: modules/settings/views/manage.php:164
+msgid "ENGLISH (AUSTRALIAN)"
+msgstr "ENGELS (AUSTRALISCH)"
+
+#: modules/settings/views/manage.php:165
+msgid "ENGLISH (GREAT BRITAIN)"
+msgstr "ENGELS (GROOT-BRITTANNIË)"
+
+#: modules/settings/views/manage.php:166
+msgid "SPANISH"
+msgstr "SPAANS"
+
+#: modules/settings/views/manage.php:168
+msgid "FINNISH"
+msgstr "FINS"
+
+#: modules/settings/views/manage.php:169
+msgid "FILIPINO"
+msgstr "FILIPIJNS"
+
+#: modules/settings/views/manage.php:170
+msgid "FRENCH"
+msgstr "FRANS"
+
+#: modules/settings/views/manage.php:175
+msgid "HUNGARIAN"
+msgstr "HONGAARS"
+
+#: modules/settings/views/manage.php:177 modules/settings/views/manage.php:185
+msgid "ITALIAN"
+msgstr "ITALIAANS"
+
+#: modules/settings/views/manage.php:178
+msgid "HEBREW"
+msgstr "HEBREEUWS"
+
+#: modules/settings/views/manage.php:179
+msgid "JAPANESE"
+msgstr "JAPANS"
+
+#: modules/settings/views/manage.php:181
+msgid "KOREAN"
+msgstr "KOREAANS"
+
+#: modules/settings/views/manage.php:182
+msgid "LITHUANIAN"
+msgstr "LITOUWS"
+
+#: modules/settings/views/manage.php:187
+msgid "DUTCH"
+msgstr "NEDERLANDS"
+
+#: modules/settings/views/manage.php:188
+msgid "NORWEGIAN"
+msgstr "NOORS"
+
+#: modules/settings/views/manage.php:189
+msgid "POLISH"
+msgstr "POOLS"
+
+#: modules/settings/views/manage.php:190
+msgid "PORTUGUESE"
+msgstr "PORTUGEES"
+
+#: modules/settings/views/manage.php:191
+msgid "PORTUGUESE (BRAZIL)"
+msgstr "PORTUGEES (BRAZILIË)"
+
+#: modules/settings/views/manage.php:196
+msgid "SLOVENIAN"
+msgstr "SLOVEENS"
+
+#: modules/settings/views/manage.php:197
+msgid "SERBIAN"
+msgstr "SERVISCH"
+
+#: modules/settings/views/manage.php:198
+msgid "SWEDISH"
+msgstr "ZWEEDS"
+
+#: modules/settings/views/manage.php:202
+msgid "THAI"
+msgstr "THAIS"
+
+#: modules/settings/views/manage.php:203
+msgid "TURKISH"
+msgstr "TURKS"
+
+#: modules/settings/views/manage.php:205
+msgid "VIETNAMESE"
+msgstr "VIETNAMEES"
+
+#: modules/settings/views/manage.php:212
+msgid "Map Language"
+msgstr "Kaarttaal"
+
+#: modules/settings/views/manage.php:591
+msgid "Create Extra Field(s)"
+msgstr "Extra veld(en) aanmaken"
+
+#: modules/settings/views/manage.php:612
+msgid "Troubleshooting"
+msgstr "Probleemoplossen"
+
+#: classes/wpgmp-integration-form.php:35 modules/settings/views/manage.php:717
+msgid "Save Settings"
+msgstr "Instellingen opslaan"
+
+#: integrations/class-wpgmp-integration-clarity.php:26
+#: integrations/class-wpgmp-integration-ga4.php:28
+#: integrations/class-wpgmp-integration-meta.php:26
+#: integrations/class-wpgmp-integration-zapier.php:26
+#: modules/permissions/views/manage.php:29 wp-google-map-plugin.php:661
+msgid "Settings"
+msgstr "Instellingen"
+
+#: classes/wpgmp-helper.php:242
+msgid "Show Locations"
+msgstr "Toon locaties"
+
+#: classes/wpgmp-helper.php:243
+msgid "Sort by"
+msgstr "Sorteer op"
+
+#: classes/wpgmp-helper.php:253
+msgid "Hide"
+msgstr "Verbergen"
+
+#: classes/wpgmp-helper.php:204
+msgid "Do you really want to delete this category?"
+msgstr "Wil je deze categorie echt verwijderen?"
+
+#: classes/wpgmp-helper.php:205
+msgid "Do you really want to delete this route?"
+msgstr "Wil je deze route echt verwijderen?"
+
+#: classes/wpgmp-helper.php:206
+msgid "Please select some records first to apply bulk action on them."
+msgstr "Selecteer eerst enkele records om er een bulkactie op toe te passen."
+
+#: wp-google-map-plugin.php:959 wp-google-map-plugin.php:1216
+msgid "Insert into Post"
+msgstr "Invoegen in bericht"
+
+#: classes/wpgmp-pro-feature-ui.php:83
+msgid "PRO"
+msgstr "PRO"
+
+#: modules/tools/model.tools.php:43
+msgid "Plugin Tools"
+msgstr "Plugin gereedschappen"
+
+#: modules/settings/views/manage.php:675
+msgid "Cookies Acceptance"
+msgstr "Cookies acceptatie"
+
+#. Plugin Name of the plugin
+#: wp-google-map-plugin.php
+msgid "WP Maps"
+msgstr "WP Maps"
+
+#: classes/wpgmp-helper.php:240
+msgid "Select Category"
+msgstr "Selecteer categorie"
+
+#: modules/settings/views/manage.php:192
+msgid "PORTUGUESE (PORTUGAL)"
+msgstr "PORTUGEES (PORTUGAL)"
+
+#: modules/map/views/map-forms/general-setting-form.php:133
+msgid "45&deg; Imagery"
+msgstr "45° beelden"
+
+#: modules/map/views/map-forms/general-setting-form.php:137
+msgid "Apply 45&deg; Imagery ? (only available for map type SATELLITE and HYBRID)."
+msgstr "45° beelden toepassen? (alleen beschikbaar voor kaarttype SATELLITE en HYBRID)."
+
+#: modules/settings/views/manage.php:102
+msgid "View Instructions"
+msgstr "Instructies bekijken"
+
+#: modules/location/model.location.php:39 modules/location/views/manage.php:71
+msgid "Add Location"
+msgstr "Locatie toevoegen"
+
+#: modules/location/model.location.php:40 modules/location/views/form.php:57
+#: modules/location/views/manage.php:70 modules/permissions/views/manage.php:20
+msgid "Manage Locations"
+msgstr "Locaties beheren"
+
+#: modules/location/views/form.php:88 modules/location/views/manage.php:41
+#: modules/route/views/form.php:275
+msgid "Location Title"
+msgstr "Locatie titel"
+
+#: modules/location/views/form.php:91
+msgid "Enter Location Title"
+msgstr "Vul locatie titel in"
+
+#: modules/map/views/map-forms/url-filter.php:14
+msgid "URL Filters Settings"
+msgstr "URL filterinstellingen"
+
+#: modules/settings/views/manage.php:90
+msgid "Copy HTTP Referrer To Clipboard"
+msgstr "Kopieer HTTP verwijzer naar klembord"
+
+#: modules/settings/views/manage.php:568
+msgid "Meta Box Settings"
+msgstr "Metabox instellingen"
+
+#: modules/map/views/map-forms/street-view-setting-form.php:88
+msgid "POV Pitch"
+msgstr "POV pitch"
+
+#: modules/map/views/map-forms/infowindow-settings.php:118
+msgid "Bounce Animation"
+msgstr "Bounce animatie"
+
+#: modules/map/views/manage.php:62
+#: modules/map/views/map-forms/general-setting-form.php:92
+msgid "Map Type"
+msgstr "Kaarttype"
+
+#: classes/wpgmp-template.php:128 modules/overview/views/view.php:123
+#: wp-google-map-plugin.php:674 wp-google-map-plugin.php:675
+msgid "WP MAPS"
+msgstr "WP MAPS"
+
+#: modules/location/views/form.php:214
+msgid "Redirect Url"
+msgstr "Omleiding URL"
+
+#: modules/map/views/map-forms/tab-setting-form.php:15
+msgid "Tabs Settings"
+msgstr "Tabs instellingen"
+
+#: modules/map/views/map-forms/control-position-style-form.php:31
+msgid "Control Position(s) Settings"
+msgstr "Controlepositie(s) instellingen"
+
+#: classes/wpgmp-template.php:114
+msgid "Hire Wordpress Expert"
+msgstr "WordPress expert inhuren"
+
+#: modules/overview/views/view.php:116
+msgid "Getting Started Guide"
+msgstr "Aan de slag handleiding"
+
+#: modules/map/views/map-forms/extra-settings.php:52
+msgid "Transit Layer"
+msgstr "Transit laag"
+
+#: modules/group_map/model.group_map.php:54
+msgid "Manage Categories"
+msgstr "Beheer categorieën"
+
+#: modules/map/views/map-forms/overlay-setting-form.php:15
+msgid "Overlays Settings"
+msgstr "Overlay instellingen"
+
+#: modules/map/views/map-forms/street-view-setting-form.php:15
+msgid "Street View Settings"
+msgstr "Street View instellingen"
+
+#: modules/map/views/map-forms/street-view-setting-form.php:24
+msgid "Turn On Street View"
+msgstr "Streetview inschakelen"
+
+#: modules/group_map/views/form.php:74 modules/group_map/views/manage.php:85
+msgid "Parent Category"
+msgstr "Hoofdcategorie"
+
+#: modules/location/views/form.php:200
+msgid "Infowindow Message"
+msgstr "Infovenster bericht"
+
+#: modules/map/views/map-forms/control-position-style-form.php:96
+msgid "Street View Control"
+msgstr "Streetview controle"
+
+#: modules/map/views/map-forms/custom-control-form.php:14
+msgid "Custom Control(s) Settings"
+msgstr "Aangepaste controle(s) instellingen"
+
+#: modules/map/views/map-forms/control-position-style-form.php:61
+msgid "Map Type Control"
+msgstr "Map type controle"
+
+#: modules/map/views/map-forms/control-position-style-form.php:64
+msgid "Please select position of map type control."
+msgstr "Selecteer de positie van het kaarttype besturingselement."
+
+#: modules/map/views/map-forms/control-position-style-form.php:52
+msgid "Zoom Control Style"
+msgstr "Zoom controle stijl"
+
+#: modules/map/views/map-forms/marker-cluster-setting-form.php:132
+msgid "Mouseover Cluster Color"
+msgstr "Mouseover clusterkleur"
+
+#: modules/map/views/map-forms/control-position-style-form.php:22
+msgid "Left Bottom"
+msgstr "Linksonder"
+
+#: modules/map/views/map-forms/control-position-style-form.php:23
+msgid "Right Bottom"
+msgstr "Rechtsonder"
+
+#: classes/wpgmp-template.php:38
+msgid "For each of our plugins, we have created step by step detailed tutorials that helps you to get started quickly."
+msgstr "Voor elk van onze plugins hebben we stapsgewijze gedetailleerde tutorials gemaakt die je helpen om snel aan de slag te gaan."
+
+#: classes/wpgmp-template.php:48 modules/overview/views/view.php:156
+msgid "We will not share your email addresses in any case."
+msgstr "We zullen je e-mailadressen in geen geval delen."
+
+#: classes/wpgmp-template.php:53
+msgid "For our each product we have very well explained starting guide to get you started in matter of minutes."
+msgstr "Voor elk van onze producten hebben we een zeer goed uitgelegde startgids om je binnen enkele minuten op weg te helpen."
+
+#: classes/wpgmp-template.php:55
+msgid "For our each product we have set up demo pages where you can see the plugin in working mode. You can see a working demo before making a purchase."
+msgstr "Voor elk van onze producten hebben we demopagina's opgezet waar je de plugin in werking kunt zien. Je kunt een werkende demo bekijken voordat je een aankoop doet."
+
+#: modules/overview/views/view.php:227
+msgid "If you have any question and need our help, click below button to create a support ticket and our support team will assist you asap."
+msgstr "Als je vragen hebt en onze hulp nodig hebt, klik dan op de onderstaande knop om een ondersteuningsticket aan te maken en ons ondersteuningsteam zal je zo snel mogelijk helpen."
+
+#: classes/wpgmp-template.php:115 modules/overview/views/view.php:195
+msgid "Do you have a custom requirement which is missing in this plugin?"
+msgstr "Heb je een specifieke vereiste die ontbreekt in deze plugin?"
+
+#: classes/wpgmp-template.php:116
+msgid "We can customize this plugin according to your needs. Click below button to send an quotation request."
+msgstr "We kunnen deze plugin aanpassen aan je behoeften. Klik op de onderstaande knop om een offerteaanvraag te versturen."
+
+#: modules/location/model.location.php:406 modules/location/views/manage.php:75
+msgid "Location was updated successfully."
+msgstr "Locatie is succesvol geüpdatet."
+
+#. translators: %s: Api key creation tutorial link.
+#. translators: %s: Api key creation docs link.
+#: modules/location/views/form.php:68 modules/map/views/form.php:101
+msgid "Google Maps API Key is missing. Follow instructions to %1$s and then insert your key %2$s."
+msgstr "Google Maps API-sleutel ontbreekt. Volg de instructies op %1$s en voeg vervolgens je sleutel %2$s in."
+
+#: modules/settings/views/manage.php:90
+msgid "( Works for most websites )"
+msgstr "(Werkt voor de meeste sites)"
+
+#: classes/wpgmp-helper.php:194
+msgid "Are you sure to delete item?"
+msgstr "Weet je zeker dat je het item wil verwijderen ?"
+
+#: classes/wpgmp-helper.php:207
+msgid "Are you sure you want to delete the selected records?"
+msgstr "Weet je zeker dat je de geselecteerde records wil verwijderen?"
+
+#: classes/wpgmp-helper.php:202
+msgid "Do you really want to delete this location?"
+msgstr "Wil je deze locatie echt verwijderen ?"
+
+#: classes/wpgmp-helper.php:203
+msgid "Do you really want to delete this map?"
+msgstr "Wil je deze kaart echt verwijderen?"
+
+#: modules/settings/model.settings.php:26
+msgid "Plugin Settings"
+msgstr "Plugin instellingen"
+
+#: modules/map/views/map-forms/extra-settings.php:76
+msgid "Geo Json Settings"
+msgstr "Geo Json instellingen"
+
+#: modules/map/views/map-forms/listing-setting-form.php:387
+msgid "Listing Item Skin"
+msgstr "Vermelding item skin"
+
+#: modules/map/views/map-forms/infowindow-settings.php:106
+msgid "Please check to close infowindow on map click."
+msgstr "Controleer of het infovenster wordt gesloten wanneer er op de kaart wordt geklikt."
+
+#: modules/group_map/views/form.php:85
+#: modules/map/views/map-forms/infowindow-settings.php:80
+msgid "Choose Marker Image"
+msgstr "Kies marker afbeelding"
+
+#: modules/map/views/map-forms/infowindow-settings.php:71
+#: modules/map/views/map-forms/listing-setting-form.php:41
+msgid "Show Infowindow on"
+msgstr "Toon infowindow op"
+
+#: modules/map/views/map-forms/general-setting-form.php:104
+msgid "Please check to disable scroll wheel zoom."
+msgstr "Controleer of het scrollwiel zoomen is uitgeschakeld."
+
+#: modules/map/views/map-forms/control-setting-form.php:103
+msgid "Please check to enable search box control."
+msgstr "Controleer of de zoeken box besturing is ingeschakeld."
+
+#: modules/map/views/map-forms/control-setting-form.php:71
+msgid "Please check to disable street view control."
+msgstr "Controleer of de straatweergave besturing is uitgeschakeld."
+
+#: modules/map/views/map-forms/control-setting-form.php:67
+msgid "Turn Off Street View Control"
+msgstr "Schakel straatweergave besturing uit"
+
+#: modules/map/views/map-forms/control-setting-form.php:51
+msgid "Please check to disable map type control."
+msgstr "Vink aan om de kaarttype besturing uit te schakelen."
+
+#: modules/map/views/map-forms/control-setting-form.php:39
+msgid "Please check to disable full screen control."
+msgstr "Vink aan om  de volledige schermbediening uit te schakelen."
+
+#: modules/settings/views/manage.php:255
+msgid "Footer (Recommended)"
+msgstr "Footer (Aanbevolen)"
+
+#: modules/map/views/map-forms/infowindow-settings.php:114
+msgid "Mouse Hover"
+msgstr "Muis hoveren"
+
+#: modules/group_map/model.group_map.php:53
+#: modules/group_map/views/manage.php:110
+msgid "Add Category"
+msgstr "Categorie toevoegen"
+
+#: classes/wpgmp-template.php:54
+msgid " Click Here"
+msgstr " KIik hier"
+
+#: modules/location/views/form.php:187
+msgid "Display Infowindow"
+msgstr "Toon infovenster"
+
+#: modules/map/views/map-forms/listing-setting-form.php:304
+#: modules/map/views/map-forms/locations-form.php:88
+msgid "Title"
+msgstr "Titel"
+
+#: modules/settings/views/manage.php:252
+msgid "Include Scripts in "
+msgstr "Scripts opnemen in "
+
+#: modules/map/views/map-forms/infowindow-settings.php:131
+msgid "DROP indicates that the marker should drop from the top of the map. "
+msgstr "DROP geeft aan dat de marker vanaf de bovenkant van de kaart moet vallen. "
+
+#: modules/settings/views/manage.php:90
+msgid "You will need to enter any one of the below HTTP referrer during the key creation process :   "
+msgstr "Je zult een van de onderstaande HTTP verwijzers moeten invoeren tijdens het sleutelcreatieproces:   "
+
+#: modules/map/views/map-forms/control-position-style-form.php:86
+msgid "Full Screen Control"
+msgstr "Volledig scherm besturing"
+
+#: modules/map/views/map-forms/control-position-style-form.php:78
+msgid "Please select style of map type control."
+msgstr "Selecteer de stijl van het kaarttype besturing."
+
+#: modules/group_map/model.group_map.php:178
+#: modules/group_map/views/manage.php:114
+msgid "Marker category was updated successfully."
+msgstr "Marker categorie is succesvol geüpdatet."
+
+#: modules/settings/views/manage.php:90
+msgid "The very first step to get started with Google Maps is to create the right API key for your website. While creating the Google Maps API keys from the Google Cloud Platform, in the key restriction section, you need to choose HTTP referrer and then you will need to enter HTTP referrer according to your website domain name."
+msgstr "De allereerste stap om aan de slag te gaan met Google Maps is het maken van de juiste API-sleutel voor je site. Bij het maken van de Google Maps API-sleutels van het Google Cloud Platform, in de sectie voor sleutelbeperking, moet je HTTP verwijzer kiezen en vervolgens moet je de HTTP verwijzer invoeren volgens de domeinnaam van je site."
+
+#: modules/map/views/map-forms/control-position-style-form.php:21
+#: modules/map/views/map-forms/control-position-style-form.php:26
+msgid "Bottom Right"
+msgstr "Rechtsonder"
+
+#: modules/map/views/map-forms/control-position-style-form.php:18
+msgid "Top Center"
+msgstr "Middenboven"
+
+#: modules/location/views/manage.php:53
+msgid "location"
+msgstr "locatie"
+
+#: modules/map/views/map-forms/map-style-setting-form.php:15
+msgid "Map Styling Settings"
+msgstr "Kaartstijl instellingen"
+
+#: modules/map/views/manage.php:90
+msgid "Map was added successfully."
+msgstr "Kaart is succesvol toegevoegd."
+
+#: classes/wpgmp-helper.php:244 modules/drawing/views/manage.php:471
+msgid "not working..."
+msgstr "werkt niet..."
+
+#: modules/extentions/views/manage.php:14
+msgid "Premium Add-Ons / Extentions For WP Maps Pro"
+msgstr "Premium add-ons/extensies voor WP Maps Pro"
+
+#: modules/route/views/manage.php:85
+msgid "Route was deleted successfully."
+msgstr "Route is succesvol verwijderd."
+
+#: modules/map/views/manage.php:88
+msgid "Map was deleted successfully."
+msgstr "Kaart is succesvol verwijderd."

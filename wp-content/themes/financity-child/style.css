@@ -1,0 +1,94 @@
+/*
+ Theme Name:   Financity Child
+ Theme URI:    http://demo.goodlayers.com/financity
+ Description:  Goodlayers Financity Child Theme
+ Author:       Goodlayers
+ Author URI:   http://goodlayers.com
+ Template:     financity
+ Version:      1.0.0
+ License:      GNU General Public License v2 or later
+ License URI:  http://www.gnu.org/licenses/gpl-2.0.html
+ Tags:         light, dark, right-sidebar, responsive-layout
+ Text Domain:  financity-child
+
+ START YOUR CHILD THEME CSS HERE
+*/
+
+/* menu fix lié aux ancres */
+.menu-item-6346 ul li a,
+.menu-item-5207 ul li a{
+	background-color: #f5f5f5!important;
+}
+.menu-item-6346 ul li a:hover,
+.menu-item-5207 ul li a:hover{
+	background-color: #ebebeb!important;
+}
+/* bouton suivant financement */
+.page-id-6360 .brochure-pme,
+.page-id-5451 .brochure-pme{
+	display: none;
+}
+.page-id-5447 .brochure-startup{
+	display: none;
+}
+
+/* filtre sur portefeuille */
+.filter-type{
+	display: inline-block;
+	width: 90px;
+	color: #532609
+}
+#gdlr-core-filterer-wrap-id3,
+#gdlr-core-filterer-wrap-id {
+    margin-bottom: 25px!important;
+	text-align: left!important;
+}
+#gdlr-core-filterer-wrap-id2 {
+	text-align: left!important;
+}
+@media only screen and (max-width: 768px){
+
+	#gdlr-core-filterer-wrap-id,
+	#gdlr-core-filterer-wrap-id2 {
+		text-align: left;
+		display: flex;
+		flex-direction: column;
+	}
+	#gdlr-core-filterer-wrap-id a,
+	#gdlr-core-filterer-wrap-id2 a {
+		display: inline-block;
+		margin: 0 0 10px 0;
+	}
+}
+
+
+/* Portefeuille */
+.financity-body .gdlr-core-portfolio-item .gdlr-core-portfolio-read-more{
+	text-transform: uppercase!important;
+	font-size: 12px!important;
+}
+body .gdlr-core-portfolio-grid .gdlr-core-portfolio-content-wrap{
+	padding-top: 15px!important;
+}
+.financity-page-title-content .financity-page-caption{
+	text-transform:none!important;
+	padding: 0 10%;
+}
+
+body .gdlr-core-input-wrap input[type="button"],
+body .gdlr-core-input-wrap input[type="submit"],
+body .gdlr-core-input-wrap input[type="reset"]{
+	padding: 15px 30px 20px 30px!important;
+	font-size: 14px!important;
+}
+.gdlr-core-image-overlay-content .gdlr-core-portfolio-title{
+	display: none;
+}
+
+/* On retire les boutons sur la page Education (FR et EN)
+/financement/education-formation-insertion-professionnelle/
+*/
+.page-id-5327 .gdlr-core-button-shortcode,
+.page-id-6353 .gdlr-core-button-shortcode{
+	display: none;
+}
