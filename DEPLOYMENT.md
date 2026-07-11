@@ -24,6 +24,8 @@ LEAVE_CERTIFICATE_SIGNATORY_TITLE="Directeur Général"
 
 Configurer également la base de données, Microsoft 365, Microsoft Graph Mail, la queue et une clé `APP_KEY` persistante. Vérifier que `storage/` et `bootstrap/cache/` sont accessibles en écriture par PHP.
 
+Pour Sentry, définir `SENTRY_LARAVEL_DSN` uniquement dans le `.env` serveur. Conserver `SENTRY_SEND_DEFAULT_PII=false` et régler `SENTRY_TRACES_SAMPLE_RATE` selon le volume attendu. La configuration PHP doit contenir `zend.exception_ignore_args = Off` et un magasin de certificats valide via `curl.cainfo` (ou le magasin CA du système).
+
 ## Après chaque livraison
 
 ```bash
