@@ -3,6 +3,8 @@
 namespace App\Services\Leaves;
 
 use App\Models\LeaveRequest;
+use BaconQrCode\Common\ErrorCorrectionLevel;
+use BaconQrCode\Encoder\Encoder;
 use Carbon\CarbonInterface;
 use Illuminate\Support\Str;
 
@@ -26,8 +28,8 @@ class LeavePdfRenderer
     {
         $employee = $request->employee;
         $company = $employee?->entity ?: 'NERE CAPITAL PARTNERS';
-        $signatoryName = (string) ($data['signed_by_label'] ?? 'Direction Generale');
-        $signatoryTitle = (string) ($data['signed_by_role'] ?? 'Directeur general');
+        $signatoryName = (string) ($data['signed_by_label'] ?? 'Monsieur ZONGO P. Job');
+        $signatoryTitle = (string) ($data['signed_by_role'] ?? 'Directeur Général');
         $days = rtrim(rtrim(number_format((float) $request->requested_days, 2, ',', ' '), '0'), ',');
         $generatedAt = now();
         $content = "0.32 0.15 0.04 RG\n0.8 w\n";
@@ -38,22 +40,13 @@ class LeavePdfRenderer
             $this->textTop($content, 'NERE CAPITAL', 58, 68, 22, 'F2', 'left', [0.32, 0.15, 0.04]);
         }
 
-        $this->multilineTextTop(
-            $content,
-            $company."\nOuagadougou, Burkina Faso\nEmail : tools@nerecapital.com",
-            320,
-            45,
-            215,
-            8.5,
-            'F1',
-            11,
-        );
-        $this->lineTop($content, 58, 116, 537, 116);
-        $this->textTop($content, 'ATTESTATION DE CONGES', self::PAGE_WIDTH / 2, 172, 19, 'F2', 'center', [0.32, 0.15, 0.04]);
-        $this->lineTop($content, 185, 194, 410, 194);
+        $this->multilineTextTop($content, "NERE CAPITAL PARTNERS\nOuaga 2000, Rue Bitto\n01 BP 595 Ouagadougou 01\nTél : +226 25 37 57 66\nEmail : info@nerecapital.com", 320, 40, 220, 8.5, 'F1', 11);
+        $this->brandRule($content, 58, 116, 479);
+        $this->rectangleTop($content, 82, 174, 431, 38, [0.76, 0.76, 0.76]);
+        $this->textTop($content, 'ATTESTATION DE CONGES', self::PAGE_WIDTH / 2, 181, 19, 'F2', 'center');
 
         $body = sprintf(
-            'Je soussigne, %s, %s, atteste que %s, employe(e) a %s en qualite de %s, beneficie d un conge de %s jours allant du %s au %s inclus.',
+            'Je soussigné, %s, %s, atteste que %s, employé(e) à %s en qualité de %s, bénéficie d\'un congé de %s jours allant du %s au %s inclus.',
             $signatoryName,
             $signatoryTitle,
             $employee?->name() ?: '-',
@@ -64,36 +57,79 @@ class LeavePdfRenderer
             $this->date($request->end_date),
         );
 
-        $this->multilineTextTop($content, $body, 82, 248, 430, 12, 'F1', 19);
+        $this->multilineTextTop($content, $body, 82, 260, 430, 11.5, 'F1', 19);
         $this->multilineTextTop(
             $content,
-            'En foi de quoi, la presente attestation lui est delivree pour servir et valoir ce que de droit.',
+            'En foi de quoi, la présente attestation lui est délivrée pour servir et valoir ce que de droit.',
             82,
-            368,
+            380,
             430,
             12,
             'F1',
             19,
         );
 
-        $this->textTop($content, 'Fait a Ouagadougou, le '.$this->date($generatedAt), 312, 500, 11, 'F1');
-        $this->textTop($content, $signatoryTitle, 365, 586, 10.5, 'F1', 'center');
+        $this->textTop($content, 'Fait à Ouagadougou, le '.$this->date($generatedAt), 312, 494, 11, 'F1');
+        $this->textTop($content, $signatoryTitle, 397, 565, 10.5, 'F1', 'center');
 
         if (isset($images['Signature'])) {
-            $this->drawImageTop($content, 'Signature', 323, 602, 130, 58);
+            $this->drawImageTop($content, 'Signature', 332, 584, 130, 58);
         }
 
-        $this->lineTop($content, 295, 678, 500, 678);
-        $this->textTop($content, $signatoryName, 397, 697, 11, 'F2', 'center');
+        $this->textTop($content, $signatoryName, 397, 657, 11, 'F2', 'center');
 
-        $this->textTop($content, 'Reference interne : '.($data['document_reference'] ?? '-'), 58, 790, 7.8, 'F1', 'left', [0.36, 0.32, 0.28]);
+        $verificationUrl = (string) ($data['verification_url'] ?? '');
+        if ($verificationUrl !== '') {
+            $this->qrCode($content, $verificationUrl, 62, 708, 52);
+        }
+        $this->textTop($content, 'Ce document peut être authentifié numériquement.', 124, 714, 8.2, 'F2', 'left', [0.24, 0.22, 0.20]);
+        $this->textTop($content, 'Vérification : '.$verificationUrl, 124, 728, 7.2, 'F1', 'left', [0.36, 0.32, 0.28]);
+        $this->textTop($content, 'Référence : '.($data['document_reference'] ?? '-'), 124, 741, 7.2, 'F1', 'left', [0.36, 0.32, 0.28]);
+        $this->brandRule($content, 58, 778, 479);
+        $this->multilineTextTop($content, 'NERE CAPITAL PARTNERS, Société au capital de 10 000 000 Francs CFA - RCCM : BF OUA O1 2024 B16 10564 - IFU : 00241622Y, Régime Simplifié d\'imposition DCI OUAGA 8', 82, 790, 431, 7.1, 'F2', 9);
 
         return $content;
     }
 
     private function date(?CarbonInterface $date): string
     {
-        return $date?->format('d/m/Y') ?: '-';
+        if (! $date) {
+            return '-';
+        }
+
+        $months = [1 => 'janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
+
+        return $date->format('d').' '.$months[(int) $date->format('n')].' '.$date->format('Y');
+    }
+
+    private function rectangleTop(string &$content, float $x, float $top, float $width, float $height, array $rgb): void
+    {
+        $content .= sprintf("%.2F %.2F %.2F rg %.2F %.2F %.2F %.2F re f 0 g\n", $rgb[0], $rgb[1], $rgb[2], $x, self::PAGE_HEIGHT - $top - $height, $width, $height);
+    }
+
+    private function brandRule(string &$content, float $x, float $top, float $width): void
+    {
+        $colors = [[0.35, 0.28, 0.30], [0.92, 0.48, 0.14], [0.45, 0.18, 0.05], [0.64, 0.50, 0.25], [0.55, 0.16, 0.14], [0.55, 0.68, 0.82], [0.27, 0.10, 0.02]];
+        $segment = $width / count($colors);
+        foreach ($colors as $index => $color) {
+            $this->rectangleTop($content, $x + ($index * $segment), $top, $segment + 0.2, 4, $color);
+        }
+    }
+
+    private function qrCode(string &$content, string $value, float $x, float $top, float $size): void
+    {
+        $matrix = Encoder::encode($value, ErrorCorrectionLevel::M())->getMatrix();
+        $margin = 2;
+        $module = $size / ($matrix->getWidth() + ($margin * 2));
+        $this->rectangleTop($content, $x, $top, $size, $size, [1, 1, 1]);
+
+        foreach ($matrix->getArray() as $row => $values) {
+            foreach ($values as $column => $enabled) {
+                if ($enabled) {
+                    $this->rectangleTop($content, $x + (($column + $margin) * $module), $top + (($row + $margin) * $module), $module + 0.05, $module + 0.05, [0.12, 0.12, 0.12]);
+                }
+            }
+        }
     }
 
     private function textTop(

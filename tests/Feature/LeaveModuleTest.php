@@ -138,7 +138,7 @@ class LeaveModuleTest extends TestCase
         $this->assertSame(64, strlen($document->sha256_hash));
     }
 
-    public function test_generated_pdf_uses_short_verification_hint_without_showing_raw_token_path(): void
+    public function test_generated_pdf_uses_dg_job_and_digital_authentication_footer(): void
     {
         Storage::fake('local');
 
@@ -156,7 +156,10 @@ class LeaveModuleTest extends TestCase
         $pdf = Storage::disk('local')->get($document->file_path);
 
         $this->assertStringContainsString('ATTESTATION DE CONGES', $pdf);
-        $this->assertStringNotContainsString('/conges/verify/', $pdf);
+        $this->assertStringContainsString('Monsieur ZONGO P. Job', $pdf);
+        $this->assertStringContainsString('authentifi', $pdf);
+        $this->assertStringContainsString($document->verification_url, $pdf);
+        $this->assertStringNotContainsString('DG Test', $pdf);
     }
 
     public function test_unauthorized_user_cannot_download_leave_pdf(): void

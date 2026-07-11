@@ -220,17 +220,9 @@ class LeavePdfService
      */
     private function signatory(LeaveRequest $request): array
     {
-        $dgApproval = $request->approvals()
-            ->with('validatorUser.employee')
-            ->where('step_key', 'dg')
-            ->where('status', 'approved')
-            ->first();
-
-        $user = $dgApproval?->validatorUser ?: $request->reviewer;
-
         return [
-            $user?->name ?: $this->setting('LEAVE_CERTIFICATE_SIGNATORY_NAME', config('leaves.certificate_signatory_name')),
-            $user?->employee?->job_title ?: $this->setting('LEAVE_CERTIFICATE_SIGNATORY_TITLE', config('leaves.certificate_signatory_title')),
+            $this->setting('LEAVE_CERTIFICATE_SIGNATORY_NAME', config('leaves.certificate_signatory_name')),
+            $this->setting('LEAVE_CERTIFICATE_SIGNATORY_TITLE', config('leaves.certificate_signatory_title')),
         ];
     }
 
