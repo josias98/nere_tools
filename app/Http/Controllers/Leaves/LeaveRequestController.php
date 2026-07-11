@@ -9,14 +9,20 @@ use App\Services\Leaves\LeaveBalanceService;
 use App\Services\Leaves\LeaveDayCountService;
 use App\Services\Leaves\LeaveRequestWorkflowService;
 use App\Services\Leaves\LeaveValidatorService;
+use DomainException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
+use Throwable;
 
 class LeaveRequestController extends Controller
 {
     protected LeaveBalanceService $balanceService;
+
     protected LeaveRequestWorkflowService $workflowService;
+
     protected LeaveDayCountService $dayCountService;
+
     protected LeaveValidatorService $validatorService;
 
     public function __construct(
@@ -34,7 +40,7 @@ class LeaveRequestController extends Controller
     public function create()
     {
         $user = Auth::user();
-        if (!$user->employee) {
+        if (! $user->employee) {
             return redirect()->route('dashboard')->with('error', 'Profil employé manquant.');
         }
 
@@ -58,12 +64,20 @@ class LeaveRequestController extends Controller
         if (! $user->employee) {
             return redirect()->route('dashboard')->with('error', 'Profil employé manquant.');
         }
-        
+
         try {
             $leaveRequest = $this->workflowService->submitRequest($user->employee, $request->all(), $user->id);
+
             return redirect()->route('leaves.show', $leaveRequest->uuid)->with('success', 'Votre demande a été soumise avec succès.');
-        } catch (\Exception $e) {
-            return back()->withInput()->with('error', $e->getMessage());
+        } catch (DomainException $exception) {
+            return back()->withInput()->with('error', $exception->getMessage());
+        } catch (Throwable $exception) {
+            Log::error('Leave request submission failed.', [
+                'user_id' => $user->id,
+                'exception' => $exception,
+            ]);
+
+            return back()->withInput()->with('error', "La demande n'a pas pu être enregistrée. Veuillez réessayer.");
         }
     }
 
@@ -71,7 +85,7 @@ class LeaveRequestController extends Controller
     {
         $user = Auth::user();
         $leaveRequest->load(['employee.department', 'leaveType', 'reviewer', 'document', 'approvals.validatorUser.employee', 'currentApproval']);
-        
+
         if (! $this->validatorService->userCanAccessDocument($user, $leaveRequest)) {
             abort(403);
         }

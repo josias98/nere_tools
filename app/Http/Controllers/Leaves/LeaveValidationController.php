@@ -8,6 +8,7 @@ use App\Models\LeaveRequest;
 use App\Services\Leaves\LeaveBalanceService;
 use App\Services\Leaves\LeaveRequestWorkflowService;
 use App\Services\Leaves\LeaveValidatorService;
+use DomainException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -51,10 +52,14 @@ class LeaveValidationController extends Controller
             $this->workflow->approve($leaveRequest, $request->user(), $request->string('reviewer_comment')->toString());
 
             return redirect()->route('leaves.validations.index')->with('success', 'Decision enregistree.');
-        } catch (Throwable $exception) {
+        } catch (DomainException $exception) {
             $this->logDecisionFailure('leave.validation.approve_failed', $leaveRequest, $request, $exception);
 
             return redirect()->route('leaves.validations.index')->with('error', $exception->getMessage());
+        } catch (Throwable $exception) {
+            $this->logDecisionFailure('leave.validation.approve_failed', $leaveRequest, $request, $exception);
+
+            return redirect()->route('leaves.validations.index')->with('error', "La décision n'a pas pu être enregistrée. Veuillez réessayer.");
         }
     }
 
@@ -71,10 +76,14 @@ class LeaveValidationController extends Controller
             $this->workflow->reject($leaveRequest, $request->user(), $data['reviewer_comment']);
 
             return redirect()->route('leaves.validations.index')->with('success', 'Demande rejetee.');
-        } catch (Throwable $exception) {
+        } catch (DomainException $exception) {
             $this->logDecisionFailure('leave.validation.reject_failed', $leaveRequest, $request, $exception);
 
             return redirect()->route('leaves.validations.index')->withInput()->with('error', $exception->getMessage());
+        } catch (Throwable $exception) {
+            $this->logDecisionFailure('leave.validation.reject_failed', $leaveRequest, $request, $exception);
+
+            return redirect()->route('leaves.validations.index')->withInput()->with('error', "La décision n'a pas pu être enregistrée. Veuillez réessayer.");
         }
     }
 

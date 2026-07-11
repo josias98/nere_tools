@@ -8,6 +8,7 @@ use App\Models\LeaveRequest;
 use App\Models\LeaveRequestApproval;
 use App\Models\User;
 use Carbon\Carbon;
+use DomainException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
@@ -19,8 +20,7 @@ class LeaveRequestWorkflowService
         protected ?LeaveNotificationService $notificationService = null,
         protected ?LeavePdfService $pdfService = null,
         protected ?LeaveValidatorService $validatorService = null,
-    ) {
-    }
+    ) {}
 
     public function submitRequest(Employee $employee, array $data, int $userId): LeaveRequest
     {
@@ -28,7 +28,7 @@ class LeaveRequestWorkflowService
         $endDate = Carbon::parse($data['end_date']);
 
         if ($endDate->isBefore($startDate)) {
-            throw new \Exception('La date de fin ne peut pas être antérieure à la date de début.');
+            throw new DomainException('La date de fin ne peut pas être antérieure à la date de début.');
         }
 
         $overlap = LeaveRequest::query()
@@ -42,7 +42,7 @@ class LeaveRequestWorkflowService
             ->exists();
 
         if ($overlap) {
-            throw new \Exception('Une demande de congé existe déjà sur cette période.');
+            throw new DomainException('Une demande de congé existe déjà sur cette période.');
         }
 
         $request = DB::transaction(function () use ($employee, $data, $userId, $startDate, $endDate): LeaveRequest {
@@ -84,11 +84,11 @@ class LeaveRequestWorkflowService
             $approval = $this->currentApproval($request);
 
             if (! $approval) {
-                throw new \Exception('Cette demande ne peut plus etre approuvee.');
+                throw new DomainException('Cette demande ne peut plus etre approuvee.');
             }
 
             if (! $this->validators()->userCanValidateStep($reviewer, $request, $approval->step_key)) {
-                throw new \Exception("Vous n'etes pas autorise a valider cette etape.");
+                throw new DomainException("Vous n'etes pas autorise a valider cette etape.");
             }
 
             $approval->forceFill([
@@ -115,7 +115,7 @@ class LeaveRequestWorkflowService
             $balance = $this->balanceService->getBalance($request->employee);
 
             if (! $override && $request->requested_days > $balance['available_balance']) {
-                throw new \Exception('Solde insuffisant pour approuver cette demande.');
+                throw new DomainException('Solde insuffisant pour approuver cette demande.');
             }
 
             $request->forceFill([
@@ -146,7 +146,7 @@ class LeaveRequestWorkflowService
     public function reject(LeaveRequest $request, User $reviewer, string $comment): LeaveRequest
     {
         if (trim($comment) === '') {
-            throw new \Exception('Le commentaire est obligatoire pour rejeter une demande.');
+            throw new DomainException('Le commentaire est obligatoire pour rejeter une demande.');
         }
 
         $request = DB::transaction(function () use ($request, $reviewer, $comment): LeaveRequest {
@@ -159,11 +159,11 @@ class LeaveRequestWorkflowService
             $approval = $this->currentApproval($request);
 
             if (! $approval) {
-                throw new \Exception('Cette demande ne peut plus etre rejetee.');
+                throw new DomainException('Cette demande ne peut plus etre rejetee.');
             }
 
             if (! $this->validators()->userCanValidateStep($reviewer, $request, $approval->step_key)) {
-                throw new \Exception("Vous n'etes pas autorise a rejeter cette etape.");
+                throw new DomainException("Vous n'etes pas autorise a rejeter cette etape.");
             }
 
             $approval->forceFill([

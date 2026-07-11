@@ -2,15 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use App\Modules\Timesheets\Support\TimesheetCsvParser;
 use App\Models\Employee;
 use App\Models\TimesheetGeneration;
 use App\Models\TimesheetGenerationFile;
+use App\Modules\Timesheets\Support\TimesheetCsvParser;
 use App\Services\TimesheetService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
+use RuntimeException;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Throwable;
 
@@ -41,8 +43,12 @@ class TimesheetController extends Controller
 
         try {
             $rows = $parser->parse($data['csv_file']->getRealPath());
-        } catch (Throwable $exception) {
+        } catch (RuntimeException $exception) {
             return back()->withErrors(['csv_file' => $exception->getMessage()]);
+        } catch (Throwable $exception) {
+            Log::error('Timesheet CSV import failed.', ['exception' => $exception, 'user_id' => $request->user()?->id]);
+
+            return back()->withErrors(['csv_file' => "Le fichier CSV n'a pas pu être traité. Veuillez vérifier son format."]);
         }
 
         session(['timesheet_csv_rows' => $rows]);
@@ -96,8 +102,12 @@ class TimesheetController extends Controller
                     'excluded_signature_dates' => $data['excluded_signature_dates'] ?? null,
                 ]);
                 session()->forget('timesheet_csv_rows');
-            } catch (Throwable $exception) {
+            } catch (RuntimeException $exception) {
                 return back()->withInput()->withErrors(['generation' => $exception->getMessage()]);
+            } catch (Throwable $exception) {
+                Log::error('Timesheet row generation failed.', ['exception' => $exception, 'user_id' => $request->user()?->id]);
+
+                return back()->withInput()->withErrors(['generation' => 'La génération a échoué. Veuillez réessayer.']);
             }
 
             if ($request->boolean('download_zip')) {
@@ -126,12 +136,17 @@ class TimesheetController extends Controller
 
         try {
             $generation = $service->generate($data, $request->user());
-        } catch (Throwable $exception) {
+        } catch (RuntimeException $exception) {
             return back()->withInput()->withErrors(['generation' => $exception->getMessage()]);
+        } catch (Throwable $exception) {
+            Log::error('Timesheet generation failed.', ['exception' => $exception, 'user_id' => $request->user()?->id]);
+
+            return back()->withInput()->withErrors(['generation' => 'La génération a échoué. Veuillez réessayer.']);
         }
 
         return redirect()->route('timesheets.result', $generation);
     }
+
     public function result(TimesheetGeneration $generation): View
     {
         return view('timesheets.result', [
