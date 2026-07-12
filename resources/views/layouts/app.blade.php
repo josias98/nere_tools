@@ -9,26 +9,50 @@
     @endif
 </head>
 <body>
+    <a class="nc-skip-link" href="#main-content">Aller au contenu</a>
     <div class="nc-shell">
         @auth
             <header class="nc-header">
                 <div class="nc-header-inner">
                     <a href="{{ route('dashboard') }}" class="nc-brand" aria-label="Nere Tools - Accueil">
                         <img class="nc-logo" src="{{ asset('brand/nere-capital-rgb.png') }}" alt="Nere Capital">
-                        <!-- <span class="nc-muted">Portail interne</span> -->
                     </a>
 
+                    <nav class="nc-nav-links" aria-label="Navigation principale">
+                        <a href="{{ route('dashboard') }}" @class(['is-active' => request()->routeIs('dashboard')]) @if(request()->routeIs('dashboard')) aria-current="page" @endif>
+                            <i data-lucide="layout-grid" class="nc-icon" aria-hidden="true"></i>
+                            Accueil
+                        </a>
+                        @if (auth()->user()->canAccessTool('conges'))
+                            <a href="{{ route('leaves.index') }}" @class(['is-active' => request()->routeIs('leaves.*') && ! request()->routeIs('admin.leaves.*')]) @if(request()->routeIs('leaves.*') && ! request()->routeIs('admin.leaves.*')) aria-current="page" @endif>
+                                <i data-lucide="calendar-range" class="nc-icon" aria-hidden="true"></i>
+                                Congés
+                            </a>
+                        @endif
+                        @if (auth()->user()->canAccessTool('timesheets'))
+                            <a href="{{ route('timesheets.index') }}" @class(['is-active' => request()->routeIs('timesheets.*')]) @if(request()->routeIs('timesheets.*')) aria-current="page" @endif>
+                                <i data-lucide="file-text" class="nc-icon" aria-hidden="true"></i>
+                                Feuilles de temps
+                            </a>
+                        @endif
+                        @if (auth()->user()->canAccessAdmin())
+                            <a href="{{ route('admin.index') }}" @class(['is-active' => request()->routeIs('admin.*')]) @if(request()->routeIs('admin.*')) aria-current="page" @endif>
+                                <i data-lucide="settings" class="nc-icon" aria-hidden="true"></i>
+                                Administration
+                            </a>
+                        @endif
+                    </nav>
+
                     <div class="nc-nav">
-                        
                         <div class="nc-user">
                             <strong>{{ auth()->user()->name }}</strong>
-                            <span class="nc-muted">{{ auth()->user()->email }}</span>
+                            <span class="nc-muted">{{ auth()->user()->role }}</span>
                         </div>
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
                             <button type="submit" class="nc-ghost">
                                 <i data-lucide="log-out" class="nc-icon" aria-hidden="true"></i>
-                                Deconnexion
+                                Déconnexion
                             </button>
                         </form>
                     </div>
@@ -36,7 +60,7 @@
             </header>
         @endauth
 
-        <main>
+        <main id="main-content" tabindex="-1">
             @isset($breadcrumbs)
                 <nav class="nc-breadcrumb" aria-label="Fil d'Ariane">
                     @foreach ($breadcrumbs as $breadcrumb)
