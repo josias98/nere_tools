@@ -1,0 +1,9 @@
+{
+  "date": "2026-07-12",
+  "framework": "Laravel Blade + Tailwind CSS v4 + Vite",
+  "design_system": "design.md",
+  "font_display": "Le Monde Livre",
+  "font_body": "Work Sans",
+  "anchor": "Nere Capital brown",
+  "motion": "CSS only, reduced-motion supported"
+}

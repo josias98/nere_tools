@@ -1,0 +1,10 @@
+[
+  {
+    "date": "2026-07-12",
+    "scope": "app",
+    "macrostructure": "Workbench",
+    "theme": "design.md",
+    "enrichment": "none",
+    "brief": "Rendre Nere Tools plus intuitif sans modifier les parcours métier"
+  }
+]

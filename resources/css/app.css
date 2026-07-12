@@ -1,6 +1,5 @@
-/* Hallmark · macrostructure: Workbench · tone: institutional · anchor hue: brown
- * pre-emit critique: P4 H4 E4 S4 R5 V4
- * ponytail: shared shell stays here; per-screen rules live in module files.
+/* Hallmark · genre: modern-minimal · macrostructure: Workbench · design-system: design.md · designed-as-app
+ * pre-emit critique: P5 H5 E4 S5 R5 V4 · contrast: pass · mobile: pass
  */
 @import 'tailwindcss';
 @import './modules/leaves.css';
@@ -21,6 +20,7 @@
     --ip-grey: #5f5249;
     --ip-light-grey: #cdc6c0;
     --ip-orange: #e1580a;
+    --ip-orange-ink: #341604;
     --ip-white: #ffffff;
     --ip-ivory: #f7f4f1;
     --ip-panel: #eeeae7;
@@ -219,6 +219,7 @@ img {
 .nc-button.is-secondary {
     background: var(--ip-orange);
     border-color: var(--ip-orange);
+    color: var(--ip-orange-ink);
 }
 
 .nc-button.is-secondary:hover {
@@ -242,6 +243,11 @@ img {
     opacity: .55;
 }
 
+.nc-button:active,
+.nc-ghost:active {
+    transform: translateY(1px);
+}
+
 .nc-ghost {
     background: var(--ip-white);
     border-color: var(--ip-line);
@@ -250,6 +256,7 @@ img {
 
 .nc-ghost[aria-disabled="true"] {
     opacity: .7;
+    cursor: not-allowed;
 }
 
 .nc-user {
@@ -518,6 +525,14 @@ label.nc-field span {
     outline: 2px solid transparent;
     outline-offset: 1px;
     transition: background-color var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out);
+}
+
+.nc-field input:disabled,
+.nc-field select:disabled,
+.nc-field textarea:disabled {
+    opacity: .55;
+    cursor: not-allowed;
+    background: var(--ip-panel);
 }
 
 @media (hover: hover) and (pointer: fine) {
