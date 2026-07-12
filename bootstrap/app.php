@@ -3,6 +3,7 @@
 use App\Http\Middleware\EnsureUserCanAccessTool;
 use App\Http\Middleware\EnsureUserCanAdmin;
 use App\Http\Middleware\EnsureUserHasRole;
+use App\Http\Middleware\ReportHttpStatusToSentry;
 use App\Models\AuditLog;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Application;
@@ -23,6 +24,7 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->trustProxies(at: '127.0.0.1');
+        $middleware->append(ReportHttpStatusToSentry::class);
 
         $middleware->alias([
             'admin-area' => EnsureUserCanAdmin::class,

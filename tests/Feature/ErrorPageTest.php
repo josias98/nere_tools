@@ -33,7 +33,7 @@ class ErrorPageTest extends TestCase
 
         $this->get('/_test-server-error-page')
             ->assertStatus(500)
-            ->assertSee('Incident enregistre')
+            ->assertSee('incident enregistr')
             ->assertDontSee('Whoops');
 
         $this->assertDatabaseHas('audit_logs', [
