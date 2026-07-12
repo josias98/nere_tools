@@ -59,6 +59,20 @@ class LeaveModernizationTest extends TestCase
         Storage::disk('local')->assertExists($request->attachments->first()->file_path);
     }
 
+    public function test_missing_required_attachment_is_explained_on_the_form(): void
+    {
+        $employee = $this->employee();
+        $user = User::factory()->create(['email' => $employee->email]);
+        $type = LeaveType::query()->create(['name' => 'Maladie', 'slug' => 'illness-required', 'unit' => 'calendar_day', 'requires_attachment' => true]);
+
+        $this->actingAs($user)
+            ->followingRedirects()
+            ->from(route('leaves.create'))
+            ->post(route('leaves.store'), ['leave_type_id' => $type->id, 'start_date' => '2026-08-01', 'end_date' => '2026-08-02'])
+            ->assertOk()
+            ->assertSee('Le justificatif est obligatoire pour ce type de congé.');
+    }
+
     public function test_admin_export_is_an_xlsx_workbook(): void
     {
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);

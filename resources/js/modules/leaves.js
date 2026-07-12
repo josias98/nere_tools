@@ -29,6 +29,11 @@ export const bootLeavePage = () => {
         count.textContent = String(duration);
         document.getElementById('leave_unit_label').textContent = `${option?.dataset.unitLabel ?? 'jour'}(s)`;
         document.getElementById('leave_attachment_hint').textContent = option?.dataset.attachment === '1' ? 'Obligatoire' : 'Facultatif';
+        const attachments = document.getElementById('leave_attachments');
+        const attachmentRequired = option?.dataset.attachment === '1';
+        if (attachments) attachments.required = attachmentRequired;
+        const requirement = document.getElementById('leave_attachment_requirement');
+        if (requirement) requirement.textContent = attachmentRequired ? 'Requis' : 'Facultatif';
         const returnAt = new Date(end); returnAt.setDate(returnAt.getDate() + 1);
         document.getElementById('leave_return_date').textContent = returnAt.toLocaleDateString('fr-FR');
 
@@ -42,4 +47,5 @@ export const bootLeavePage = () => {
     endInput.addEventListener('change', sync);
     typeInput?.addEventListener('change', sync);
     sync();
+    document.querySelector('[data-validation-summary]')?.focus();
 };

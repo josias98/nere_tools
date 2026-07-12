@@ -34,4 +34,13 @@ class StoreLeaveRequest extends FormRequest
             'attachments.*' => ['file', 'max:10240', 'mimes:pdf,jpg,jpeg,png'],
         ];
     }
+
+    public function messages(): array
+    {
+        return [
+            'attachments.required' => 'Le justificatif est obligatoire pour ce type de congé.',
+            'attachments.*.max' => 'Chaque justificatif doit faire au maximum 10 Mo.',
+            'attachments.*.mimes' => 'Les justificatifs doivent être des fichiers PDF, JPG ou PNG.',
+        ];
+    }
 }

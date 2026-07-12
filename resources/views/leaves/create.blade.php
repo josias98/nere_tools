@@ -65,7 +65,7 @@
                             <label class="nc-field"><span>Lieu</span><input name="location" value="{{ old('location') }}"></label>
                             <label class="nc-field"><span>Contact pendant l’absence</span><input name="contact" value="{{ old('contact') }}"></label>
                             <label class="nc-field"><span>Incidence sur le traitement</span><input name="salary_impact" value="{{ old('salary_impact') }}"></label>
-                            <label class="nc-field"><span>Justificatifs privés</span><input type="file" name="attachments[]" multiple accept=".pdf,.jpg,.jpeg,.png"><small>PDF ou image, 10 Mo maximum.</small></label>
+                            <label class="nc-field"><span>Justificatifs privés <small id="leave_attachment_requirement">Selon le type</small></span><input id="leave_attachments" type="file" name="attachments[]" multiple accept=".pdf,.jpg,.jpeg,.png" aria-describedby="leave_attachment_help @error('attachments') leave_attachments_error @enderror" @error('attachments') aria-invalid="true" @enderror><small id="leave_attachment_help">PDF ou image, 10 Mo maximum.</small>@error('attachments')<small id="leave_attachments_error" class="nc-error">{{ $message }}</small>@enderror</label>
                         </div>
                         <label class="nc-mini-check"><input type="checkbox" name="replacement_needed" value="1" @checked(old('replacement_needed'))> Un remplacement est nécessaire</label>
                         <label class="nc-field" for="requester_comment">
