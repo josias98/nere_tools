@@ -27,8 +27,8 @@
                     <span>Statut</span>
                     <select name="status">
                         <option value="">Tous</option>
-                        @foreach (['submitted', 'under_review', 'approved', 'rejected', 'cancelled'] as $status)
-                            <option value="{{ $status }}" @selected(request('status') === $status)>{{ $status }}</option>
+                        @foreach (\App\Models\LeaveRequest::statusLabels() as $status => $label)
+                            <option value="{{ $status }}" @selected(request('status') === $status)>{{ $label }}</option>
                         @endforeach
                     </select>
                 </label>
@@ -60,7 +60,7 @@
                                     <td>{{ $request->leaveType?->name ?? 'Conge' }}</td>
                                     <td>{{ $request->start_date->format('d/m/Y') }} au {{ $request->end_date->format('d/m/Y') }}</td>
                                     <td>{{ number_format($request->requested_days, 2) }}</td>
-                                    <td><span class="leave-status is-{{ $request->status }}">{{ $request->status }}</span></td>
+                                    <td><span class="leave-status is-{{ $request->status }}">{{ $request->statusLabel() }}</span></td>
                                     <td>
                                         <a href="{{ route('leaves.show', $request->uuid) }}" class="nc-link">
                                             <i data-lucide="eye" class="nc-icon" aria-hidden="true"></i>

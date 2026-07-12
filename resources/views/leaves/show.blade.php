@@ -25,7 +25,7 @@
                     <h2>{{ $leaveRequest->leaveType?->name ?? 'Conge' }}</h2>
                     <p>{{ number_format($leaveRequest->requested_days, 2) }} jours calendaires</p>
                 </div>
-                <span class="leave-status is-{{ $leaveRequest->status }}">{{ $leaveRequest->status }}</span>
+                <span class="leave-status is-{{ $leaveRequest->status }}">{{ $leaveRequest->statusLabel() }}</span>
             </div>
 
             <dl class="leave-detail-grid">
@@ -45,7 +45,7 @@
             <div class="leave-timeline">
                 @foreach ($leaveRequest->approvals as $approval)
                     <div class="leave-timeline-item">
-                        <span class="leave-status is-{{ $approval->status }}">{{ $approval->status }}</span>
+                        <span class="leave-status is-{{ $approval->status }}">{{ $approval->statusLabel() }}</span>
                         <strong>{{ $approval->step_order }}. {{ $approval->step_label }}</strong>
                         <span>{{ $approval->validatorUser?->name ?? 'En attente' }}{{ $approval->decided_at ? ' - '.$approval->decided_at->format('d/m/Y H:i') : '' }}</span>
                         @if ($approval->comment)

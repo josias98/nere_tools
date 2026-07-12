@@ -11,6 +11,26 @@ class LeaveRequest extends Model
 {
     protected $guarded = [];
 
+    /** @return array<string, string> */
+    public static function statusLabels(): array
+    {
+        return [
+            'submitted' => 'Demande envoyée',
+            'under_review' => 'En cours de validation',
+            'pending_supervisor' => 'Validation du responsable',
+            'pending_hr' => 'Validation RH',
+            'pending_dg' => 'Validation de la direction',
+            'approved' => 'Approuvée',
+            'rejected' => 'Rejetée',
+            'cancelled' => 'Annulée',
+        ];
+    }
+
+    public function statusLabel(): string
+    {
+        return self::statusLabels()[$this->status] ?? $this->status;
+    }
+
     protected function casts(): array
     {
         return [

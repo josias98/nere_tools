@@ -133,8 +133,8 @@
                     <span>Statut</span>
                     <select name="status">
                         <option value="">Tous</option>
-                        @foreach (['pending_supervisor', 'pending_hr', 'pending_dg', 'approved', 'rejected', 'cancelled'] as $status)
-                            <option value="{{ $status }}" @selected($filters['status'] === $status)>{{ $status }}</option>
+                        @foreach (\App\Models\LeaveRequest::statusLabels() as $status => $label)
+                            <option value="{{ $status }}" @selected($filters['status'] === $status)>{{ $label }}</option>
                         @endforeach
                     </select>
                 </label>
@@ -203,7 +203,7 @@
                                 <td>{{ $request->leaveType?->name ?? '-' }}</td>
                                 <td>{{ $request->start_date->format('d/m/Y') }} au {{ $request->end_date->format('d/m/Y') }}</td>
                                 <td>{{ number_format($request->requested_days, 2) }}</td>
-                                <td><span class="leave-status is-{{ $request->status }}">{{ $request->status }}</span></td>
+                                <td><span class="leave-status is-{{ $request->status }}">{{ $request->statusLabel() }}</span></td>
                                 <td>{{ $request->currentApproval?->step_label ?? '-' }}</td>
                                 <td>{{ $request->currentApproval?->step_label ?? '-' }}</td>
                                 <td>{{ $lastDecision?->decided_at?->format('d/m/Y H:i') ?? '-' }}</td>

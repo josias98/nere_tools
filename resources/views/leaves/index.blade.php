@@ -80,7 +80,7 @@
                                     <td>{{ $request->start_date->format('d/m/Y') }} au {{ $request->end_date->format('d/m/Y') }}</td>
                                     <td>{{ $request->leaveType?->name ?? 'Conge' }}</td>
                                     <td>{{ number_format($request->requested_days, 2) }}</td>
-                                    <td><span class="leave-status is-{{ $request->status }}">{{ $request->status }}</span></td>
+                                    <td><span class="leave-status is-{{ $request->status }}">{{ $request->statusLabel() }}</span></td>
                                     <td>
                                         <a href="{{ route('leaves.show', $request->uuid) }}" class="nc-link">
                                             <i data-lucide="eye" class="nc-icon" aria-hidden="true"></i>

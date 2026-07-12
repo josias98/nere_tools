@@ -17,6 +17,17 @@ class LeaveRequestApproval extends Model
 
     protected $guarded = [];
 
+    public function statusLabel(): string
+    {
+        return match ($this->status) {
+            self::STATUS_PENDING => 'À traiter',
+            self::STATUS_APPROVED => 'Approuvée',
+            self::STATUS_REJECTED => 'Rejetée',
+            self::STATUS_SKIPPED => 'Non requise',
+            default => $this->status,
+        };
+    }
+
     protected function casts(): array
     {
         return [
