@@ -7,8 +7,8 @@ export const bootTimesheetPage = () => {
     const periodEnd = document.getElementById('period_end');
     const zipLabel = document.getElementById('zip_label');
     const logoPreviewText = document.getElementById('logo_preview_text');
-    const csvPlaceholder = 'Aucun fichier CSV sÃ©lectionnÃ©.';
-    const logoPlaceholder = 'Le logo IP fourni sera appliquÃ© automatiquement dans les PDF gÃ©nÃ©rÃ©s.';
+    const csvPlaceholder = 'Aucun fichier CSV sélectionné.';
+    const logoPlaceholder = 'Le logo IP fourni sera appliqué automatiquement dans les PDF générés.';
 
     if (!chipTray && !csvFileInput && !periodStart && !logoPreviewText) {
         return;
@@ -35,7 +35,7 @@ export const bootTimesheetPage = () => {
         if (selectedLabels.length === 0) {
             const empty = document.createElement('span');
             empty.className = 'nc-muted';
-            empty.textContent = 'Aucun collaborateur sÃ©lectionnÃ©.';
+            empty.textContent = 'Aucun collaborateur sélectionné.';
             chipTray.append(empty);
             return;
         }

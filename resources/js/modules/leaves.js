@@ -16,7 +16,7 @@ export const bootLeavePage = () => {
         if (!leaveStart.value || !leaveEnd.value || Number.isNaN(start.valueOf()) || Number.isNaN(end.valueOf())) {
             leaveDayCount.textContent = '-';
             if (leaveBalanceHint) {
-                leaveBalanceHint.textContent = 'SÃ©lectionnez les dates pour vÃ©rifier le solde.';
+                leaveBalanceHint.textContent = 'Sélectionnez les dates pour vérifier le solde.';
             }
             return;
         }
@@ -26,7 +26,7 @@ export const bootLeavePage = () => {
         if (days < 1) {
             leaveDayCount.textContent = 'Erreur';
             if (leaveBalanceHint) {
-                leaveBalanceHint.textContent = 'La date de fin doit Ãªtre postÃ©rieure ou Ã©gale Ã  la date de dÃ©but.';
+                leaveBalanceHint.textContent = 'La date de fin doit être postérieure ou égale à la date de début.';
             }
             return;
         }
@@ -36,8 +36,8 @@ export const bootLeavePage = () => {
         if (leaveBalanceHint && leaveForm) {
             const projected = Number(leaveForm.dataset.projectedBalance ?? 0);
             leaveBalanceHint.textContent = days > projected
-                ? 'Cette demande dÃ©passe votre solde projetÃ©. Elle pourra Ãªtre refusÃ©e.'
-                : 'Votre solde projetÃ© couvre cette demande.';
+                ? 'Cette demande dépasse votre solde projeté. Elle pourra être refusée.'
+                : 'Votre solde projeté couvre cette demande.';
         }
     };
 
