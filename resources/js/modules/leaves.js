@@ -3,6 +3,7 @@ export const bootLeavePage = () => {
     const leaveEnd = document.getElementById('leave_end_date');
     const leaveDayCount = document.getElementById('leave_day_count');
     const leaveBalanceHint = document.getElementById('leave_balance_hint');
+    const leaveRemainingBalance = document.getElementById('leave_remaining_balance');
     const leaveForm = document.querySelector('[data-leave-form]');
 
     if (!leaveStart || !leaveEnd || !leaveDayCount) {
@@ -15,6 +16,7 @@ export const bootLeavePage = () => {
 
         if (!leaveStart.value || !leaveEnd.value || Number.isNaN(start.valueOf()) || Number.isNaN(end.valueOf())) {
             leaveDayCount.textContent = '-';
+            if (leaveRemainingBalance) leaveRemainingBalance.textContent = '-';
             if (leaveBalanceHint) {
                 leaveBalanceHint.textContent = 'Sélectionnez les dates pour vérifier le solde.';
             }
@@ -25,6 +27,7 @@ export const bootLeavePage = () => {
 
         if (days < 1) {
             leaveDayCount.textContent = 'Erreur';
+            if (leaveRemainingBalance) leaveRemainingBalance.textContent = '-';
             if (leaveBalanceHint) {
                 leaveBalanceHint.textContent = 'La date de fin doit être postérieure ou égale à la date de début.';
             }
@@ -35,6 +38,9 @@ export const bootLeavePage = () => {
 
         if (leaveBalanceHint && leaveForm) {
             const projected = Number(leaveForm.dataset.projectedBalance ?? 0);
+            if (leaveRemainingBalance) {
+                leaveRemainingBalance.textContent = `${(projected - days).toFixed(2)} jours`;
+            }
             leaveBalanceHint.textContent = days > projected
                 ? 'Cette demande dépasse votre solde projeté. Elle pourra être refusée.'
                 : 'Votre solde projeté couvre cette demande.';
