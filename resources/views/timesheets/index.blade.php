@@ -26,10 +26,15 @@
             <p class="nc-alert is-success">{{ session('status') }}</p>
         @endif
 
+        <section class="ts-mode-intro" aria-labelledby="timesheet_mode_title">
+            <h2 id="timesheet_mode_title">Comment souhaitez-vous commencer ?</h2>
+            <p>Choisissez le mode qui correspond aux informations dont vous disposez. Vous pourrez vérifier les données avant toute génération.</p>
+        </section>
+
         <div class="ts-option-grid">
             <section class="ts-card">
                 <div class="ts-step-head">
-                    <h2><span>Option 1.</span> Générer à partir d'un CSV</h2>
+                    <h2>Importer un fichier CSV</h2>
                     <p>Choisissez cette option si vous partez d'une clé de répartition. Une fois le fichier chargé, vous pouvez relire et ajuster chaque ligne avant la génération.</p>
                 </div>
                 <form method="POST" action="{{ route('timesheets.csv') }}" enctype="multipart/form-data" class="ts-import-form">
@@ -54,7 +59,7 @@
 
             <section class="ts-card">
                 <div class="ts-step-head">
-                    <h2><span>Option 2.</span> Génération manuelle</h2>
+                    <h2>Créer un lot manuellement</h2>
                     <p>Utilisez ce mode pour créer un lot simple à partir des collaborateurs déjà présents dans Nere Tools, sans fichier source.</p>
                 </div>
                 @if ($rows)

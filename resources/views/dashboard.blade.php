@@ -18,7 +18,7 @@
             <div>
                 <p class="nc-kicker">Portail interne</p>
                 <h1 class="nc-title">Nere Tools</h1>
-                <p class="nc-lead">Bienvenue, {{ auth()->user()->name }}. Choisissez l'outil dont vous avez besoin pour commencer.</p>
+                <p class="nc-lead">Bonjour {{ auth()->user()->name }}. Accédez directement à votre espace de travail.</p>
             </div>
         </div>
 
@@ -26,13 +26,13 @@
             @if (auth()->user()->canAccessAdmin())
                 <article class="nc-card nc-card-feature">
                     <div class="nc-card-top">
-                        <div class="nc-card-top">
+                        <div class="nc-card-identity">
                             <span class="nc-card-symbol" aria-hidden="true">
                                 <i data-lucide="settings" class="nc-icon"></i>
                             </span>
                             <div>
                                 <h2>Administration</h2>
-                                <p>Retrouvez les acces, les roles et les reglages metier depuis un espace de pilotage unique.</p>
+                                <p>Gérez les accès, les rôles et les réglages métier depuis un espace de pilotage unique.</p>
                             </div>
                         </div>
                         <span class="nc-badge active">
@@ -59,7 +59,7 @@
 
                 <article class="nc-card">
                     <div class="nc-card-top">
-                        <div class="nc-card-top">
+                        <div class="nc-card-identity">
                             <span class="nc-card-symbol" aria-hidden="true">
                                 <i data-lucide="{{ $toolIcon }}" class="nc-icon"></i>
                             </span>
@@ -79,12 +79,12 @@
                         @elseif ($isActive)
                             <span class="nc-ghost" aria-disabled="true">
                                 <i data-lucide="circle-slash" class="nc-icon" aria-hidden="true"></i>
-                                Acces non autorise
+                                Accès non autorisé
                             </span>
                         @else
                             <span class="nc-ghost" aria-disabled="true">
                                 <i data-lucide="clock-3" class="nc-icon" aria-hidden="true"></i>
-                                Bientot disponible
+                                Bientôt disponible
                             </span>
                         @endif
                     </div>

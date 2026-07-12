@@ -12,12 +12,20 @@
         <div class="nc-title-row">
             <div>
                 <p class="nc-kicker">Administration</p>
-                <h1 class="nc-title">Conges</h1>
-                <p class="nc-lead">Completez les emails Microsoft, configurez les validateurs et surveillez le circuit de notification.</p>
+                <h1 class="nc-title">Congés</h1>
+                <p class="nc-lead">Configurez le module, suivez les demandes et intervenez rapidement lorsqu’une action est nécessaire.</p>
             </div>
         </div>
 
         @include('leaves.partials.flash')
+
+        <nav class="leave-admin-nav" aria-label="Sections de l’administration des congés">
+            <a href="#leave-settings">Paramètres</a>
+            <a href="#leave-import">Import des soldes</a>
+            <a href="#leave-requests">Demandes</a>
+            <a href="#leave-validators">Validateurs</a>
+            <a href="#leave-employees">Collaborateurs</a>
+        </nav>
 
         @if (session('import_report'))
             <section class="nc-alert is-success">
@@ -37,11 +45,11 @@
         @endif
 
         <div class="leave-admin-grid leave-admin-grid--top">
-            <section class="nc-panel">
+            <section class="nc-panel" id="leave-settings">
                 <div class="nc-panel-heading">
                     <div>
-                        <h2>Parametres</h2>
-                        <p>Regles utilisees dans le calcul des soldes.</p>
+                        <h2>Paramètres</h2>
+                        <p>Règles utilisées dans le calcul des soldes.</p>
                     </div>
                 </div>
                 <form method="POST" action="{{ route('admin.leaves.settings.update') }}" class="nc-form-grid">
@@ -92,7 +100,7 @@
             </section>
         </div>
 
-        <section class="nc-panel">
+        <section class="nc-panel" id="leave-import">
             <div class="nc-panel-heading">
                 <div>
                     <h2>Import CSV</h2>
@@ -121,7 +129,7 @@
             <p>Colonnes recommandees : employee_id, email, display_name, date_embauche, total_acquis, total_pris, solde_restant, notes. Virgule ou point-virgule acceptes.</p>
         </section>
 
-        <section class="nc-panel">
+        <section class="nc-panel" id="leave-requests">
             <div class="nc-panel-heading">
                 <div>
                     <h2>Suivi des demandes</h2>
@@ -217,7 +225,7 @@
             {{ $requests->links() }}
         </section>
 
-        <section class="nc-panel">
+        <section class="nc-panel" id="leave-validators">
             <div class="nc-panel-heading">
                 <div>
                     <h2>Validateurs</h2>
@@ -315,7 +323,7 @@
             </div>
         </section>
 
-        <section class="nc-panel">
+        <section class="nc-panel" id="leave-employees">
             <div class="nc-panel-heading">
                 <div>
                     <h2>Collaborateurs</h2>
