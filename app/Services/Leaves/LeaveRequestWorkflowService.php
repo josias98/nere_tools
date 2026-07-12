@@ -2,14 +2,18 @@
 
 namespace App\Services\Leaves;
 
+use App\Enums\LeaveUnit;
 use App\Models\AuditLog;
 use App\Models\Employee;
 use App\Models\LeaveRequest;
 use App\Models\LeaveRequestApproval;
+use App\Models\LeaveType;
 use App\Models\User;
 use Carbon\Carbon;
 use DomainException;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class LeaveRequestWorkflowService
@@ -26,6 +30,11 @@ class LeaveRequestWorkflowService
     {
         $startDate = Carbon::parse($data['start_date']);
         $endDate = Carbon::parse($data['end_date']);
+        $type = LeaveType::query()->with('rules')->findOrFail($data['leave_type_id']);
+        $rule = $type->ruleAt($startDate);
+        $configuration = $rule?->configuration ?? [];
+        $unit = LeaveUnit::from($configuration['unit'] ?? $type->unit->value);
+        $duration = $this->dayCountService->calculate($startDate, $endDate, $unit);
 
         if ($endDate->isBefore($startDate)) {
             throw new DomainException('La date de fin ne peut pas être antérieure à la date de début.');
@@ -45,19 +54,41 @@ class LeaveRequestWorkflowService
             throw new DomainException('Une demande de congé existe déjà sur cette période.');
         }
 
-        $request = DB::transaction(function () use ($employee, $data, $userId, $startDate, $endDate): LeaveRequest {
+        $request = DB::transaction(function () use ($employee, $data, $userId, $startDate, $endDate, $type, $duration, $rule, $configuration, $unit): LeaveRequest {
             $request = LeaveRequest::query()->create([
                 'uuid' => Str::uuid(),
                 'employee_id' => $employee->id,
                 'leave_type_id' => $data['leave_type_id'],
                 'start_date' => $startDate,
                 'end_date' => $endDate,
-                'requested_days' => $this->dayCountService->calculateDays($startDate, $endDate),
+                'requested_days' => $duration,
+                'requested_duration' => $duration,
+                'duration_unit' => $unit->value,
+                'start_at' => $startDate,
+                'end_at' => $endDate,
+                'effective_return_at' => $this->dayCountService->effectiveReturn($endDate, $unit),
+                'rule_snapshot' => [
+                    'type' => array_merge($type->only(['id', 'name', 'slug', 'category', 'unit', 'is_paid', 'counts_against_balance', 'quota', 'maximum_duration', 'legal_reference']), $configuration),
+                    'rule_version' => $rule?->version,
+                    'configuration' => $rule?->configuration ?? [],
+                    'captured_at' => now()->toIso8601String(),
+                ],
                 'status' => 'pending_supervisor',
                 'requester_comment' => $data['requester_comment'] ?? null,
                 'submitted_at' => now(),
                 'created_by_user_id' => $userId,
+                'relationship' => $data['relationship'] ?? null,
+                'reason' => $data['reason'] ?? null,
+                'replacement_needed' => (bool) ($data['replacement_needed'] ?? false),
+                'replacement_employee_id' => $data['replacement_employee_id'] ?? null,
+                'location' => $data['location'] ?? null,
+                'contact' => $data['contact'] ?? null,
+                'salary_impact' => $data['salary_impact'] ?? null,
             ]);
+
+            foreach ($data['attachments'] ?? [] as $attachment) {
+                $this->storeAttachment($request, $attachment, $userId);
+            }
 
             $this->createApprovalChain($request);
             $this->audit('leave.created', $request, $userId);
@@ -114,7 +145,7 @@ class LeaveRequestWorkflowService
 
             $balance = $this->balanceService->getBalance($request->employee);
 
-            if (! $override && $request->requested_days > $balance['available_balance']) {
+            if ($request->leaveType->counts_against_balance && ! $override && $request->requested_days > $balance['available_balance']) {
                 throw new DomainException('Solde insuffisant pour approuver cette demande.');
             }
 
@@ -124,7 +155,7 @@ class LeaveRequestWorkflowService
                 'reviewed_by_user_id' => $reviewer->id,
                 'reviewer_comment' => $comment,
                 'balance_before' => $balance['available_balance'],
-                'balance_after' => $balance['available_balance'] - $request->requested_days,
+                'balance_after' => $request->leaveType->counts_against_balance ? $balance['available_balance'] - $request->requested_days : $balance['available_balance'],
             ])->save();
 
             $this->audit('leave.approved', $request, $reviewer->id, ['step' => $approval->step_key]);
@@ -196,6 +227,19 @@ class LeaveRequestWorkflowService
         foreach ($this->steps() as $step) {
             $request->approvals()->create($step + ['status' => LeaveRequestApproval::STATUS_PENDING]);
         }
+    }
+
+    private function storeAttachment(LeaveRequest $request, UploadedFile $file, int $userId): void
+    {
+        $path = $file->store('private/leaves/attachments/'.$request->uuid, 'local');
+        $request->attachments()->create([
+            'original_name' => $file->getClientOriginalName(),
+            'file_path' => $path,
+            'mime_type' => $file->getMimeType() ?: 'application/octet-stream',
+            'size' => $file->getSize(),
+            'sha256' => hash_file('sha256', Storage::disk('local')->path($path)),
+            'uploaded_by_user_id' => $userId,
+        ]);
     }
 
     private function ensureApprovalChain(LeaveRequest $request): void

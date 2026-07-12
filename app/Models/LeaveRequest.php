@@ -42,7 +42,18 @@ class LeaveRequest extends Model
             'requested_days' => 'float',
             'balance_before' => 'float',
             'balance_after' => 'float',
+            'requested_duration' => 'float',
+            'start_at' => 'datetime',
+            'end_at' => 'datetime',
+            'effective_return_at' => 'datetime',
+            'rule_snapshot' => 'array',
+            'replacement_needed' => 'boolean',
         ];
+    }
+
+    public function attachments(): HasMany
+    {
+        return $this->hasMany(LeaveAttachment::class);
     }
 
     public function employee(): BelongsTo

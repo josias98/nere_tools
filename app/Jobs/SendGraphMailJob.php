@@ -20,9 +20,9 @@ class SendGraphMailJob implements ShouldQueue
     public int $tries = 3;
 
     /**
-     * @param array<int, string> $to
-     * @param array<int, string> $cc
-     * @param array<int, string> $bcc
+     * @param  array<int, string>  $to
+     * @param  array<int, string>  $cc
+     * @param  array<int, string>  $bcc
      */
     public function __construct(
         public array $to,
@@ -35,8 +35,7 @@ class SendGraphMailJob implements ShouldQueue
         public ?string $relatedType = null,
         public ?int $relatedId = null,
         public ?int $notificationLogId = null,
-    ) {
-    }
+    ) {}
 
     /**
      * @return array<int, int>

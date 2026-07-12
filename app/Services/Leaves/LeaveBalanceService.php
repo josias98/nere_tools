@@ -16,10 +16,10 @@ class LeaveBalanceService
         $this->accrualService = $accrualService;
     }
 
-    public function getBalance(Employee $employee, Carbon $targetDate = null): array
+    public function getBalance(Employee $employee, ?Carbon $targetDate = null): array
     {
         $targetDate = $targetDate ?? Carbon::now();
-        
+
         $balanceRecord = LeaveBalance::where('employee_id', $employee->id)
             ->orderByDesc('reference_date')
             ->first();
@@ -31,15 +31,19 @@ class LeaveBalanceService
 
         $adjustments = 0; // Future: sum from leave_balance_adjustments
 
-        $approvedDaysSinceReference = (float) LeaveRequest::where('employee_id', $employee->id)
+        $approvedDaysSinceReference = (float) LeaveRequest::with('leaveType')->where('employee_id', $employee->id)
             ->where('status', 'approved')
             ->where('start_date', '>=', $referenceDate)
+            ->get()
+            ->filter(fn (LeaveRequest $request) => $request->rule_snapshot['type']['counts_against_balance'] ?? $request->leaveType?->counts_against_balance)
             ->sum('requested_days');
 
         $availableBalance = $initialRemaining + $accruedSinceReference + $adjustments - $approvedDaysSinceReference;
 
-        $pendingDays = (float) LeaveRequest::where('employee_id', $employee->id)
+        $pendingDays = (float) LeaveRequest::with('leaveType')->where('employee_id', $employee->id)
             ->whereIn('status', ['submitted', 'under_review', 'pending_supervisor', 'pending_hr', 'pending_dg'])
+            ->get()
+            ->filter(fn (LeaveRequest $request) => $request->rule_snapshot['type']['counts_against_balance'] ?? $request->leaveType?->counts_against_balance)
             ->sum('requested_days');
 
         $projectedBalance = $availableBalance - $pendingDays;
@@ -52,6 +56,13 @@ class LeaveBalanceService
             'available_balance' => $availableBalance,
             'pending_days' => $pendingDays,
             'projected_balance' => $projectedBalance,
+            'initial_balance' => $initialRemaining,
+            'accrued' => $accruedSinceReference,
+            'bonuses' => $adjustments,
+            'consumed' => $approvedDaysSinceReference,
+            'planned' => 0.0,
+            'pending' => $pendingDays,
+            'available' => $availableBalance,
         ];
     }
 }

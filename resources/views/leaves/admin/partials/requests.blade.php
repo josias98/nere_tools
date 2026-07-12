@@ -1,0 +1,13 @@
+<section class="nc-panel" id="requests">
+    <div class="nc-panel-heading"><div><h2>Suivi des demandes</h2><p>Les filtres restent dans l’URL et s’appliquent aussi à l’export.</p></div><a class="nc-button is-secondary" href="{{ route('admin.leaves.export', request()->query()) }}"><i data-lucide="file-spreadsheet" aria-hidden="true"></i>Exporter Excel</a></div>
+    <form method="GET" class="leave-filter">
+        <label class="nc-field"><span>Statut</span><select name="status"><option value="">Tous</option>@foreach (\App\Models\LeaveRequest::statusLabels() as $value => $label)<option value="{{ $value }}" @selected($filters['status'] === $value)>{{ $label }}</option>@endforeach</select></label>
+        <label class="nc-field"><span>Département</span><select name="department_id"><option value="">Tous</option>@foreach ($departments as $department)<option value="{{ $department->id }}" @selected($filters['department_id'] == $department->id)>{{ $department->name }}</option>@endforeach</select></label>
+        <label class="nc-field"><span>Salarié</span><select name="employee_id"><option value="">Tous</option>@foreach ($employees as $employee)<option value="{{ $employee->id }}" @selected($filters['employee_id'] == $employee->id)>{{ $employee->name() }}</option>@endforeach</select></label>
+        <label class="nc-field"><span>Du</span><input type="date" name="from" value="{{ $filters['from'] }}"></label><label class="nc-field"><span>Au</span><input type="date" name="to" value="{{ $filters['to'] }}"></label>
+        <button class="nc-button" type="submit">Appliquer</button>
+    </form>
+    <div class="nc-table-wrap"><table class="nc-table"><thead><tr><th>Salarié</th><th>Type</th><th>Période</th><th>Durée</th><th>Reprise</th><th>Statut</th><th></th></tr></thead><tbody>
+    @forelse ($requests as $leave)<tr><td>{{ $leave->employee?->name() }}</td><td>{{ $leave->leaveType?->name }}</td><td>{{ $leave->start_date->format('d/m/Y') }} – {{ $leave->end_date->format('d/m/Y') }}</td><td>{{ $leave->requested_duration ?? $leave->requested_days }} {{ $leave->leaveType?->unit?->label() ?? 'jours' }}</td><td>{{ $leave->effective_return_at?->format('d/m/Y') ?? 'Historique' }}</td><td><span class="leave-status is-{{ $leave->status }}">{{ $leave->statusLabel() }}</span></td><td><a class="nc-link" href="{{ route('leaves.show', $leave->uuid) }}">Ouvrir</a></td></tr>@empty<tr><td colspan="7"><div class="nc-empty">Aucune demande ne correspond aux filtres.</div></td></tr>@endforelse
+    </tbody></table></div>{{ $requests->links() }}
+</section>

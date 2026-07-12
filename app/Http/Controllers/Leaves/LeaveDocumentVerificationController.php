@@ -78,7 +78,7 @@ class LeaveDocumentVerificationController extends Controller
                 : [
                     'status' => 'unknown',
                     'title' => 'Correspondance inconnue',
-                    'message' => "Ce fichier ne correspond a aucun document actif enregistre dans Nere Tools. Il peut etre inconnu, modifie, recompresse ou altere.",
+                    'message' => 'Ce fichier ne correspond a aucun document actif enregistre dans Nere Tools. Il peut etre inconnu, modifie, recompresse ou altere.',
                 ];
 
             $this->audit(
@@ -123,17 +123,17 @@ class LeaveDocumentVerificationController extends Controller
             LeaveDocument::STATUS_ACTIVE => [
                 'status' => 'active',
                 'title' => 'Document authentique',
-                'message' => "Ce document correspond a une demande de conge authentique, generee et validee via Nere Tools.".($canSeePrivateDetails ? '' : ''),
+                'message' => 'Ce document correspond a une demande de conge authentique, generee et validee via Nere Tools.'.($canSeePrivateDetails ? '' : ''),
             ],
             LeaveDocument::STATUS_REPLACED => [
                 'status' => 'replaced',
                 'title' => 'Version remplacee',
-                'message' => "Ce document correspond a une version anterieure remplacee. Veuillez vous referer a la derniere version disponible dans Nere Tools.",
+                'message' => 'Ce document correspond a une version anterieure remplacee. Veuillez vous referer a la derniere version disponible dans Nere Tools.',
             ],
             LeaveDocument::STATUS_REVOKED => [
                 'status' => 'revoked',
                 'title' => 'Document revoque',
-                'message' => "Ce document a bien ete genere par Nere Tools, mais il a ete revoque. Il ne doit plus etre considere comme actif.",
+                'message' => 'Ce document a bien ete genere par Nere Tools, mais il a ete revoque. Il ne doit plus etre considere comme actif.',
             ],
             default => [
                 'status' => 'unknown_token',
@@ -152,7 +152,7 @@ class LeaveDocumentVerificationController extends Controller
             LeaveDocument::STATUS_ACTIVE => [
                 'status' => 'valid_active',
                 'title' => 'Correspondance exacte',
-                'message' => "Ce fichier correspond exactement a un document actif genere par Nere Tools.",
+                'message' => 'Ce fichier correspond exactement a un document actif genere par Nere Tools.',
             ],
             LeaveDocument::STATUS_REPLACED => [
                 'status' => 'valid_replaced',
@@ -162,12 +162,12 @@ class LeaveDocumentVerificationController extends Controller
             LeaveDocument::STATUS_REVOKED => [
                 'status' => 'valid_revoked',
                 'title' => 'Document revoque reconnu',
-                'message' => "Ce fichier correspond a un document genere par Nere Tools, mais il a ete revoque.",
+                'message' => 'Ce fichier correspond a un document genere par Nere Tools, mais il a ete revoque.',
             ],
             default => [
                 'status' => 'unknown',
                 'title' => 'Correspondance inconnue',
-                'message' => "Ce fichier ne correspond a aucun document actif enregistre dans Nere Tools. Il peut etre inconnu, modifie, recompresse ou altere.",
+                'message' => 'Ce fichier ne correspond a aucun document actif enregistre dans Nere Tools. Il peut etre inconnu, modifie, recompresse ou altere.',
             ],
         };
     }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Leaves;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Leaves\StoreLeaveRequest;
 use App\Models\LeaveRequest;
 use App\Models\LeaveType;
 use App\Services\Leaves\LeaveBalanceService;
@@ -10,7 +11,6 @@ use App\Services\Leaves\LeaveDayCountService;
 use App\Services\Leaves\LeaveRequestWorkflowService;
 use App\Services\Leaves\LeaveValidatorService;
 use DomainException;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Throwable;
@@ -50,15 +50,8 @@ class LeaveRequestController extends Controller
         return view('leaves.create', compact('balance', 'leaveTypes'));
     }
 
-    public function store(Request $request)
+    public function store(StoreLeaveRequest $request)
     {
-        $request->validate([
-            'leave_type_id' => 'required|exists:leave_types,id',
-            'start_date' => 'required|date',
-            'end_date' => 'required|date|after_or_equal:start_date',
-            'requester_comment' => 'nullable|string',
-        ]);
-
         $user = Auth::user();
 
         if (! $user->employee) {
@@ -66,7 +59,7 @@ class LeaveRequestController extends Controller
         }
 
         try {
-            $leaveRequest = $this->workflowService->submitRequest($user->employee, $request->all(), $user->id);
+            $leaveRequest = $this->workflowService->submitRequest($user->employee, $request->validated(), $user->id);
 
             return redirect()->route('leaves.show', $leaveRequest->uuid)->with('success', 'Votre demande a été soumise avec succès.');
         } catch (DomainException $exception) {

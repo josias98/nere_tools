@@ -17,9 +17,7 @@ class LeavePdfService
     public function __construct(
         private LeaveDocumentReferenceService $references,
         private LeavePdfRenderer $renderer,
-    )
-    {
-    }
+    ) {}
 
     public function generate(LeaveRequest $request, ?User $actor = null): LeaveDocument
     {

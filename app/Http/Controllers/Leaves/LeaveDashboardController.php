@@ -15,21 +15,20 @@ class LeaveDashboardController extends Controller
     public function __construct(
         LeaveBalanceService $balanceService,
         private LeaveValidatorService $validatorService,
-    )
-    {
+    ) {
         $this->balanceService = $balanceService;
     }
 
     public function index()
     {
         $user = Auth::user();
-        
-        if (!$user->employee) {
+
+        if (! $user->employee) {
             return redirect()->route('dashboard')->with('error', 'Vous n\'êtes pas associé à un profil employé.');
         }
 
         $balance = $this->balanceService->getBalance($user->employee);
-        
+
         $recentRequests = LeaveRequest::with('leaveType')
             ->where('employee_id', $user->employee->id)
             ->orderBy('created_at', 'desc')

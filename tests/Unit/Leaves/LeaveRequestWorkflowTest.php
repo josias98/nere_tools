@@ -9,8 +9,8 @@ use App\Models\User;
 use App\Services\Leaves\LeaveBalanceService;
 use App\Services\Leaves\LeaveDayCountService;
 use App\Services\Leaves\LeaveRequestWorkflowService;
-use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Str;
 use Tests\TestCase;
 
 class LeaveRequestWorkflowTest extends TestCase
@@ -22,10 +22,10 @@ class LeaveRequestWorkflowTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         $balanceMock = $this->createMock(LeaveBalanceService::class);
-        $dayCountMock = new LeaveDayCountService();
-        
+        $dayCountMock = new LeaveDayCountService;
+
         $this->service = new LeaveRequestWorkflowService($balanceMock, $dayCountMock);
     }
 
@@ -76,7 +76,7 @@ class LeaveRequestWorkflowTest extends TestCase
 
         // First request
         LeaveRequest::create([
-            'uuid' => \Illuminate\Support\Str::uuid(),
+            'uuid' => Str::uuid(),
             'employee_id' => $employee->id,
             'leave_type_id' => $leaveType->id,
             'start_date' => '2026-08-01',
@@ -87,7 +87,7 @@ class LeaveRequestWorkflowTest extends TestCase
         ]);
 
         $this->expectException(\Exception::class);
-        $this->expectExceptionMessage("Une demande de congé existe déjà sur cette période.");
+        $this->expectExceptionMessage('Une demande de congé existe déjà sur cette période.');
 
         // Overlapping request
         $data = [

@@ -3,6 +3,22 @@
     gap: 18px;
 }
 
+.leave-admin-layout { display: grid; grid-template-columns: 240px minmax(0, 1fr); min-height: calc(100vh - 72px); }
+.leave-admin-sidebar { position: sticky; top: 0; align-self: start; display: grid; gap: 4px; padding: 28px 18px; background: #fff; border-right: 1px solid var(--ip-line); }
+.leave-admin-sidebar strong { padding: 10px 12px 18px; color: var(--ip-brown); }
+.leave-admin-sidebar a { padding: 10px 12px; color: var(--ip-grey); text-decoration: none; border-left: 3px solid transparent; }
+.leave-admin-sidebar a:hover, .leave-admin-sidebar a:focus-visible { color: var(--ip-brown); background: var(--ip-ivory); border-left-color: var(--ip-orange); }
+.leave-admin-main { width: min(1380px, calc(100% - 40px)); }
+.leave-metric > i { width: 20px; color: var(--ip-blue); }
+.leave-timeline { display: grid; gap: 10px; padding-left: 24px; color: var(--ip-grey); }
+.leave-rule-list { display: grid; gap: 12px; }
+.leave-rule-card { border: 1px solid var(--ip-line); background: var(--ip-white); }
+.leave-rule-card summary { display: flex; justify-content: space-between; gap: 16px; padding: 16px; cursor: pointer; }
+.leave-rule-card form { padding: 0 16px 16px; }
+.leave-holiday-list { display: grid; gap: 8px; padding: 0; list-style: none; }
+.leave-holiday-list li { display: flex; align-items: center; justify-content: space-between; gap: 12px; border-top: 1px solid var(--ip-line); padding-top: 8px; }
+@media (max-width: 900px) { .leave-admin-layout { grid-template-columns: 1fr; } .leave-admin-sidebar { position: static; grid-auto-flow: column; overflow-x: auto; border-right: 0; border-bottom: 1px solid var(--ip-line); } }
+
 .leave-metrics,
 .leave-admin-grid,
 .leave-review-grid {

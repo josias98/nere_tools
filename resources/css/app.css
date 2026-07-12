@@ -1,6 +1,7 @@
 /* Hallmark · genre: modern-minimal · macrostructure: Workbench · design-system: design.md · designed-as-app
  * pre-emit critique: P5 H5 E4 S5 R5 V4 · contrast: pass · mobile: pass
  */
+@import url('https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700;800&display=swap');
 @import 'tailwindcss';
 @import './modules/leaves.css';
 @import './modules/timesheets.css';
@@ -13,13 +14,15 @@
 }
 
 :root {
-    --ip-brown: #532609;
+    --ip-brown: #522400;
     --ip-brown-dark: #341604;
     --ip-rust: #8f342a;
     --ip-ochre: #a98c4e;
     --ip-grey: #5f5249;
     --ip-light-grey: #cdc6c0;
     --ip-orange: #e1580a;
+    --ip-green: #a2bb9b;
+    --ip-blue: #42707c;
     --ip-orange-ink: #341604;
     --ip-white: #ffffff;
     --ip-ivory: #f7f4f1;

@@ -9,6 +9,7 @@ use App\Models\Tool;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Collection;
 
 class DatabaseSeeder extends Seeder
 {
@@ -115,7 +116,7 @@ class DatabaseSeeder extends Seeder
     }
 
     /**
-     * @param \Illuminate\Support\Collection $departments
+     * @param  Collection  $departments
      * @return array<int, array<string, mixed>>
      */
     private function employees($departments): array

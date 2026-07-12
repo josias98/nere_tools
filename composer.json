@@ -11,6 +11,7 @@
         "laravel/framework": "^13.8",
         "laravel/pulse": "^1.7",
         "laravel/tinker": "^3.0",
+        "openspout/openspout": "5.6",
         "sentry/sentry-laravel": "^4.26"
     },
     "require-dev": {

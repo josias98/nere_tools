@@ -24,7 +24,7 @@ class SendGraphMailTestCommand extends Command
         $recipient = $this->argument('recipient') ?: config('services.graph_mail.test_recipient');
 
         if (! is_string($recipient) || trim($recipient) === '') {
-            $this->error("Aucun destinataire defini. Passez {recipient} ou configurez GRAPH_MAIL_TEST_RECIPIENT.");
+            $this->error('Aucun destinataire defini. Passez {recipient} ou configurez GRAPH_MAIL_TEST_RECIPIENT.');
 
             return self::FAILURE;
         }

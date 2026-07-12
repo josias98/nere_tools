@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Tool;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -101,7 +102,7 @@ class UserController extends Controller
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Collection<int, Tool>
+     * @return Collection<int, Tool>
      */
     private function tools()
     {
@@ -109,7 +110,7 @@ class UserController extends Controller
     }
 
     /**
-     * @param array<int, int|string> $toolIds
+     * @param  array<int, int|string>  $toolIds
      */
     private function syncTools(User $user, array $toolIds): void
     {

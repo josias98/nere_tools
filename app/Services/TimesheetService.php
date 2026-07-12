@@ -2,12 +2,12 @@
 
 namespace App\Services;
 
-use App\Modules\Timesheets\Support\TimesheetArchiveBuilder;
-use App\Modules\Timesheets\Support\TimesheetPdfRenderer;
 use App\Models\Employee;
 use App\Models\TimesheetGeneration;
 use App\Models\TimesheetGenerationFile;
 use App\Models\User;
+use App\Modules\Timesheets\Support\TimesheetArchiveBuilder;
+use App\Modules\Timesheets\Support\TimesheetPdfRenderer;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -18,8 +18,7 @@ class TimesheetService
     public function __construct(
         private TimesheetPdfRenderer $pdfRenderer,
         private TimesheetArchiveBuilder $archiveBuilder,
-    ) {
-    }
+    ) {}
 
     /**
      * @param  array<string, mixed>  $data
@@ -129,6 +128,7 @@ class TimesheetService
             $employee = $employees[(int) $row['employee_id']];
             if ($monthPairs !== []) {
                 $this->createFile($generation, $employee, $monthPairs, [...$row, 'excluded_signature_dates' => $excludedDates]);
+
                 continue;
             }
 

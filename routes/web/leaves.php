@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Leaves\LeaveAttachmentController;
 use App\Http\Controllers\Leaves\LeaveDashboardController;
 use App\Http\Controllers\Leaves\LeaveDocumentController;
 use App\Http\Controllers\Leaves\LeaveDocumentVerificationController;
@@ -24,5 +25,6 @@ Route::middleware(['auth', 'tool:conges'])->group(function (): void {
     Route::post('/conges/validations/{leaveRequest:uuid}/approuver', [LeaveValidationController::class, 'approve'])->name('leaves.validations.approve');
     Route::post('/conges/validations/{leaveRequest:uuid}/rejeter', [LeaveValidationController::class, 'reject'])->name('leaves.validations.reject');
     Route::get('/conges/documents/{document}/telecharger', LeaveDocumentController::class)->name('leaves.documents.download');
+    Route::get('/conges/justificatifs/{attachment}/telecharger', LeaveAttachmentController::class)->name('leaves.attachments.download');
     Route::get('/conges/{leaveRequest:uuid}', [LeaveRequestController::class, 'show'])->name('leaves.show');
 });

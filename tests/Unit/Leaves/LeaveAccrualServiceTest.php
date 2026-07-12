@@ -18,24 +18,24 @@ class LeaveAccrualServiceTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->service = new LeaveAccrualService();
+        $this->service = new LeaveAccrualService;
 
         LeaveSetting::create([
             'key' => 'accrual_policy',
             'value' => 'end_of_month',
-            'value_type' => 'string'
+            'value_type' => 'string',
         ]);
 
         LeaveSetting::create([
             'key' => 'monthly_accrual_days',
             'value' => '2.5',
-            'value_type' => 'decimal'
+            'value_type' => 'decimal',
         ]);
     }
 
     public function test_monthly_accrual_is_two_point_five()
     {
-        $employee = new Employee();
+        $employee = new Employee;
         $employee->leave_eligible = true;
 
         $referenceDate = Carbon::parse('2026-01-01');

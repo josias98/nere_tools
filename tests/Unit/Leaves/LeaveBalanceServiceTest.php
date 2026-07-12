@@ -5,10 +5,13 @@ namespace Tests\Unit\Leaves;
 use App\Models\Employee;
 use App\Models\LeaveBalance;
 use App\Models\LeaveRequest;
+use App\Models\LeaveType;
+use App\Models\User;
 use App\Services\Leaves\LeaveAccrualService;
 use App\Services\Leaves\LeaveBalanceService;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Str;
 use Tests\TestCase;
 
 class LeaveBalanceServiceTest extends TestCase
@@ -20,11 +23,11 @@ class LeaveBalanceServiceTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         // Use a mock for accrual service to isolate tests
         $accrualMock = $this->createMock(LeaveAccrualService::class);
         $accrualMock->method('calculateAccruedDays')->willReturn(5.0);
-        
+
         $this->service = new LeaveBalanceService($accrualMock);
     }
 
@@ -50,19 +53,19 @@ class LeaveBalanceServiceTest extends TestCase
         ]);
 
         // Mock 1 approved request (should be deducted from available)
-        $leaveType = \App\Models\LeaveType::create([
+        $leaveType = LeaveType::create([
             'name' => 'Test',
-            'slug' => 'test'
+            'slug' => 'test',
         ]);
 
-        $user = \App\Models\User::create([
+        $user = User::create([
             'name' => 'Test',
             'email' => 'test@test.com',
-            'password' => 'password'
+            'password' => 'password',
         ]);
 
         LeaveRequest::create([
-            'uuid' => \Illuminate\Support\Str::uuid(),
+            'uuid' => Str::uuid(),
             'employee_id' => $employee->id,
             'leave_type_id' => $leaveType->id,
             'start_date' => '2026-02-01',
@@ -74,7 +77,7 @@ class LeaveBalanceServiceTest extends TestCase
 
         foreach (['submitted', 'pending_supervisor', 'pending_hr', 'pending_dg'] as $index => $status) {
             LeaveRequest::create([
-                'uuid' => \Illuminate\Support\Str::uuid(),
+                'uuid' => Str::uuid(),
                 'employee_id' => $employee->id,
                 'leave_type_id' => $leaveType->id,
                 'start_date' => '2026-03-'.str_pad((string) ($index + 1), 2, '0', STR_PAD_LEFT),
@@ -89,7 +92,7 @@ class LeaveBalanceServiceTest extends TestCase
 
         // Expected available = 10 (initial) + 5 (mock accrued) - 3 (approved) = 12
         $this->assertEquals(12.0, $balance['available_balance']);
-        
+
         $this->assertEquals(8.0, $balance['pending_days']);
 
         $this->assertEquals(4.0, $balance['projected_balance']);

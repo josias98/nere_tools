@@ -10,14 +10,12 @@ use Throwable;
 
 class GraphMailService
 {
-    public function __construct(private GraphMailTokenService $tokens)
-    {
-    }
+    public function __construct(private GraphMailTokenService $tokens) {}
 
     /**
-     * @param array<int, string> $to
-     * @param array<int, string> $cc
-     * @param array<int, string> $bcc
+     * @param  array<int, string>  $to
+     * @param  array<int, string>  $cc
+     * @param  array<int, string>  $bcc
      */
     public function send(
         array $to,
@@ -111,7 +109,7 @@ class GraphMailService
     }
 
     /**
-     * @param array<int, string> $emails
+     * @param  array<int, string>  $emails
      * @return array<int, array<string, array<string, string>>>
      */
     private function recipients(array $emails): array

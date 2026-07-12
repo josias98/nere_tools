@@ -13,7 +13,7 @@ class LeaveDayCountServiceTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->service = new LeaveDayCountService();
+        $this->service = new LeaveDayCountService;
     }
 
     public function test_same_day_counts_as_one()

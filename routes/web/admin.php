@@ -1,14 +1,17 @@
 <?php
 
+use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Leaves\Admin\LeaveAdminController;
+use App\Http\Controllers\Leaves\Admin\LeaveDocumentAdminController;
+use App\Http\Controllers\Leaves\Admin\LeaveExportController;
+use App\Http\Controllers\Leaves\Admin\LeaveHolidayController;
+use App\Http\Controllers\Leaves\Admin\LeaveImportController;
+use App\Http\Controllers\Leaves\Admin\LeaveTypeController;
+use App\Http\Controllers\Leaves\Admin\LeaveValidatorController;
 use App\Models\LeaveSetting;
 use App\Models\LeaveValidator;
 use App\Models\NotificationLog;
 use App\Models\TimesheetGeneration;
-use App\Http\Controllers\Admin\UserController;
-use App\Http\Controllers\Leaves\Admin\LeaveAdminController;
-use App\Http\Controllers\Leaves\Admin\LeaveDocumentAdminController;
-use App\Http\Controllers\Leaves\Admin\LeaveImportController;
-use App\Http\Controllers\Leaves\Admin\LeaveValidatorController;
 use App\Models\Tool;
 use App\Models\User;
 use Illuminate\Support\Facades\Route;
@@ -145,4 +148,8 @@ Route::middleware(['auth', 'admin-area'])->group(function (): void {
     Route::delete('/admin/conges/validateurs/{validator}', [LeaveValidatorController::class, 'destroy'])->name('admin.leaves.validators.destroy');
     Route::get('/admin/conges/import/template', [LeaveImportController::class, 'template'])->name('admin.leaves.import.template');
     Route::post('/admin/conges/import', LeaveImportController::class)->name('admin.leaves.import');
+    Route::get('/admin/conges/export', LeaveExportController::class)->name('admin.leaves.export');
+    Route::put('/admin/conges/types/{leaveType}', [LeaveTypeController::class, 'update'])->name('admin.leaves.types.update');
+    Route::post('/admin/conges/jours-feries', [LeaveHolidayController::class, 'store'])->name('admin.leaves.holidays.store');
+    Route::delete('/admin/conges/jours-feries/{holiday}', [LeaveHolidayController::class, 'destroy'])->name('admin.leaves.holidays.destroy');
 });

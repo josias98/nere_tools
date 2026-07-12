@@ -13,7 +13,7 @@ class LeaveAccrualService
      */
     public function calculateAccruedDays(Employee $employee, Carbon $referenceDate, Carbon $targetDate): float
     {
-        if (!$employee->leave_eligible) {
+        if (! $employee->leave_eligible) {
             return 0;
         }
 
@@ -21,7 +21,7 @@ class LeaveAccrualService
         $monthlyAccrual = (float) (LeaveSetting::where('key', 'monthly_accrual_days')->value('value') ?? 2.5);
 
         $months = 0;
-        
+
         if ($accrualPolicy === 'end_of_month') {
             $currentDate = $referenceDate->copy()->endOfMonth();
             $targetDateEnd = $targetDate->copy()->endOfDay();

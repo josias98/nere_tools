@@ -12,8 +12,8 @@ class LeaveHistoryController extends Controller
     public function index(Request $request)
     {
         $user = Auth::user();
-        
-        if (!$user->employee) {
+
+        if (! $user->employee) {
             return redirect()->route('dashboard')->with('error', 'Profil employé manquant.');
         }
 
@@ -22,7 +22,7 @@ class LeaveHistoryController extends Controller
         if ($request->has('year') && $request->year) {
             $query->whereYear('start_date', $request->year);
         }
-        
+
         if ($request->has('status') && $request->status) {
             $query->where('status', $request->status);
         }

@@ -38,6 +38,7 @@ class LeaveImportService
 
             if (is_string($employeeResult)) {
                 $this->skip($report, $employeeResult);
+
                 continue;
             }
 
@@ -45,11 +46,13 @@ class LeaveImportService
 
             if ($remaining === null) {
                 $this->skip($report, 'Ligne '.$report['rows_read'].': solde_restant est obligatoire.');
+
                 continue;
             }
 
             if ($remaining < 0 && ! config('leaves.allow_negative_balance_import')) {
                 $this->skip($report, 'Ligne '.$report['rows_read'].': solde negatif refuse.');
+
                 continue;
             }
 
@@ -96,8 +99,8 @@ class LeaveImportService
     }
 
     /**
-     * @param array<int, string> $headers
-     * @param array<int, string> $row
+     * @param  array<int, string>  $headers
+     * @param  array<int, string>  $row
      * @return array<string, string>
      */
     private function row(array $headers, array $row): array

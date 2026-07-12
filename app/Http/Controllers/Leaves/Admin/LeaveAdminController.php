@@ -5,18 +5,22 @@ namespace App\Http\Controllers\Leaves\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Department;
 use App\Models\Employee;
+use App\Models\LeaveHoliday;
 use App\Models\LeaveRequest;
 use App\Models\LeaveSetting;
+use App\Models\LeaveType;
 use App\Models\LeaveValidator;
 use App\Models\NotificationLog;
+use App\Services\Leaves\LeaveBalanceService;
 use App\Services\Leaves\LeaveNotificationService;
+use App\Services\Leaves\LeaveReportQuery;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class LeaveAdminController extends Controller
 {
-    public function index(Request $request): View
+    public function index(Request $request, LeaveReportQuery $reports, LeaveBalanceService $balances): View
     {
         $filters = [
             'status' => (string) $request->string('status'),
@@ -27,17 +31,17 @@ class LeaveAdminController extends Controller
             'to' => (string) $request->string('to'),
         ];
 
-        $requests = LeaveRequest::query()
-            ->with(['employee.department', 'leaveType', 'currentApproval', 'document', 'approvals.validatorUser.employee'])
-            ->when($filters['status'] !== '', fn ($query) => $query->where('status', $filters['status']))
-            ->when($filters['step'] !== '', fn ($query) => $query->where('status', 'pending_'.$filters['step']))
-            ->when($filters['department_id'] !== '', fn ($query) => $query->whereHas('employee', fn ($employee) => $employee->where('department_id', $filters['department_id'])))
-            ->when($filters['employee_id'] !== '', fn ($query) => $query->where('employee_id', $filters['employee_id']))
-            ->when($filters['from'] !== '', fn ($query) => $query->whereDate('start_date', '>=', $filters['from']))
-            ->when($filters['to'] !== '', fn ($query) => $query->whereDate('end_date', '<=', $filters['to']))
-            ->latest('submitted_at')
+        $requests = $reports->requests($filters)
             ->paginate(15)
             ->withQueryString();
+
+        $today = now()->toDateString();
+        $summary = [
+            'absent_today' => LeaveRequest::query()->where('status', 'approved')->whereDate('start_date', '<=', $today)->whereDate('end_date', '>=', $today)->count(),
+            'next_30_days' => LeaveRequest::query()->where('status', 'approved')->whereBetween('start_date', [now()->addDay(), now()->addDays(30)])->count(),
+            'pending' => LeaveRequest::query()->whereIn('status', ['pending_supervisor', 'pending_hr', 'pending_dg'])->count(),
+            'missing_attachments' => LeaveRequest::query()->whereHas('leaveType', fn ($q) => $q->where('requires_attachment', true))->doesntHave('attachments')->count(),
+        ];
 
         return view('leaves.admin.index', [
             'employees' => Employee::query()->with('department')->orderBy('display_name')->get(),
@@ -47,6 +51,10 @@ class LeaveAdminController extends Controller
             'requests' => $requests,
             'filters' => $filters,
             'signatureExists' => is_file(storage_path('app/signatures/dg-signature.png')) || is_file(public_path('brand/dg-signature.png')),
+            'summary' => $summary,
+            'personnel' => $reports->employees($filters)->paginate(20, ['*'], 'personnel_page')->withQueryString()->through(fn ($employee) => ['employee' => $employee, 'balance' => $balances->getBalance($employee)]),
+            'leaveTypes' => LeaveType::query()->with('rules')->orderBy('name')->get(),
+            'holidays' => LeaveHoliday::query()->orderBy('date')->get(),
         ]);
     }
 

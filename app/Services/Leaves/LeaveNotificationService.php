@@ -10,9 +10,7 @@ use Illuminate\Support\Facades\Log;
 
 class LeaveNotificationService
 {
-    public function __construct(private LeaveValidatorService $validators)
-    {
-    }
+    public function __construct(private LeaveValidatorService $validators) {}
 
     public function requestSubmitted(LeaveRequest $request): void
     {
@@ -125,7 +123,7 @@ class LeaveNotificationService
     }
 
     /**
-     * @param array<int, string> $recipients
+     * @param  array<int, string>  $recipients
      */
     private function queue(
         string $action,
@@ -157,7 +155,7 @@ class LeaveNotificationService
     }
 
     /**
-     * @param array<int, string> $recipients
+     * @param  array<int, string>  $recipients
      */
     private function logNotification(
         string $action,
