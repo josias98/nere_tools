@@ -30,6 +30,20 @@ class LeaveModuleTest extends TestCase
             ->assertSee('Demandes de congé');
     }
 
+    public function test_leave_form_has_readable_utf8_copy_and_accessible_fields(): void
+    {
+        [$user] = $this->userWithEmployee();
+
+        $this->actingAs($user)
+            ->get(route('leaves.create'))
+            ->assertOk()
+            ->assertSee('Sélectionnez les dates pour vérifier le solde.')
+            ->assertSee('Quel congé souhaitez-vous prendre ?')
+            ->assertSee('aria-live="polite"', false)
+            ->assertSee('for="leave_start_date"', false)
+            ->assertDontSee('SÃ©lectionnez');
+    }
+
     public function test_user_without_employee_is_redirected_from_leave_dashboard(): void
     {
         $user = User::factory()->create(['role' => User::ROLE_USER]);
