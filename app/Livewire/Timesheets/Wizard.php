@@ -9,6 +9,7 @@ use App\Modules\Timesheets\Support\TimesheetCsvParser;
 use App\Services\TimesheetService;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Locked;
@@ -114,9 +115,13 @@ class Wizard extends Component
         $this->authorizeAction();
         $this->csvErrors = [];
         $this->validate(['csvFile' => ['required', 'file', 'mimes:csv,txt', 'mimetypes:text/plain,text/csv,application/csv,application/vnd.ms-excel', 'max:1024']]);
-        RateLimiter::attempt('timesheet-upload:'.auth()->id(), 10, function () use ($parser): void {
-            $this->rows = $parser->parse($this->csvFile->getRealPath());
-        }, 60) || throw ValidationException::withMessages(['csvFile' => 'Trop de téléversements. Réessayez dans une minute.']);
+        try {
+            RateLimiter::attempt('timesheet-upload:'.auth()->id(), 10, function () use ($parser): void {
+                $this->rows = $parser->parse($this->csvFile->getRealPath());
+            }, 60) || throw ValidationException::withMessages(['csvFile' => 'Trop de téléversements. Réessayez dans une minute.']);
+        } catch (RuntimeException $exception) {
+            throw ValidationException::withMessages(['csvFile' => $exception->getMessage()]);
+        }
         AuditLog::query()->create(['user_id' => auth()->id(), 'action' => 'timesheet.csv_analyzed', 'metadata' => ['rows' => count($this->rows)]]);
         $this->csvFile = null;
         $this->notice = count($this->rows).' ligne(s) analysée(s). Vous pouvez les corriger.';
@@ -160,6 +165,13 @@ class Wizard extends Component
         $this->validate(['confirmed' => ['accepted']], ['confirmed.accepted' => 'Confirmez la génération du lot.']);
 
         $key = 'timesheet-generation:'.auth()->id().':'.hash('sha256', json_encode([$this->periodStart, $this->periodEnd, $this->rows]));
+        if ($uuid = Cache::get($key.':result')) {
+            $this->generationUuid = $uuid;
+            $this->step = 6;
+            $this->notice = 'Ce lot avait déjà été généré. Le livrable existant a été retrouvé.';
+
+            return;
+        }
         if (! RateLimiter::attempt('timesheet-generate:'.auth()->id(), 5, fn (): bool => true, 60)) {
             throw ValidationException::withMessages(['generation' => 'Trop de générations. Réessayez dans une minute.']);
         }
@@ -175,6 +187,7 @@ class Wizard extends Component
                 'zip_label' => $this->zipLabel,
             ]);
             $this->generationUuid = $generation->uuid;
+            Cache::put($key.':result', $generation->uuid, now()->addMinutes(10));
             $this->step = 6;
             $this->notice = 'Le lot a été généré avec succès.';
         } catch (RuntimeException $exception) {
@@ -221,7 +234,7 @@ class Wizard extends Component
     {
         $this->validate([
             'rows' => ['required', 'array', 'min:1', 'max:500'],
-            'rows.*.employee_id' => ['required', 'integer', 'distinct', 'exists:employees,id'],
+            'rows.*.employee_id' => ['required', 'integer', 'distinct', Rule::exists('employees', 'id')->where('is_active', true)],
             'rows.*.first_name' => ['nullable', 'string', 'max:80'],
             'rows.*.last_name' => ['nullable', 'string', 'max:80'],
             'rows.*.entity_name' => ['nullable', 'string', 'max:80'],
@@ -254,6 +267,14 @@ class Wizard extends Component
             'signatory_name' => $employee->signatory_name, 'signature_title' => $employee->signature_title,
             'comments_label' => 'Commentaires / Détails', 'include_comments' => 1,
         ];
+    }
+
+    public function rowTotal(int $index): float
+    {
+        $row = $this->rows[$index] ?? [];
+
+        return collect(['ipas_rate', 'catal_rate', 'ipde_rate', 'other_projects_rate'])
+            ->sum(fn (string $key): float => (float) ($row[$key] ?? 0));
     }
 
     private function authorizeAction(): void

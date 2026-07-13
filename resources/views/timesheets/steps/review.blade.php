@@ -3,7 +3,7 @@
     <div class="ts-summary"><span><small>Période</small><strong>{{ \Carbon\Carbon::parse($periodStart)->format('d/m/Y') }} – {{ \Carbon\Carbon::parse($periodEnd)->format('d/m/Y') }}</strong></span><span><small>Collaborateurs</small><strong>{{ count($rows) }}</strong></span><span><small>Mode</small><strong>{{ $method === 'csv' ? 'Import CSV' : 'Saisie manuelle' }}</strong></span></div>
     <div class="ts-review-list">
         @foreach ($rows as $index => $row)
-            @php($total = collect(['ipas_rate','catal_rate','ipde_rate','other_projects_rate'])->sum(fn($key) => (float) ($row[$key] ?? 0)))
+            @php($total = $this->rowTotal($index))
             <article class="ts-allocation" wire:key="allocation-{{ $row['employee_id'] }}">
                 <header><div><h3>{{ $row['first_name'] }} {{ $row['last_name'] }}</h3><p>{{ $row['entity_name'] ?: 'Entité non renseignée' }}</p></div><span @class(['nc-badge', 'active' => abs($total - 100) < .01, 'warning' => abs($total - 100) >= .01])>{{ round($total, 2) }} %</span></header>
                 <div class="ts-rate-grid">@foreach(['ipas_rate'=>'IPAS','catal_rate'=>'CATAL','ipde_rate'=>'IPDE','other_projects_rate'=>'Autres projets'] as $field => $label)<div class="nc-field"><label for="row_{{ $index }}_{{ $field }}">{{ $label }}</label><div class="ts-percent"><input id="row_{{ $index }}_{{ $field }}" type="number" min="0" max="100" step="0.01" wire:model.live.debounce.250ms="rows.{{ $index }}.{{ $field }}"><span>%</span></div>@error("rows.$index.$field")<small class="nc-error">{{ $message }}</small>@enderror</div>@endforeach</div>

@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Livewire\Timesheets\Wizard;
 use App\Models\Employee;
+use App\Models\TimesheetGeneration;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Storage;
@@ -20,7 +21,7 @@ class TimesheetWizardTest extends TestCase
         $employee = $this->employee();
 
         $this->actingAs($user);
-        Livewire::test(Wizard::class)
+        $component = Livewire::test(Wizard::class)
             ->call('chooseMethod', 'manual')
             ->assertSet('step', 2)
             ->call('next')
@@ -42,7 +43,7 @@ class TimesheetWizardTest extends TestCase
         $employee = $this->employee();
 
         $this->actingAs($user);
-        Livewire::test(Wizard::class)
+        $component = Livewire::test(Wizard::class)
             ->set('method', 'manual')
             ->set('step', 3)
             ->call('addEmployee', $employee->id)
@@ -53,8 +54,24 @@ class TimesheetWizardTest extends TestCase
             ->assertHasNoErrors()
             ->assertSet('step', 6);
 
+        $component->call('generate')->assertHasNoErrors()->assertSet('step', 6);
+
         $this->assertDatabaseCount('timesheet_generations', 1);
         $this->assertDatabaseHas('audit_logs', ['action' => 'timesheet.generated', 'user_id' => $user->id]);
+    }
+
+    public function test_user_cannot_open_another_users_generation(): void
+    {
+        $owner = User::factory()->create(['role' => User::ROLE_FINANCE]);
+        $other = User::factory()->create(['role' => User::ROLE_FINANCE]);
+        $generation = TimesheetGeneration::query()->create([
+            'uuid' => fake()->uuid(), 'period_start' => '2026-01-01', 'period_end' => '2026-01-31',
+            'year' => 2026, 'period_label' => 'Janvier', 'generated_by_user_id' => $owner->id,
+            'employee_count' => 1, 'pdf_count' => 1, 'status' => 'completed',
+        ]);
+
+        $this->actingAs($other)->get(route('timesheets.result', $generation))->assertForbidden();
+        $this->actingAs($owner)->get(route('timesheets.result', $generation))->assertOk();
     }
 
     private function employee(): Employee

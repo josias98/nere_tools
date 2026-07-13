@@ -6,10 +6,12 @@ use App\Models\AuditLog;
 use App\Models\Employee;
 use App\Models\TimesheetGeneration;
 use App\Models\TimesheetGenerationFile;
+use App\Models\User;
 use App\Modules\Timesheets\Support\TimesheetCsvParser;
 use App\Services\TimesheetService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
@@ -151,6 +153,8 @@ class TimesheetController extends Controller
 
     public function result(TimesheetGeneration $generation): View
     {
+        Gate::authorize('view', $generation);
+
         return view('timesheets.result', [
             'generation' => $generation->load(['files.employee', 'user']),
         ]);
@@ -158,13 +162,19 @@ class TimesheetController extends Controller
 
     public function history(): View
     {
+        $query = TimesheetGeneration::query()->with('user')->latest();
+        if (request()->user()->role !== User::ROLE_ADMIN) {
+            $query->where('generated_by_user_id', request()->user()->id);
+        }
+
         return view('timesheets.history', [
-            'generations' => TimesheetGeneration::query()->with('user')->latest()->paginate(20),
+            'generations' => $query->paginate(20),
         ]);
     }
 
     public function downloadFile(TimesheetGenerationFile $file): StreamedResponse
     {
+        Gate::authorize('view', $file->generation);
         abort_unless(Storage::disk('local')->exists($file->file_path), 404);
         AuditLog::query()->create(['user_id' => request()->user()->id, 'action' => 'timesheet.file_downloaded', 'auditable_type' => TimesheetGenerationFile::class, 'auditable_id' => $file->id]);
 
@@ -173,6 +183,7 @@ class TimesheetController extends Controller
 
     public function downloadZip(TimesheetGeneration $generation): StreamedResponse
     {
+        Gate::authorize('view', $generation);
         abort_unless($generation->zip_path && Storage::disk('local')->exists($generation->zip_path), 404);
         AuditLog::query()->create(['user_id' => request()->user()->id, 'action' => 'timesheet.zip_downloaded', 'auditable_type' => TimesheetGeneration::class, 'auditable_id' => $generation->id]);
 
