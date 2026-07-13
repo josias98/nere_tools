@@ -8,3 +8,5 @@ document.addEventListener('DOMContentLoaded', () => {
     bootTimesheetPage();
     bootLeavePage();
 });
+
+document.addEventListener('nere:icons-refresh', () => createIcons({ icons }));

@@ -1,5 +1,5 @@
 export const bootTimesheetPage = () => {
-    document.addEventListener('alpine:init', () => {
+    const register = () => {
         Alpine.data('timesheetWizard', () => ({
             dirty: false,
             init() {
@@ -12,7 +12,7 @@ export const bootTimesheetPage = () => {
                 window.addEventListener('beforeunload', (event) => {
                     if (this.dirty && this.$wire.step > 1 && this.$wire.step < 6) event.preventDefault();
                 });
-                document.addEventListener('livewire:navigated', () => window.lucide?.createIcons());
+                document.addEventListener('livewire:navigated', () => document.dispatchEvent(new CustomEvent('nere:icons-refresh')));
             },
             persist() {
                 if (this.$wire.step === 6) return sessionStorage.removeItem('nere.timesheet-wizard');
@@ -22,5 +22,8 @@ export const bootTimesheetPage = () => {
                 }));
             },
         }));
-    });
+    };
+
+    if (window.Alpine) register();
+    else document.addEventListener('alpine:init', register, { once: true });
 };
