@@ -40,4 +40,13 @@ class TimesheetCsvParserTest extends TestCase
         $this->assertSame('Nere Capital', $rows[0]['entity_name']);
         $this->assertSame('Ouagadougou', $rows[0]['location']);
     }
+
+    public function test_parser_reports_the_exact_line_when_columns_do_not_match(): void
+    {
+        $path = storage_path('framework/testing/timesheet-parser-invalid.csv');
+        file_put_contents($path, "prenom;nom\nAwa;Kaboré;colonne inattendue\n");
+
+        $this->expectExceptionMessage('Ligne 2 : 3 colonne(s) reçue(s), 2 attendue(s).');
+        app(TimesheetCsvParser::class)->parse($path);
+    }
 }
