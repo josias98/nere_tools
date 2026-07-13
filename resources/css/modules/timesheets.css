@@ -694,7 +694,7 @@
 .ts-stepper-status { display: grid; gap: 5px; margin: auto 18px 18px; padding-top: 16px; border-top: 1px solid var(--ip-line-strong); }
 .ts-stepper-status span { color: var(--ip-orange)!important; font-size: 10px!important; text-transform: uppercase; }
 .ts-stepper-status strong { color: var(--ip-brown); font-family: var(--font-title); font-size: 16px; line-height: 1.25; }
-.ts-workbench .ts-stage { min-width: 0; min-height: 520px; border: 0; box-shadow: none; }
+.ts-workbench .ts-stage { grid-column: 2; min-width: 0; min-height: 520px; border: 0; box-shadow: none; }
 .ts-workbench .ts-step-panel { max-width: 900px; padding: clamp(32px, 5vw, 62px); }
 .ts-workbench .ts-step-heading { max-width: 670px; margin-bottom: 34px; }
 .ts-workbench .ts-step-heading > span { color: var(--ip-ochre); letter-spacing: .07em; }
@@ -750,7 +750,7 @@
     .ts-workbench .ts-stepper div::before { inset: auto 0 0; width: auto; height: 3px; }
     .ts-workbench .ts-stepper small { display: none; }
     .ts-stepper-status { grid-column: 1 / -1; margin: 0; padding: 12px 14px; border-top: 1px solid var(--ip-line); }
-    .ts-workbench .ts-stage { min-height: 470px; }
+    .ts-workbench .ts-stage { grid-column: 1; min-height: 470px; }
     .ts-workbench .ts-step-panel { padding: 28px 16px; }
     .ts-workbench .ts-method-grid,.ts-context-preview,.ts-workbench .ts-rate-grid { grid-template-columns: minmax(0, 1fr); }
     .ts-workbench .ts-method-card { min-height: 280px; }

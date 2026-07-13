@@ -8,6 +8,11 @@
         <a class="nc-ghost" href="{{ route('timesheets.history') }}">Voir l’historique</a>
     </header>
 
+    <div aria-live="polite" aria-atomic="true">
+        @if ($notice)<div class="nc-alert is-success ts-toast" role="status">{{ $notice }}</div>@endif
+        @error('generation')<div class="nc-alert ts-toast" role="alert">{{ $message }}</div>@enderror
+    </div>
+
     <div class="ts-workbench-shell">
     <nav class="ts-stepper" aria-label="Progression du lot">
         @foreach (['Méthode', 'Contexte', 'Données', 'Vérification', 'Génération', 'Livrable'] as $number => $label)
@@ -17,11 +22,6 @@
         @endforeach
         <p class="ts-stepper-status"><span>Étape {{ $step }} / 6</span><strong>{{ ['Choisir le point de départ', 'Cadre du lot', 'Constituer les données', 'Contrôler les répartitions', 'Confirmer le traitement', 'Récupérer les fichiers'][$step - 1] }}</strong></p>
     </nav>
-
-    <div aria-live="polite" aria-atomic="true">
-        @if ($notice)<div class="nc-alert is-success ts-toast" role="status">{{ $notice }}</div>@endif
-        @error('generation')<div class="nc-alert ts-toast" role="alert">{{ $message }}</div>@enderror
-    </div>
 
     <div class="ts-stage" wire:loading.class="is-loading" aria-busy="{{ $this->getErrorBag()->isNotEmpty() ? 'false' : 'false' }}">
         <div class="ts-loading" wire:loading.flex><span class="ts-spinner" aria-hidden="true"></span><span>Traitement en cours…</span></div>
