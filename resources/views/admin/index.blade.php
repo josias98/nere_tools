@@ -3,7 +3,10 @@
 @section('content')
 <div class="admin-workspace" data-admin-workspace>
     <aside class="admin-sidebar" aria-label="Navigation de l’administration">
-        <a class="admin-sidebar-brand" href="{{ route('admin.index') }}">Centre d’administration</a>
+        <div class="admin-sidebar-heading">
+            <span class="admin-sidebar-mark" aria-hidden="true"><i data-lucide="settings-2"></i></span>
+            <div><span>Administration</span><strong>Centre de pilotage</strong></div>
+        </div>
         <nav>
             <a class="is-active" href="{{ route('admin.index') }}"><i data-lucide="layout-dashboard"></i> Vue d’ensemble</a>
             <a href="{{ route('admin.users.index') }}"><i data-lucide="users"></i> Utilisateurs et accès</a>
@@ -17,7 +20,7 @@
 
     <main class="admin-content">
         <header class="admin-topbar">
-            <div><p class="nc-kicker">Pilotage</p><h1>Vue d’ensemble</h1><p>Les décisions importantes, les anomalies et les accès au même endroit.</p></div>
+            <div class="admin-title"><p class="nc-kicker">Administration</p><h1>Vue d’ensemble</h1><p>Les décisions importantes, les anomalies et les accès au même endroit.</p></div>
             <label class="admin-search"><span class="sr-only">Rechercher un paramètre</span><i data-lucide="search"></i><input type="search" placeholder="Rechercher un réglage…" data-admin-search></label>
         </header>
 
