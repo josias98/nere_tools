@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers\Leaves\Admin;
 
+use App\Actions\Settings\UpdateLeaveSettings;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Leaves\UpdateLeaveSettingsRequest;
 use App\Models\Department;
 use App\Models\Employee;
 use App\Models\LeaveHoliday;
@@ -164,18 +166,14 @@ class LeaveAdminController extends Controller
         return back()->with('success', 'Collaborateur mis à jour.');
     }
 
-    public function updateSettings(Request $request): RedirectResponse
+    public function updateSettings(UpdateLeaveSettingsRequest $request, UpdateLeaveSettings $action): RedirectResponse
     {
-        $data = $request->validate([
-            'monthly_accrual_days' => ['required', 'numeric', 'min:0'],
-            'accrual_policy' => ['required', 'in:end_of_month,start_of_month,prorated'],
-            'LEAVE_CERTIFICATE_SIGNATORY_NAME' => ['nullable', 'string', 'max:255'],
-            'LEAVE_CERTIFICATE_SIGNATORY_TITLE' => ['nullable', 'string', 'max:255'],
-        ]);
+        $data = $request->validated();
+        $expectedUpdatedAt = $data['settings_updated_at'] ?? null;
+        $reason = $data['change_reason'] ?? null;
+        unset($data['settings_updated_at'], $data['change_reason']);
 
-        foreach ($data as $key => $value) {
-            LeaveSetting::query()->updateOrCreate(['key' => $key], ['value' => (string) $value]);
-        }
+        $action->execute($data, $request->user(), $expectedUpdatedAt, $reason, $request->ip());
 
         return back()->with('success', 'Paramètres enregistrés.');
     }

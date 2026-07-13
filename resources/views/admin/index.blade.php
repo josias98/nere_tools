@@ -1,145 +1,58 @@
-@extends('layouts.app', [
-    'title' => 'Administration - Nere Tools',
-    'breadcrumbs' => [
-        ['label' => 'Dashboard', 'url' => route('dashboard')],
-        ['label' => 'Administration'],
-    ],
-])
+@extends('layouts.app', ['title' => 'Centre d’administration - Néré Tools'])
 
 @section('content')
-    <section class="nc-page">
-        <div class="nc-title-row">
-            <div>
-                <p class="nc-kicker">Administration</p>
-                <h1 class="nc-title">Reglages du portail</h1>
-                <p class="nc-lead">Ici, vous pilotez ce qui s'applique a tout le monde, puis ce qui reste propre a chaque module. L'objectif est simple: savoir qui peut entrer, qui peut faire quoi, et ou regler chaque sujet sans hesitation.</p>
-            </div>
-        </div>
+<div class="admin-workspace" data-admin-workspace>
+    <aside class="admin-sidebar" aria-label="Navigation de l’administration">
+        <a class="admin-sidebar-brand" href="{{ route('admin.index') }}">Centre d’administration</a>
+        <nav>
+            <a class="is-active" href="{{ route('admin.index') }}"><i data-lucide="layout-dashboard"></i> Vue d’ensemble</a>
+            <a href="{{ route('admin.users.index') }}"><i data-lucide="users"></i> Utilisateurs et accès</a>
+            <a href="{{ route('admin.leaves.index') }}"><i data-lucide="calendar-range"></i> Congés</a>
+            <a href="{{ route('timesheets.index') }}"><i data-lucide="file-text"></i> Feuilles de temps</a>
+            <a href="{{ route('admin.leaves.index') }}#workflow"><i data-lucide="git-branch"></i> Workflows et validations</a>
+            <a href="{{ route('admin.leaves.notifications.index') }}"><i data-lucide="bell"></i> Notifications</a>
+            <a href="{{ route('admin.leaves.index') }}#imports"><i data-lucide="arrow-left-right"></i> Imports et exports</a>
+        </nav>
+    </aside>
 
-        <div class="nc-overview-grid">
-            @foreach ($userStats as $stat)
-                <article class="nc-panel nc-overview-card">
-                    <span class="nc-overview-icon" aria-hidden="true">
-                        <i data-lucide="{{ $stat['icon'] }}" class="nc-icon"></i>
-                    </span>
-                    <span class="nc-kicker">{{ $stat['label'] }}</span>
-                    <strong class="nc-overview-value">{{ $stat['value'] }}</strong>
-                    <p>{{ $stat['helper'] }}</p>
-                </article>
-            @endforeach
-        </div>
+    <main class="admin-content">
+        <header class="admin-topbar">
+            <div><p class="nc-kicker">Pilotage</p><h1>Vue d’ensemble</h1><p>Les décisions importantes, les anomalies et les accès au même endroit.</p></div>
+            <label class="admin-search"><span class="sr-only">Rechercher un paramètre</span><i data-lucide="search"></i><input type="search" placeholder="Rechercher un réglage…" data-admin-search></label>
+        </header>
 
-        <div class="nc-admin-shell">
-            <div class="nc-admin-stack">
-                <section class="nc-panel nc-panel-premium">
-                    <div class="nc-panel-heading">
-                        <div>
-                            <p class="nc-kicker">Reglages globaux</p>
-                            <h2>Acces, roles et droits</h2>
-                            <p>Cet espace sert a autoriser les connexions, attribuer un role lisible et ouvrir les bons modules a la bonne personne.</p>
-                        </div>
-                        <a href="{{ route('admin.users.index') }}" class="nc-button">
-                            <i data-lucide="users" class="nc-icon" aria-hidden="true"></i>
-                            Gerer les utilisateurs
-                        </a>
-                    </div>
+        @include('leaves.partials.flash')
 
-                    <div class="nc-role-grid">
-                        @foreach ($roleCards as $role)
-                            <article class="nc-card nc-role-card">
-                                <div class="nc-role-head">
-                                    <span class="nc-role-icon" aria-hidden="true">
-                                        <i data-lucide="{{ $role['icon'] }}" class="nc-icon"></i>
-                                    </span>
-                                    <div>
-                                        <h3>{{ $role['label'] }}</h3>
-                                        <span class="nc-role-count">{{ $role['count'] }} compte(s)</span>
-                                    </div>
-                                </div>
-                                <p>{{ $role['summary'] }}</p>
-                            </article>
-                        @endforeach
-                    </div>
-                </section>
-            </div>
-
-            <aside class="nc-admin-stack">
-                <section class="nc-panel nc-admin-note">
-                    <div class="nc-panel-heading">
-                        <div>
-                            <p class="nc-kicker">Mode d'emploi</p>
-                            <h2>Par ou commencer</h2>
-                        </div>
-                    </div>
-                    <ul class="nc-list">
-                        <li>Commencez par verifier que la personne est bien autorisee a se connecter avec son adresse Microsoft 365.</li>
-                        <li>Choisissez ensuite un role simple a comprendre, puis ouvrez seulement les modules utiles a son travail.</li>
-                        <li>Quand un module a sa propre logique, ouvrez ses reglages dedies juste en dessous plutot que de tout melanger ici.</li>
-                    </ul>
-                </section>
-
-                <section class="nc-panel nc-admin-note">
-                    <div class="nc-panel-heading">
-                        <div>
-                            <p class="nc-kicker">Bon reflexe</p>
-                            <h2>Ce qui reste global</h2>
-                        </div>
-                    </div>
-                    <ul class="nc-list">
-                        <li>Les roles cadrent le niveau de responsabilite dans le portail.</li>
-                        <li>Les acces par module servent a ouvrir ou fermer les espaces de travail.</li>
-                        <li>Les parametrages metier restent dans leur module pour eviter les confusions.</li>
-                    </ul>
-                </section>
-            </aside>
-        </div>
-
-        <section class="nc-panel">
-            <div class="nc-panel-heading">
-                <div>
-                    <p class="nc-kicker">Reglages par module</p>
-                    <h2>Chaque module garde son espace</h2>
-                    <p>Vous retrouvez ici les reglages vraiment utiles par domaine. Quand un module n'a pas encore de back-office dedie, on vous le dit clairement au lieu de simuler des options vides.</p>
-                </div>
-            </div>
-
-            <div class="nc-admin-module-grid">
-                @foreach ($moduleCards as $module)
-                    <article class="nc-card nc-admin-card">
-                        <div class="nc-admin-card-head">
-                            <span class="nc-card-symbol" aria-hidden="true">
-                                <i data-lucide="{{ $module['icon'] }}" class="nc-icon"></i>
-                            </span>
-                            <div>
-                                <h3>{{ $module['name'] }}</h3>
-                                <p>{{ $module['summary'] }}</p>
-                            </div>
-                        </div>
-
-                        <dl class="nc-admin-facts">
-                            @foreach ($module['facts'] as $label => $value)
-                                <div>
-                                    <dt>{{ $label }}</dt>
-                                    <dd>{{ $value }}</dd>
-                                </div>
-                            @endforeach
-                        </dl>
-
-                        <div class="nc-actions">
-                            <a href="{{ $module['action_url'] }}" class="nc-button is-secondary">
-                                <i data-lucide="arrow-right" class="nc-icon" aria-hidden="true"></i>
-                                {{ $module['action_label'] }}
-                            </a>
-                            @if ($module['secondary_url'])
-                                <a href="{{ $module['secondary_url'] }}" class="nc-ghost">
-                                    <i data-lucide="eye" class="nc-icon" aria-hidden="true"></i>
-                                    {{ $module['secondary_label'] }}
-                                </a>
-                            @endif
-                        </div>
-                    </article>
+        <section aria-labelledby="health-title">
+            <div class="admin-section-heading"><div><p class="nc-kicker">Modules</p><h2 id="health-title">Santé de la configuration</h2></div><span class="nc-badge">{{ $activeUsers }} comptes actifs</span></div>
+            <div class="admin-health-grid">
+                @foreach ($modules as $key => $module)
+                    <a class="admin-health-card" href="{{ $module['url'] }}" data-searchable="{{ $module['name'] }}">
+                        <span class="nc-card-symbol"><i data-lucide="{{ $module['icon'] }}"></i></span>
+                        <span><strong>{{ $module['name'] }}</strong><small>{{ $module['issues']->count() }} point(s) à vérifier</small></span>
+                        <x-admin.configuration-health :health="$module['health']" />
+                    </a>
                 @endforeach
             </div>
         </section>
-    </section>
+
+        <section class="admin-panel" aria-labelledby="issues-title">
+            <div class="admin-section-heading"><div><p class="nc-kicker">À traiter</p><h2 id="issues-title">Recommandations prioritaires</h2></div>
+                <form class="admin-filters" method="GET"><select name="module" aria-label="Filtrer par module"><option value="">Tous les modules</option><option value="conges" @selected(request('module') === 'conges')>Congés</option><option value="timesheets" @selected(request('module') === 'timesheets')>Feuilles de temps</option></select><select name="status" aria-label="Filtrer par criticité"><option value="">Toutes les criticités</option><option value="error" @selected(request('status') === 'error')>Erreurs</option><option value="warning" @selected(request('status') === 'warning')>Attention</option><option value="info" @selected(request('status') === 'info')>Information</option></select><button class="nc-ghost">Filtrer</button></form>
+            </div>
+            <div class="admin-issue-list">
+                @forelse ($issues as $issue)
+                    <x-admin.risk-warning :severity="$issue['severity']" :title="$issue['title']" :description="$issue['description']" :url="$issue['url']" />
+                @empty
+                    <x-ui.empty-state title="Configuration saine" description="Aucune anomalie ne correspond aux filtres sélectionnés." />
+                @endforelse
+            </div>
+        </section>
+
+        <div class="admin-columns">
+            <x-admin.recommendation-card title="Valider les circuits avant ouverture" source="Bonne pratique" recommended="Un valideur principal et un suppléant par étape" risk="Une demande peut rester bloquée pendant une absence." example="Le responsable hiérarchique valide, puis RH contrôle le solde." :url="route('admin.leaves.index').'#workflow'" />
+            <section class="admin-panel"><p class="nc-kicker">Historique</p><h2>Dernières modifications</h2><ol class="admin-timeline">@forelse($recentChanges as $change)<li><strong>{{ str_replace('.', ' · ', $change->action) }}</strong><small>{{ $change->created_at->diffForHumans() }}</small></li>@empty<li>Aucune modification enregistrée.</li>@endforelse</ol></section>
+        </div>
+    </main>
+</div>
 @endsection

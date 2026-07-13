@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Leaves\Admin\LeaveAdminController;
 use App\Http\Controllers\Leaves\Admin\LeaveDocumentAdminController;
@@ -17,7 +18,9 @@ use App\Models\User;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth', 'admin-area'])->group(function (): void {
-    Route::get('/admin', function () {
+    Route::get('/admin', AdminDashboardController::class)->name('admin.index');
+    /* Legacy dashboard implementation retained below temporarily during migration. */
+    Route::get('/admin/legacy', function () {
         $roleCounts = User::query()
             ->selectRaw('role, COUNT(*) as aggregate')
             ->groupBy('role')
@@ -128,7 +131,7 @@ Route::middleware(['auth', 'admin-area'])->group(function (): void {
             )->values(),
             'moduleCards' => $moduleCards,
         ]);
-    })->name('admin.index');
+    })->name('admin.legacy');
 
     Route::get('/admin/users', [UserController::class, 'index'])->name('admin.users.index');
     Route::post('/admin/users', [UserController::class, 'store'])->name('admin.users.store');
