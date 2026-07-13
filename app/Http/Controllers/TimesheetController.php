@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AuditLog;
 use App\Models\Employee;
 use App\Models\TimesheetGeneration;
 use App\Models\TimesheetGenerationFile;
@@ -38,7 +39,7 @@ class TimesheetController extends Controller
     public function uploadCsv(Request $request, TimesheetCsvParser $parser): RedirectResponse
     {
         $data = $request->validate([
-            'csv_file' => ['required', 'file', 'max:1024'],
+            'csv_file' => ['required', 'file', 'mimes:csv,txt', 'mimetypes:text/plain,text/csv,application/csv,application/vnd.ms-excel', 'max:1024'],
         ]);
 
         try {
@@ -52,6 +53,7 @@ class TimesheetController extends Controller
         }
 
         session(['timesheet_csv_rows' => $rows]);
+        AuditLog::query()->create(['user_id' => $request->user()->id, 'action' => 'timesheet.csv_analyzed', 'metadata' => ['rows' => count($rows)]]);
 
         return redirect()->route('timesheets.index')->with('status', count($rows).' ligne(s) CSV pretes a verifier.');
     }
@@ -164,6 +166,7 @@ class TimesheetController extends Controller
     public function downloadFile(TimesheetGenerationFile $file): StreamedResponse
     {
         abort_unless(Storage::disk('local')->exists($file->file_path), 404);
+        AuditLog::query()->create(['user_id' => request()->user()->id, 'action' => 'timesheet.file_downloaded', 'auditable_type' => TimesheetGenerationFile::class, 'auditable_id' => $file->id]);
 
         return Storage::disk('local')->download($file->file_path, $file->file_name);
     }
@@ -171,6 +174,7 @@ class TimesheetController extends Controller
     public function downloadZip(TimesheetGeneration $generation): StreamedResponse
     {
         abort_unless($generation->zip_path && Storage::disk('local')->exists($generation->zip_path), 404);
+        AuditLog::query()->create(['user_id' => request()->user()->id, 'action' => 'timesheet.zip_downloaded', 'auditable_type' => TimesheetGeneration::class, 'auditable_id' => $generation->id]);
 
         return Storage::disk('local')->download($generation->zip_path, "Feuilles_de_temps_{$generation->period_label}.zip");
     }

@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\AuditLog;
 use App\Models\Employee;
 use App\Models\TimesheetGeneration;
 use App\Models\TimesheetGenerationFile;
@@ -9,6 +10,7 @@ use App\Models\User;
 use App\Modules\Timesheets\Support\TimesheetArchiveBuilder;
 use App\Modules\Timesheets\Support\TimesheetPdfRenderer;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use RuntimeException;
@@ -39,32 +41,37 @@ class TimesheetService
         $startMonth = (int) $data['start_month'];
         $endMonth = (int) $data['end_month'];
 
-        $generation = TimesheetGeneration::query()->create([
-            'uuid' => (string) Str::uuid(),
-            'period_start' => Carbon::create($year, $startMonth, 1),
-            'period_end' => Carbon::create($year, $endMonth, 1)->endOfMonth(),
-            'year' => $year,
-            'period_label' => $this->periodLabel($year, $startMonth, $endMonth),
-            'generated_by_user_id' => $user->id,
-            'employee_count' => $employees->count(),
-            'pdf_count' => 0,
-            'status' => 'completed',
-        ]);
+        return DB::transaction(function () use ($data, $user, $employees, $year, $startMonth, $endMonth): TimesheetGeneration {
+            $generation = TimesheetGeneration::query()->create([
+                'uuid' => (string) Str::uuid(),
+                'period_start' => Carbon::create($year, $startMonth, 1),
+                'period_end' => Carbon::create($year, $endMonth, 1)->endOfMonth(),
+                'year' => $year,
+                'period_label' => $this->periodLabel($year, $startMonth, $endMonth),
+                'generated_by_user_id' => $user->id,
+                'employee_count' => $employees->count(),
+                'pdf_count' => 0,
+                'status' => 'completed',
+            ]);
 
-        $periods = array_map(
-            fn (int $month): array => ['year' => $year, 'month' => $month],
-            range($startMonth, $endMonth)
-        );
-        foreach ($employees as $employee) {
-            $this->createFile($generation, $employee, $periods, $data);
-        }
+            $periods = array_map(
+                fn (int $month): array => ['year' => $year, 'month' => $month],
+                range($startMonth, $endMonth)
+            );
+            foreach ($employees as $employee) {
+                $this->createFile($generation, $employee, $periods, $data);
+            }
 
-        $generation->update([
-            'pdf_count' => $generation->files()->count(),
-            'zip_path' => $this->zip($generation),
-        ]);
+            $generation->update([
+                'pdf_count' => $generation->files()->count(),
+                'zip_path' => $this->zip($generation),
+            ]);
 
-        return $generation->refresh();
+            $generation = $generation->refresh();
+            $this->auditGeneration($generation, $user);
+
+            return $generation;
+        });
     }
 
     /**
@@ -110,41 +117,46 @@ class TimesheetService
             $periodEnd = collect($ends)->sortDesc()->first();
         }
 
-        $generation = TimesheetGeneration::query()->create([
-            'uuid' => (string) Str::uuid(),
-            'period_start' => $periodStart,
-            'period_end' => $periodEnd,
-            'year' => (int) $periodStart->year,
-            'period_label' => trim((string) ($options['zip_label'] ?? '')) ?: 'CSV_'.$periodStart->format('Ym').'_'.$periodEnd->format('Ym'),
-            'generated_by_user_id' => $user->id,
-            'employee_count' => $employeeIds->count(),
-            'pdf_count' => 0,
-            'status' => 'completed',
-        ]);
+        return DB::transaction(function () use ($rows, $user, $options, $employeeIds, $employees, $periodStart, $periodEnd, $monthPairs): TimesheetGeneration {
+            $generation = TimesheetGeneration::query()->create([
+                'uuid' => (string) Str::uuid(),
+                'period_start' => $periodStart,
+                'period_end' => $periodEnd,
+                'year' => (int) $periodStart->year,
+                'period_label' => trim((string) ($options['zip_label'] ?? '')) ?: 'CSV_'.$periodStart->format('Ym').'_'.$periodEnd->format('Ym'),
+                'generated_by_user_id' => $user->id,
+                'employee_count' => $employeeIds->count(),
+                'pdf_count' => 0,
+                'status' => 'completed',
+            ]);
 
-        $excludedDates = $this->excludedDates((string) ($options['excluded_signature_dates'] ?? ''));
-        $rowsByEmployee = collect($rows)->keyBy(fn (array $row): int => (int) $row['employee_id'])->values();
-        foreach ($rowsByEmployee as $row) {
-            $employee = $employees[(int) $row['employee_id']];
-            if ($monthPairs !== []) {
-                $this->createFile($generation, $employee, $monthPairs, [...$row, 'excluded_signature_dates' => $excludedDates]);
+            $excludedDates = $this->excludedDates((string) ($options['excluded_signature_dates'] ?? ''));
+            $rowsByEmployee = collect($rows)->keyBy(fn (array $row): int => (int) $row['employee_id'])->values();
+            foreach ($rowsByEmployee as $row) {
+                $employee = $employees[(int) $row['employee_id']];
+                if ($monthPairs !== []) {
+                    $this->createFile($generation, $employee, $monthPairs, [...$row, 'excluded_signature_dates' => $excludedDates]);
 
-                continue;
+                    continue;
+                }
+
+                $periods = array_map(
+                    fn (int $month): array => ['year' => (int) $row['year'], 'month' => $month],
+                    range((int) $row['start_month'], (int) $row['end_month'])
+                );
+                $this->createFile($generation, $employee, $periods, [...$row, 'excluded_signature_dates' => $excludedDates]);
             }
 
-            $periods = array_map(
-                fn (int $month): array => ['year' => (int) $row['year'], 'month' => $month],
-                range((int) $row['start_month'], (int) $row['end_month'])
-            );
-            $this->createFile($generation, $employee, $periods, [...$row, 'excluded_signature_dates' => $excludedDates]);
-        }
+            $generation->update([
+                'pdf_count' => $generation->files()->count(),
+                'zip_path' => $this->zip($generation),
+            ]);
 
-        $generation->update([
-            'pdf_count' => $generation->files()->count(),
-            'zip_path' => $this->zip($generation),
-        ]);
+            $generation = $generation->refresh();
+            $this->auditGeneration($generation, $user);
 
-        return $generation->refresh();
+            return $generation;
+        });
     }
 
     /**
@@ -272,5 +284,16 @@ class TimesheetService
         }
 
         return sprintf('%d_%02d_%02d', $year, $startMonth, $endMonth);
+    }
+
+    private function auditGeneration(TimesheetGeneration $generation, User $user): void
+    {
+        AuditLog::query()->create([
+            'user_id' => $user->id,
+            'action' => 'timesheet.generated',
+            'auditable_type' => TimesheetGeneration::class,
+            'auditable_id' => $generation->id,
+            'metadata' => ['employees' => $generation->employee_count, 'pdfs' => $generation->pdf_count],
+        ]);
     }
 }

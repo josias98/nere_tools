@@ -9,6 +9,10 @@ use RuntimeException;
 
 class TimesheetCsvParser
 {
+    private const MAX_ROWS = 500;
+
+    private const MAX_COLUMNS = 30;
+
     /**
      * @return array<int, array<string, mixed>>
      */
@@ -19,69 +23,85 @@ class TimesheetCsvParser
             throw new RuntimeException('Impossible de lire le fichier CSV.');
         }
 
-        $firstLine = fgets($handle);
-        if ($firstLine === false) {
-            throw new RuntimeException('Le fichier CSV est vide.');
+        try {
+            $firstLine = fgets($handle);
+            if ($firstLine === false) {
+                throw new RuntimeException('Le fichier CSV est vide.');
+            }
+
+            $delimiter = substr_count($firstLine, ';') > substr_count($firstLine, ',') ? ';' : ',';
+            $headers = array_map(fn (string $header): string => $this->csvKey($header), str_getcsv($firstLine, $delimiter));
+            if (count($headers) > self::MAX_COLUMNS) {
+                throw new RuntimeException('Le CSV dépasse la limite de '.self::MAX_COLUMNS.' colonnes.');
+            }
+            if (in_array('', $headers, true) || count(array_unique($headers)) !== count($headers)) {
+                throw new RuntimeException('L’en-tête contient une colonne vide ou dupliquée.');
+            }
+            if (! array_intersect($headers, ['employee_id', 'id', 'collaborateur', 'employee', 'name', 'display_name', 'first_name', 'prenom'])) {
+                throw new RuntimeException('Colonne collaborateur manquante : utilisez employee_id, collaborateur ou prenom/nom.');
+            }
+            $employees = Employee::query()->where('is_active', true)->get()->keyBy('id');
+            $employeeLookup = $this->employeeLookup($employees);
+            $rows = [];
+
+            $lineNumber = 1;
+            while (($line = fgetcsv($handle, 0, $delimiter)) !== false) {
+                $lineNumber++;
+                if (count(array_filter($line, fn ($value): bool => trim((string) $value) !== '')) === 0) {
+                    continue;
+                }
+
+                if (count($line) !== count($headers)) {
+                    throw new RuntimeException("Ligne {$lineNumber} : ".count($line).' colonne(s) reçue(s), '.count($headers).' attendue(s).');
+                }
+                $row = array_combine($headers, $line);
+
+                $firstName = trim((string) ($this->csvValue($row, ['first_name', 'prenom']) ?? ''));
+                $lastName = trim((string) ($this->csvValue($row, ['last_name', 'nom']) ?? ''));
+                $employeeId = $this->matchEmployeeId(
+                    $employees,
+                    $employeeLookup,
+                    trim((string) ($this->csvValue($row, ['employee_id', 'id']) ?? '')),
+                    $firstName,
+                    $lastName,
+                    trim((string) ($this->csvValue($row, ['collaborateur', 'employee', 'name', 'display_name']) ?? '')),
+                );
+
+                if ($employeeId === '') {
+                    throw new RuntimeException("Ligne {$lineNumber}, colonne collaborateur : aucune correspondance active et non ambiguë.");
+                }
+
+                /** @var Employee $matchedEmployee */
+                $matchedEmployee = $employees[(int) $employeeId];
+                $rows[] = [
+                    'selected' => 1,
+                    'employee_id' => (int) $employeeId,
+                    'first_name' => $firstName !== '' ? $firstName : $matchedEmployee->first_name,
+                    'last_name' => $lastName !== '' ? $lastName : $matchedEmployee->last_name,
+                    'entity_name' => (string) ($this->csvValue($row, ['entity_name', 'entity_label', 'entite']) ?? $matchedEmployee->entity),
+                    'country' => (string) ($this->csvValue($row, ['country', 'pays']) ?? ''),
+                    'function_title' => (string) ($this->csvValue($row, ['function_title', 'fonction', 'job_title']) ?? $matchedEmployee->job_title),
+                    'role' => (string) ($this->csvValue($row, ['role']) ?? ''),
+                    'funds' => (string) ($this->csvValue($row, ['funds', 'fonds']) ?? ''),
+                    'ipas_rate' => $this->csvPercent($this->csvValue($row, ['ipas', 'ipas_rate'])),
+                    'catal_rate' => $this->csvPercent($this->csvValue($row, ['catal', 'catal_rate'])) ?? $matchedEmployee->catal_rate,
+                    'ipde_rate' => $this->csvPercent($this->csvValue($row, ['ipde', 'ipde_rate'])) ?? $matchedEmployee->ipde_rate,
+                    'other_projects_rate' => $this->csvPercent($this->csvValue($row, ['autre_projets', 'other_projects', 'other_projects_rate'])),
+                    'analytic_code' => (string) ($this->csvValue($row, ['code_analytique', 'analytic_code']) ?? $matchedEmployee->analytic_code),
+                    'location' => (string) ($this->csvValue($row, ['lieu', 'location']) ?? $matchedEmployee->location),
+                    'employee_signature_name' => (string) ($this->csvValue($row, ['nom_signature', 'employee_signature_name']) ?? $matchedEmployee->name()),
+                    'signatory_name' => (string) ($this->csvValue($row, ['responsable_hierarchique', 'signatory_name', 'responsable', 'signataire']) ?? $matchedEmployee->signatory_name),
+                    'signature_title' => (string) ($this->csvValue($row, ['signature_droite_titre', 'signature_title']) ?? $matchedEmployee->signature_title),
+                    'comments_label' => (string) ($this->csvValue($row, ['comments_label', 'commentaires']) ?? 'Commentaires / Details'),
+                    'include_comments' => $this->csvBool($this->csvValue($row, ['include_comments', 'avec_commentaires'])),
+                ];
+                if (count($rows) > self::MAX_ROWS) {
+                    throw new RuntimeException('Le CSV dépasse la limite de '.self::MAX_ROWS.' lignes.');
+                }
+            }
+        } finally {
+            fclose($handle);
         }
-
-        $delimiter = substr_count($firstLine, ';') > substr_count($firstLine, ',') ? ';' : ',';
-        $headers = array_map(fn (string $header): string => $this->csvKey($header), str_getcsv($firstLine, $delimiter));
-        $employees = Employee::query()->where('is_active', true)->get()->keyBy('id');
-        $employeeLookup = $this->employeeLookup($employees);
-        $rows = [];
-
-        while (($line = fgetcsv($handle, 0, $delimiter)) !== false) {
-            if (count(array_filter($line, fn ($value): bool => trim((string) $value) !== '')) === 0) {
-                continue;
-            }
-
-            $row = array_combine($headers, array_pad($line, count($headers), ''));
-            if ($row === false) {
-                continue;
-            }
-
-            $firstName = trim((string) ($this->csvValue($row, ['first_name', 'prenom']) ?? ''));
-            $lastName = trim((string) ($this->csvValue($row, ['last_name', 'nom']) ?? ''));
-            $employeeId = $this->matchEmployeeId(
-                $employees,
-                $employeeLookup,
-                trim((string) ($this->csvValue($row, ['employee_id', 'id']) ?? '')),
-                $firstName,
-                $lastName,
-                trim((string) ($this->csvValue($row, ['collaborateur', 'employee', 'name', 'display_name']) ?? '')),
-            );
-
-            if ($employeeId === '') {
-                throw new RuntimeException('Une ligne CSV ne permet pas d identifier le collaborateur.');
-            }
-
-            /** @var Employee $matchedEmployee */
-            $matchedEmployee = $employees[(int) $employeeId];
-            $rows[] = [
-                'selected' => 1,
-                'employee_id' => (int) $employeeId,
-                'first_name' => $firstName !== '' ? $firstName : $matchedEmployee->first_name,
-                'last_name' => $lastName !== '' ? $lastName : $matchedEmployee->last_name,
-                'entity_name' => (string) ($this->csvValue($row, ['entity_name', 'entity_label', 'entite']) ?? $matchedEmployee->entity),
-                'country' => (string) ($this->csvValue($row, ['country', 'pays']) ?? ''),
-                'function_title' => (string) ($this->csvValue($row, ['function_title', 'fonction', 'job_title']) ?? $matchedEmployee->job_title),
-                'role' => (string) ($this->csvValue($row, ['role']) ?? ''),
-                'funds' => (string) ($this->csvValue($row, ['funds', 'fonds']) ?? ''),
-                'ipas_rate' => $this->csvPercent($this->csvValue($row, ['ipas', 'ipas_rate'])),
-                'catal_rate' => $this->csvPercent($this->csvValue($row, ['catal', 'catal_rate'])) ?? $matchedEmployee->catal_rate,
-                'ipde_rate' => $this->csvPercent($this->csvValue($row, ['ipde', 'ipde_rate'])) ?? $matchedEmployee->ipde_rate,
-                'other_projects_rate' => $this->csvPercent($this->csvValue($row, ['autre_projets', 'other_projects', 'other_projects_rate'])),
-                'analytic_code' => (string) ($this->csvValue($row, ['code_analytique', 'analytic_code']) ?? $matchedEmployee->analytic_code),
-                'location' => (string) ($this->csvValue($row, ['lieu', 'location']) ?? $matchedEmployee->location),
-                'employee_signature_name' => (string) ($this->csvValue($row, ['nom_signature', 'employee_signature_name']) ?? $matchedEmployee->name()),
-                'signatory_name' => (string) ($this->csvValue($row, ['responsable_hierarchique', 'signatory_name', 'responsable', 'signataire']) ?? $matchedEmployee->signatory_name),
-                'signature_title' => (string) ($this->csvValue($row, ['signature_droite_titre', 'signature_title']) ?? $matchedEmployee->signature_title),
-                'comments_label' => (string) ($this->csvValue($row, ['comments_label', 'commentaires']) ?? 'Commentaires / Details'),
-                'include_comments' => $this->csvBool($this->csvValue($row, ['include_comments', 'avec_commentaires'])),
-            ];
-        }
-
-        fclose($handle);
 
         if ($rows === []) {
             throw new RuntimeException('Le fichier CSV ne contient aucune ligne exploitable.');
