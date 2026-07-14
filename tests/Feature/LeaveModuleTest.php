@@ -40,7 +40,7 @@ class LeaveModuleTest extends TestCase
             ->assertSee('Sélectionnez les dates pour vérifier le solde.')
             ->assertSee('Quel congé souhaitez-vous prendre ?')
             ->assertSee('aria-live="polite"', false)
-            ->assertSee('for="leave_start_date"', false)
+            ->assertSee('aria-current="step"', false)
             ->assertDontSee('SÃ©lectionnez');
     }
 
