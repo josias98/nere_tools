@@ -8,6 +8,7 @@
 ])
 
 @section('content')
+<x-admin.layout>
     <section class="nc-page admin-users">
         <div class="nc-title-row">
             <div>
@@ -103,4 +104,5 @@
             </div>
         </section>
     </section>
+</x-admin.layout>
 @endsection

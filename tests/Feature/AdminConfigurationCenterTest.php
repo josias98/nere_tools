@@ -30,6 +30,17 @@ class AdminConfigurationCenterTest extends TestCase
         $this->actingAs($user)->get('/admin')->assertForbidden();
     }
 
+    public function test_admin_pages_share_the_pilotage_navigation(): void
+    {
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+
+        foreach (['/admin', '/admin/users', '/admin/conges', '/admin/conges/notifications'] as $path) {
+            $this->actingAs($admin)->get($path)
+                ->assertOk()
+                ->assertSee('Centre de pilotage');
+        }
+    }
+
     public function test_missing_leave_workflow_is_reported_as_actionable(): void
     {
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);

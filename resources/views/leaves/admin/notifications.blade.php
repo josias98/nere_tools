@@ -9,6 +9,7 @@
 ])
 
 @section('content')
+<x-admin.layout>
     <section class="nc-page leave-workbench">
         <div class="nc-title-row">
             <div>
@@ -186,4 +187,5 @@
             </div>
         </section>
     </section>
+</x-admin.layout>
 @endsection

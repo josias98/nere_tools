@@ -1,24 +1,7 @@
 @extends('layouts.app', ['title' => 'Centre d’administration - Néré Tools'])
 
 @section('content')
-<div class="admin-workspace" data-admin-workspace>
-    <aside class="admin-sidebar" aria-label="Navigation de l’administration">
-        <div class="admin-sidebar-heading">
-            <span class="admin-sidebar-mark" aria-hidden="true"><i data-lucide="settings-2"></i></span>
-            <div><span>Administration</span><strong>Centre de pilotage</strong></div>
-        </div>
-        <nav>
-            <a class="is-active" href="{{ route('admin.index') }}"><i data-lucide="layout-dashboard"></i> Vue d’ensemble</a>
-            <a href="{{ route('admin.users.index') }}"><i data-lucide="users"></i> Utilisateurs et accès</a>
-            <a href="{{ route('admin.leaves.index') }}"><i data-lucide="calendar-range"></i> Congés</a>
-            <a href="{{ route('timesheets.index') }}"><i data-lucide="file-text"></i> Feuilles de temps</a>
-            <a href="{{ route('admin.leaves.index') }}#workflow"><i data-lucide="git-branch"></i> Workflows et validations</a>
-            <a href="{{ route('admin.leaves.notifications.index') }}"><i data-lucide="bell"></i> Notifications</a>
-            <a href="{{ route('admin.leaves.index') }}#imports"><i data-lucide="arrow-left-right"></i> Imports et exports</a>
-        </nav>
-    </aside>
-
-    <main class="admin-content">
+<x-admin.layout>
         <header class="admin-topbar">
             <div class="admin-title"><p class="nc-kicker">Administration</p><h1>Vue d’ensemble</h1><p>Les décisions importantes, les anomalies et les accès au même endroit.</p></div>
             <label class="admin-search"><span class="sr-only">Rechercher un paramètre</span><i data-lucide="search"></i><input type="search" placeholder="Rechercher un réglage…" data-admin-search></label>
@@ -56,6 +39,5 @@
             <x-admin.recommendation-card title="Valider les circuits avant ouverture" source="Bonne pratique" recommended="Un valideur principal et un suppléant par étape" risk="Une demande peut rester bloquée pendant une absence." example="Le responsable hiérarchique valide, puis RH contrôle le solde." :url="route('admin.leaves.index').'#workflow'" />
             <section class="admin-panel"><p class="nc-kicker">Historique</p><h2>Dernières modifications</h2><ol class="admin-timeline">@forelse($recentChanges as $change)<li><strong>{{ str_replace('.', ' · ', $change->action) }}</strong><small>{{ $change->created_at->diffForHumans() }}</small></li>@empty<li>Aucune modification enregistrée.</li>@endforelse</ol></section>
         </div>
-    </main>
-</div>
+</x-admin.layout>
 @endsection

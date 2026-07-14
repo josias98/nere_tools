@@ -1,6 +1,7 @@
 @extends('layouts.app', ['title' => 'Pilotage RH des absences - Néré Tools'])
 
 @section('content')
+<x-admin.layout>
 <div class="leave-admin-layout">
     <aside class="leave-admin-sidebar" aria-label="Administration des absences">
         <strong>Congés & absences</strong>
@@ -17,4 +18,5 @@
         @include('leaves.admin.partials.rules')
     </main>
 </div>
+</x-admin.layout>
 @endsection
