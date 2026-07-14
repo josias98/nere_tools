@@ -28,16 +28,47 @@ class LeaveRequestWorkflowService
 
     public function submitRequest(Employee $employee, array $data, int $userId): LeaveRequest
     {
+        if ($employee->is_active === false || $employee->leave_eligible === false) {
+            throw new DomainException('Votre profil employe ne permet pas de soumettre une demande de conge.');
+        }
+
         $startDate = Carbon::parse($data['start_date']);
         $endDate = Carbon::parse($data['end_date']);
+        $startAt = Carbon::parse($data['start_date'].' '.($data['start_time'] ?? '00:00'));
+        $endAt = Carbon::parse($data['end_date'].' '.($data['end_time'] ?? '23:59'));
         $type = LeaveType::query()->with('rules')->findOrFail($data['leave_type_id']);
         $rule = $type->ruleAt($startDate);
         $configuration = $rule?->configuration ?? [];
         $unit = LeaveUnit::from($configuration['unit'] ?? $type->unit->value);
-        $duration = $this->dayCountService->calculate($startDate, $endDate, $unit);
+        $duration = $this->duration($startDate, $endDate, $startAt, $endAt, $unit, $data);
 
         if ($endDate->isBefore($startDate)) {
             throw new DomainException('La date de fin ne peut pas être antérieure à la date de début.');
+        }
+
+        if ($unit === LeaveUnit::Hour && $endAt->lessThanOrEqualTo($startAt)) {
+            throw new DomainException('L heure de fin doit etre posterieure a l heure de debut.');
+        }
+
+        if (! $type->is_active) {
+            throw new DomainException('Ce type de conge n est plus actif.');
+        }
+
+        if (($configuration['requires_attachment'] ?? $type->requires_attachment) && empty($data['attachments'])) {
+            throw new DomainException('Le justificatif est obligatoire pour ce type de conge.');
+        }
+
+        if (! empty($data['replacement_employee_id'])) {
+            $replacementExists = Employee::query()
+                ->whereKey($data['replacement_employee_id'])
+                ->where('is_active', true)
+                ->where('leave_eligible', true)
+                ->where('id', '!=', $employee->id)
+                ->exists();
+
+            if (! $replacementExists) {
+                throw new DomainException('Le remplacant selectionne n est pas disponible.');
+            }
         }
 
         $overlap = LeaveRequest::query()
@@ -54,7 +85,23 @@ class LeaveRequestWorkflowService
             throw new DomainException('Une demande de congé existe déjà sur cette période.');
         }
 
-        $request = DB::transaction(function () use ($employee, $data, $userId, $startDate, $endDate, $type, $duration, $rule, $configuration, $unit): LeaveRequest {
+        $request = DB::transaction(function () use ($employee, $data, $userId, $startDate, $endDate, $startAt, $endAt, $type, $duration, $rule, $configuration, $unit): LeaveRequest {
+            Employee::query()->whereKey($employee->id)->lockForUpdate()->firstOrFail();
+
+            $overlap = LeaveRequest::query()
+                ->where('employee_id', $employee->id)
+                ->whereIn('status', ['submitted', 'under_review', 'pending_supervisor', 'pending_hr', 'pending_dg', 'approved'])
+                ->where(function ($query) use ($startDate, $endDate): void {
+                    $query->whereBetween('start_date', [$startDate, $endDate])
+                        ->orWhereBetween('end_date', [$startDate, $endDate])
+                        ->orWhere(fn ($query) => $query->where('start_date', '<=', $startDate)->where('end_date', '>=', $endDate));
+                })
+                ->exists();
+
+            if ($overlap) {
+                throw new DomainException('Une demande de congé existe déjà sur cette période.');
+            }
+
             $request = LeaveRequest::query()->create([
                 'uuid' => Str::uuid(),
                 'employee_id' => $employee->id,
@@ -64,8 +111,8 @@ class LeaveRequestWorkflowService
                 'requested_days' => $duration,
                 'requested_duration' => $duration,
                 'duration_unit' => $unit->value,
-                'start_at' => $startDate,
-                'end_at' => $endDate,
+                'start_at' => $startAt,
+                'end_at' => $endAt,
                 'effective_return_at' => $this->dayCountService->effectiveReturn($endDate, $unit),
                 'rule_snapshot' => [
                     'type' => array_merge($type->only(['id', 'name', 'slug', 'category', 'unit', 'is_paid', 'counts_against_balance', 'quota', 'maximum_duration', 'legal_reference']), $configuration),
@@ -88,6 +135,10 @@ class LeaveRequestWorkflowService
 
             foreach ($data['attachments'] ?? [] as $attachment) {
                 $this->storeAttachment($request, $attachment, $userId);
+            }
+
+            foreach ($data['draft_attachments'] ?? [] as $attachment) {
+                $this->storeDraftAttachment($request, $attachment, $userId);
             }
 
             $this->createApprovalChain($request);
@@ -240,6 +291,54 @@ class LeaveRequestWorkflowService
             'sha256' => hash_file('sha256', Storage::disk('local')->path($path)),
             'uploaded_by_user_id' => $userId,
         ]);
+    }
+
+    /**
+     * @param  array<string, mixed>  $attachment
+     */
+    private function storeDraftAttachment(LeaveRequest $request, array $attachment, int $userId): void
+    {
+        $source = (string) ($attachment['path'] ?? '');
+        if (! str_starts_with($source, 'private/leaves/drafts/') || ! Storage::disk('local')->exists($source)) {
+            throw new DomainException('Une piece jointe temporaire est introuvable.');
+        }
+
+        $safeName = preg_replace('/[^A-Za-z0-9_.-]+/', '-', (string) ($attachment['original_name'] ?? 'justificatif')) ?: 'justificatif';
+        $safeName = trim($safeName, '-') ?: 'justificatif';
+        $target = 'private/leaves/attachments/'.$request->uuid.'/'.Str::uuid().'-'.$safeName;
+
+        Storage::disk('local')->move($source, $target);
+
+        $request->attachments()->create([
+            'original_name' => (string) ($attachment['original_name'] ?? $safeName),
+            'file_path' => $target,
+            'mime_type' => (string) ($attachment['mime_type'] ?? 'application/octet-stream'),
+            'size' => (int) ($attachment['size'] ?? Storage::disk('local')->size($target)),
+            'sha256' => (string) ($attachment['sha256'] ?? hash_file('sha256', Storage::disk('local')->path($target))),
+            'uploaded_by_user_id' => $userId,
+        ]);
+    }
+
+    /**
+     * @param  array<string, mixed>  $data
+     */
+    private function duration(Carbon $startDate, Carbon $endDate, Carbon $startAt, Carbon $endAt, LeaveUnit $unit, array $data): float
+    {
+        $duration = $unit === LeaveUnit::Hour
+            ? $this->dayCountService->calculate($startAt, $endAt, $unit)
+            : $this->dayCountService->calculate($startDate, $endDate, $unit);
+
+        if (in_array($unit, [LeaveUnit::CalendarDay, LeaveUnit::WorkingDay], true)) {
+            if (($data['start_period'] ?? 'full') === 'afternoon') {
+                $duration -= .5;
+            }
+
+            if (($data['end_period'] ?? 'full') === 'morning') {
+                $duration -= .5;
+            }
+        }
+
+        return max(.5, round($duration, 2));
     }
 
     private function ensureApprovalChain(LeaveRequest $request): void
