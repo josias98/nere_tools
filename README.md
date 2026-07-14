@@ -17,6 +17,9 @@ Points notables:
 - authentification Microsoft 365 via OAuth dans `app/Http/Controllers/Auth/MicrosoftAuthController.php` ;
 - controle d'acces par role et par outil via `User::canAccessTool()` et le middleware `tool:*` ;
 - logique metier placee surtout dans `app/Services` ;
+- routage web compose par domaine depuis `routes/web.php`, ce qui garde les modules lisibles sans routeur central massif ;
+- workflows interactifs servis par Livewire 4 lorsque le parcours gagne a rester fluide, notamment le wizard Timesheets dans `app/Livewire/Timesheets/Wizard.php` ;
+- composants Blade UI reutilisables dans `resources/views/components/ui` pour conserver le meme langage visuel entre dashboard, administration, timesheets et conges ;
 - generation PDF faite maison pour limiter les dependances :
   - timesheets dans `app/Modules/Timesheets/Support/TimesheetPdfRenderer.php` ;
   - conges dans `app/Services/Leaves/LeavePdfService.php` ;
@@ -109,6 +112,7 @@ Ce module permet:
 
 Le coeur du module est ici:
 
+- `app/Livewire/Timesheets/Wizard.php`
 - `app/Services/TimesheetService.php`
 - `app/Modules/Timesheets/Support/TimesheetPdfRenderer.php`
 - `app/Modules/Timesheets/Support/TimesheetCsvParser.php`
