@@ -41,6 +41,27 @@ class AdminConfigurationCenterTest extends TestCase
         }
     }
 
+    public function test_admin_sidebar_links_point_to_available_admin_destinations(): void
+    {
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+
+        $response = $this->actingAs($admin)->get('/admin/conges');
+
+        foreach ([
+            route('admin.index'),
+            route('admin.users.index'),
+            route('admin.leaves.index'),
+            route('timesheets.index'),
+            route('admin.leaves.index').'#workflow',
+            route('admin.leaves.notifications.index'),
+            route('admin.leaves.index').'#imports',
+        ] as $url) {
+            $response->assertSee('href="'.$url.'"', false);
+        }
+
+        $response->assertDontSee('Congés & absences');
+    }
+
     public function test_missing_leave_workflow_is_reported_as_actionable(): void
     {
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);

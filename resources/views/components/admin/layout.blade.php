@@ -7,7 +7,7 @@
         <nav>
             <a @class(['is-active' => request()->routeIs('admin.index')]) href="{{ route('admin.index') }}"><i data-lucide="layout-dashboard"></i> Vue d’ensemble</a>
             <a @class(['is-active' => request()->routeIs('admin.users.*')]) href="{{ route('admin.users.index') }}"><i data-lucide="users"></i> Utilisateurs et accès</a>
-            <a @class(['is-active' => request()->routeIs('admin.leaves.index')]) href="{{ route('admin.leaves.index') }}"><i data-lucide="calendar-range"></i> Congés</a>
+            <a @class(['is-active' => request()->routeIs('admin.leaves.*') && ! request()->routeIs('admin.leaves.notifications.*')]) href="{{ route('admin.leaves.index') }}"><i data-lucide="calendar-range"></i> Congés</a>
             <a href="{{ route('timesheets.index') }}"><i data-lucide="file-text"></i> Feuilles de temps</a>
             <a href="{{ route('admin.leaves.index') }}#workflow"><i data-lucide="git-branch"></i> Workflows et validations</a>
             <a @class(['is-active' => request()->routeIs('admin.leaves.notifications.*')]) href="{{ route('admin.leaves.notifications.index') }}"><i data-lucide="bell"></i> Notifications</a>

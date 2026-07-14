@@ -890,9 +890,6 @@ label.nc-field span {
 .admin-sidebar svg, .admin-topbar svg, .risk-warning svg, .recommendation-card svg { width: 18px; height: 18px; flex: none; }
 .admin-content { min-width: 0; }
 .admin-content > .nc-page, .admin-content .leave-admin-main { width: 100%; padding-top: 8px; }
-.admin-content .leave-admin-layout { display: block; min-height: 0; }
-.admin-content .leave-admin-sidebar { position: static; grid-auto-flow: column; overflow-x: auto; margin-bottom: 28px; padding: 0 0 12px; border-right: 0; border-bottom: 1px solid var(--ip-line); }
-.admin-content .leave-admin-sidebar strong, .admin-content .leave-admin-sidebar a { white-space: nowrap; }
 .admin-topbar, .admin-section-heading { display: flex; align-items: start; justify-content: space-between; gap: 20px; }
 .admin-topbar { position: relative; margin-bottom: 28px; padding: 8px 0 20px 20px; border-bottom: 1px solid var(--ip-line); }
 .admin-topbar::before { content: ''; position: absolute; inset: 8px auto 20px 0; width: 5px; background: var(--ip-brown); }
