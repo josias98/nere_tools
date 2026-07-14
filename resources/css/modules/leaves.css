@@ -3,6 +3,500 @@
     gap: 18px;
 }
 
+.leave-wizard {
+    --leave-radius: 6px;
+}
+
+.nc-wizard-shell {
+    display: grid;
+    grid-template-columns: 220px minmax(0, 1fr) 280px;
+    align-items: stretch;
+    border: 1px solid var(--ip-line);
+    border-radius: var(--leave-radius);
+    background: var(--ip-white);
+    box-shadow: var(--ip-shadow-soft);
+    overflow: clip;
+}
+
+.nc-stepper {
+    display: grid;
+    align-content: start;
+    gap: 14px;
+    border-right: 1px solid var(--ip-line);
+    background: var(--ip-panel);
+    padding: 18px;
+}
+
+.nc-stepper p {
+    margin: 0;
+    color: var(--ip-orange);
+    font-size: 11px;
+    font-weight: 850;
+    text-transform: uppercase;
+}
+
+.nc-stepper ol {
+    display: grid;
+    gap: 0;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.nc-stepper li {
+    position: relative;
+    display: grid;
+    grid-template-columns: 28px minmax(0, 1fr);
+    align-items: center;
+    gap: 10px;
+    min-height: 52px;
+    color: var(--ip-grey);
+}
+
+.nc-stepper li::before {
+    content: '';
+    position: absolute;
+    inset: 0 auto 0 -18px;
+    width: 3px;
+    background: transparent;
+}
+
+.nc-stepper li.is-current {
+    color: var(--ip-brown);
+}
+
+.nc-stepper li.is-current::before {
+    background: var(--ip-orange);
+}
+
+.nc-stepper li span {
+    color: var(--ip-ochre);
+    font-size: 12px;
+    font-weight: 850;
+}
+
+.nc-stepper li small {
+    font-weight: 700;
+}
+
+.nc-wizard-stage {
+    position: relative;
+    min-width: 0;
+    min-height: 580px;
+}
+
+.nc-step-frame {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: clamp(28px, 5vw, 58px);
+    animation: leave-step-forward 180ms var(--ease-out);
+}
+
+.nc-step-frame.is-back {
+    animation-name: leave-step-back;
+}
+
+.nc-step-head {
+    margin-bottom: 26px;
+    outline: none;
+}
+
+.nc-step-head > span {
+    color: var(--ip-ochre);
+    font-size: 12px;
+    font-weight: 850;
+    text-transform: uppercase;
+}
+
+.nc-step-head h2 {
+    margin: 6px 0 8px;
+    color: var(--ip-brown);
+    font-family: var(--font-title);
+    font-size: clamp(28px, 3vw, 38px);
+    line-height: 1.15;
+}
+
+.nc-step-head p {
+    margin: 0;
+    color: var(--ip-grey);
+}
+
+.nc-recommendation {
+    display: grid;
+    gap: 7px;
+    margin-bottom: 24px;
+    border: 1px solid var(--ip-line);
+    border-left: 4px solid var(--ip-blue);
+    border-radius: var(--leave-radius);
+    background: var(--ip-ivory);
+    padding: 16px 18px;
+}
+
+.nc-recommendation.is-legal { border-left-color: var(--ip-rust); }
+.nc-recommendation.is-rule { border-left-color: var(--ip-orange); }
+.nc-recommendation.is-advice { border-left-color: var(--ip-ochre); }
+
+.nc-recommendation > span,
+.nc-recommendation small {
+    color: var(--ip-grey);
+    font-size: 11px;
+    font-weight: 850;
+    text-transform: uppercase;
+}
+
+.nc-recommendation strong {
+    color: var(--ip-brown);
+}
+
+.nc-recommendation p {
+    margin: 0;
+}
+
+.leave-type-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    border: 1px solid var(--ip-line-strong);
+    border-radius: var(--leave-radius);
+    overflow: clip;
+}
+
+.leave-type-card {
+    display: grid;
+    gap: 12px;
+    min-height: 250px;
+    border: 0;
+    border-right: 1px solid var(--ip-line);
+    border-bottom: 1px solid var(--ip-line);
+    background: var(--ip-white);
+    padding: 22px;
+    color: inherit;
+    text-align: left;
+    cursor: pointer;
+}
+
+.leave-type-card:hover,
+.leave-type-card:focus-visible,
+.leave-type-card.is-selected {
+    background: var(--ip-ivory);
+    box-shadow: inset 0 -4px var(--ip-orange);
+}
+
+.leave-type-card strong {
+    color: var(--ip-brown);
+    font-family: var(--font-title);
+    font-size: 22px;
+}
+
+.leave-type-card dl {
+    display: grid;
+    gap: 6px;
+    margin: 0;
+}
+
+.leave-type-card dl div {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    border-top: 1px solid var(--ip-line);
+    padding-top: 6px;
+}
+
+.leave-type-card dt,
+.leave-type-card dd {
+    margin: 0;
+    font-size: 12px;
+}
+
+.leave-type-card dd {
+    color: var(--ip-brown);
+    font-weight: 800;
+}
+
+.leave-type-advice {
+    color: var(--ip-grey);
+    line-height: 1.5;
+}
+
+.nc-wizard-summary {
+    display: grid;
+    align-content: start;
+    gap: 12px;
+    border-left: 1px solid var(--ip-line);
+    background: var(--ip-ivory);
+    padding: 20px;
+}
+
+.nc-wizard-summary > span {
+    color: var(--ip-grey);
+    font-size: 12px;
+    font-weight: 850;
+    text-transform: uppercase;
+}
+
+.nc-wizard-summary-main {
+    display: grid;
+    gap: 2px;
+    border-block: 1px solid var(--ip-line);
+    padding-block: 16px;
+}
+
+.nc-wizard-summary-main strong {
+    color: var(--ip-brown);
+    font-family: var(--font-title);
+    font-size: clamp(34px, 5vw, 52px);
+    line-height: 1;
+}
+
+.nc-wizard-summary dl,
+.leave-confirmation dl {
+    display: grid;
+    gap: 10px;
+    margin: 0;
+}
+
+.nc-wizard-summary dl div,
+.leave-confirmation dl div {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.nc-wizard-summary dt,
+.nc-wizard-summary dd,
+.leave-confirmation dt,
+.leave-confirmation dd {
+    margin: 0;
+    font-size: 13px;
+}
+
+.nc-wizard-summary dd,
+.leave-confirmation dd {
+    color: var(--ip-brown);
+    font-weight: 800;
+    text-align: right;
+}
+
+.nc-wizard-warnings,
+.nc-error-summary ul {
+    display: grid;
+    gap: 8px;
+    margin: 0;
+    padding-left: 18px;
+}
+
+.nc-wizard-warnings li,
+.nc-error-summary {
+    color: var(--ip-rust);
+}
+
+.nc-wizard-warnings li.is-blocking {
+    font-weight: 850;
+}
+
+.nc-mobile-summary {
+    display: none;
+}
+
+.leave-combobox {
+    position: relative;
+    margin: 18px 0;
+}
+
+.leave-combobox-results {
+    display: grid;
+    gap: 6px;
+    margin-top: 8px;
+}
+
+.leave-combobox-results button {
+    display: grid;
+    gap: 2px;
+    border: 1px solid var(--ip-line);
+    background: var(--ip-white);
+    padding: 12px;
+    text-align: left;
+}
+
+.leave-dropzone label {
+    display: grid;
+    place-items: center;
+    gap: 8px;
+    min-height: 180px;
+    border: 1px dashed var(--ip-line-strong);
+    border-radius: var(--leave-radius);
+    background: var(--ip-ivory);
+    padding: 24px;
+    text-align: center;
+    cursor: pointer;
+}
+
+.leave-dropzone input {
+    max-width: 100%;
+}
+
+.leave-dropzone i {
+    width: 34px;
+    height: 34px;
+    color: var(--ip-orange);
+}
+
+.leave-dropzone progress {
+    width: 100%;
+    margin-top: 10px;
+    accent-color: var(--ip-orange);
+}
+
+.leave-attachment-list {
+    display: grid;
+    gap: 8px;
+    margin-top: 16px;
+}
+
+.leave-attachment-list > div {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    align-items: center;
+    gap: 12px;
+    border: 1px solid var(--ip-line);
+    padding: 10px 12px;
+}
+
+.leave-review-sections {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.leave-review-sections section {
+    display: grid;
+    gap: 8px;
+    border: 1px solid var(--ip-line);
+    border-radius: var(--leave-radius);
+    padding: 16px;
+}
+
+.leave-review-sections h3,
+.leave-confirmation h2 {
+    margin: 0;
+    color: var(--ip-brown);
+}
+
+.leave-review-sections p {
+    margin: 0;
+    color: var(--ip-grey);
+}
+
+.nc-confirm-check {
+    display: flex;
+    gap: 12px;
+    margin-top: 22px;
+    border: 1px solid var(--ip-line);
+    background: var(--ip-ivory);
+    padding: 16px;
+}
+
+.nc-confirm-check input,
+.leave-check input {
+    width: 20px;
+    height: 20px;
+    accent-color: var(--ip-orange);
+}
+
+.leave-confirmation {
+    display: grid;
+    place-items: center;
+    gap: 18px;
+    min-height: 430px;
+    text-align: center;
+}
+
+.leave-success-icon {
+    width: 74px;
+    height: 74px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--ip-success-surface);
+    color: var(--ip-success-text);
+}
+
+.leave-success-icon i {
+    width: 34px;
+    height: 34px;
+}
+
+.leave-wizard-actions {
+    position: sticky;
+    z-index: 12;
+    bottom: 8px;
+    width: min(1180px, calc(100% - 32px));
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin: 16px auto 0;
+    border: 1px solid var(--ip-line);
+    border-radius: var(--leave-radius);
+    background: rgba(255, 255, 255, .96);
+    padding: 10px;
+    box-shadow: 0 8px 28px rgba(52, 22, 4, .09);
+    backdrop-filter: blur(10px);
+}
+
+.leave-wizard-toast {
+    position: fixed;
+    z-index: 30;
+    top: 86px;
+    right: 20px;
+    max-width: 420px;
+    box-shadow: var(--ip-shadow);
+}
+
+.nc-error-summary {
+    margin-bottom: 16px;
+    border: 1px solid var(--ip-danger-line);
+    border-left: 4px solid var(--ip-rust);
+    background: var(--ip-danger-surface);
+    padding: 14px 16px;
+}
+
+.nc-loading-inline {
+    position: absolute;
+    z-index: 10;
+    inset: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    background: rgba(247, 244, 241, .82);
+    font-weight: 800;
+}
+
+.nc-wizard-stage.is-loading > .nc-step-frame {
+    opacity: .45;
+    pointer-events: none;
+}
+
+.nc-spinner {
+    width: 24px;
+    height: 24px;
+    border: 3px solid var(--ip-line);
+    border-top-color: var(--ip-orange);
+    border-radius: 50%;
+    animation: leave-spin .7s linear infinite;
+}
+
+@keyframes leave-step-forward {
+    from { opacity: 0; transform: translateX(12px); }
+}
+
+@keyframes leave-step-back {
+    from { opacity: 0; transform: translateX(-12px); }
+}
+
+@keyframes leave-spin {
+    to { transform: rotate(360deg); }
+}
+
 .leave-admin-main { width: min(1380px, calc(100% - 40px)); }
 .leave-metric > i { width: 20px; color: var(--ip-blue); }
 .leave-timeline { display: grid; gap: 10px; padding-left: 24px; color: var(--ip-grey); }
@@ -227,6 +721,376 @@
     justify-content: flex-end;
     border-top: 1px solid var(--ip-line);
     padding-top: 20px;
+}
+
+.leave-wizard {
+    display: grid;
+    gap: 18px;
+}
+
+.leave-wizard-shell {
+    display: grid;
+    grid-template-columns: 190px minmax(0, 1fr) 280px;
+    gap: 18px;
+    align-items: start;
+}
+
+.nc-stepper {
+    position: sticky;
+    top: 18px;
+    display: grid;
+    gap: 12px;
+}
+
+.nc-stepper-status {
+    margin: 0;
+    color: var(--ip-grey);
+    font-size: 12px;
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+.nc-stepper ol {
+    display: grid;
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.nc-stepper li,
+.nc-stepper button {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 28px minmax(0, 1fr);
+    gap: 8px;
+    align-items: center;
+    min-height: 42px;
+    border: 1px solid var(--ip-line);
+    background: var(--ip-white);
+    color: var(--ip-grey);
+    padding: 8px;
+    text-align: left;
+}
+
+.nc-stepper button {
+    cursor: pointer;
+    font: inherit;
+}
+
+.nc-stepper li > span,
+.nc-stepper button > span {
+    display: grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    background: var(--ip-panel);
+    color: var(--ip-brown);
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.nc-stepper strong {
+    overflow-wrap: anywhere;
+    font-size: 13px;
+}
+
+.nc-stepper li.is-current,
+.nc-stepper li.is-current button {
+    border-color: var(--ip-brown);
+    color: var(--ip-brown);
+}
+
+.nc-stepper li.is-complete > span,
+.nc-stepper li.is-complete button > span {
+    background: var(--ip-success-surface);
+    color: var(--ip-success-text);
+}
+
+.leave-wizard-stage,
+.leave-context-summary {
+    position: relative;
+    min-width: 0;
+    border: 1px solid var(--ip-line);
+    background: var(--ip-white);
+}
+
+.leave-wizard-stage {
+    padding: 28px;
+}
+
+.leave-step-panel {
+    display: grid;
+    gap: 18px;
+}
+
+.leave-step-panel h2 {
+    margin: 0;
+    color: var(--ip-brown);
+}
+
+.leave-step-help {
+    margin: -8px 0 0;
+}
+
+.nc-recommendation {
+    display: grid;
+    gap: 8px;
+    border: 1px solid var(--ip-line);
+    border-left: 4px solid var(--ip-blue);
+    background: var(--ip-ivory);
+    padding: 14px;
+}
+
+.nc-recommendation.is-legal { border-left-color: var(--ip-rust); }
+.nc-recommendation.is-internal { border-left-color: var(--ip-orange); }
+.nc-recommendation.is-practice { border-left-color: var(--ip-green); }
+
+.nc-recommendation div {
+    display: grid;
+    gap: 3px;
+}
+
+.nc-recommendation span,
+.nc-recommendation small {
+    color: var(--ip-grey);
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+.nc-recommendation strong {
+    color: var(--ip-brown);
+}
+
+.nc-recommendation p {
+    margin: 0;
+}
+
+.leave-type-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.leave-type-card {
+    display: grid;
+    gap: 8px;
+    min-height: 178px;
+    border: 1px solid var(--ip-line);
+    background: var(--ip-white);
+    color: var(--ip-brown-dark);
+    padding: 16px;
+    text-align: left;
+}
+
+.leave-type-card:hover,
+.leave-type-card:focus-visible,
+.leave-type-card.is-selected {
+    border-color: var(--ip-brown);
+    background: var(--ip-ivory);
+}
+
+.leave-type-card small,
+.leave-type-card span,
+.leave-type-card em {
+    color: var(--ip-grey);
+    font-size: 12px;
+}
+
+.leave-type-card strong {
+    color: var(--ip-brown);
+    font-size: 17px;
+}
+
+.leave-type-card.is-recommended {
+    border-top: 4px solid var(--ip-orange);
+}
+
+.leave-context-summary {
+    position: sticky;
+    top: 18px;
+    padding: 18px;
+    background: var(--ip-ivory);
+}
+
+.leave-context-summary-body {
+    display: grid;
+    gap: 10px;
+}
+
+.leave-context-summary-body > span {
+    color: var(--ip-grey);
+    font-size: 12px;
+    font-weight: 850;
+    text-transform: uppercase;
+}
+
+.leave-context-summary-body > strong {
+    color: var(--ip-brown);
+    font-family: var(--font-title);
+    font-size: 46px;
+    line-height: 1;
+}
+
+.leave-summary-toggle {
+    display: none;
+}
+
+.leave-local-loading {
+    position: absolute;
+    z-index: 2;
+    inset: 10px 10px auto auto;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
+    background: var(--ip-panel);
+    color: var(--ip-brown);
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.leave-spinner {
+    width: 14px;
+    height: 14px;
+    border: 2px solid var(--ip-line-strong);
+    border-top-color: var(--ip-brown);
+    border-radius: 50% !important;
+    animation: leave-spin 800ms linear infinite;
+}
+
+.leave-warning-list ul,
+.nc-error-summary ul {
+    margin: 8px 0 0;
+    padding-left: 18px;
+}
+
+.leave-replacement,
+.leave-review-sections,
+.leave-confirmation,
+.leave-file-list {
+    display: grid;
+    gap: 12px;
+}
+
+.leave-combobox {
+    display: grid;
+    gap: 6px;
+}
+
+.leave-combobox button,
+.leave-file-list li,
+.leave-review-sections section {
+    border: 1px solid var(--ip-line);
+    background: var(--ip-white);
+    padding: 12px;
+}
+
+.leave-combobox button {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    color: var(--ip-brown);
+    font: inherit;
+    text-align: left;
+}
+
+.leave-combobox button.is-selected {
+    border-color: var(--ip-brown);
+    background: var(--ip-ivory);
+}
+
+.leave-dropzone {
+    display: grid;
+    place-items: center;
+    gap: 8px;
+    min-height: 156px;
+    border: 1px dashed var(--ip-line-strong);
+    background: var(--ip-ivory);
+    color: var(--ip-brown);
+    padding: 22px;
+    text-align: center;
+}
+
+.leave-dropzone.is-dragging {
+    border-color: var(--ip-orange);
+    background: var(--ip-panel);
+}
+
+.leave-dropzone input {
+    max-width: 100%;
+}
+
+.leave-upload-progress {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 8px;
+    align-items: center;
+}
+
+.leave-upload-progress progress {
+    width: 100%;
+}
+
+.leave-file-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.leave-file-list li {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.leave-file-list button,
+.leave-review-sections button {
+    border: 0;
+    background: transparent;
+    color: var(--ip-brown);
+    cursor: pointer;
+    font-weight: 800;
+    text-decoration: underline;
+}
+
+.leave-review-sections section {
+    display: grid;
+    gap: 8px;
+}
+
+.leave-review-sections section > button {
+    justify-self: end;
+}
+
+.leave-review-sections h3,
+.leave-review-sections p {
+    margin: 0;
+}
+
+.leave-confirm-check {
+    border-top: 1px solid var(--ip-line);
+    padding-top: 16px;
+}
+
+.leave-wizard-actions {
+    position: sticky;
+    z-index: 20;
+    bottom: 8px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    border: 1px solid var(--ip-line);
+    background: color-mix(in srgb, var(--ip-white) 94%, transparent);
+    padding: 12px;
+}
+
+.leave-save-state {
+    justify-self: start;
+}
+
+@keyframes leave-spin {
+    to { transform: rotate(360deg); }
 }
 
 .leave-filter {
@@ -475,6 +1339,86 @@
 }
 
 @media (max-width: 760px) {
+    .nc-wizard-shell {
+        grid-template-columns: 1fr;
+        overflow: visible;
+    }
+
+    .nc-stepper {
+        border-right: 0;
+        border-bottom: 1px solid var(--ip-line);
+    }
+
+    .nc-stepper ol {
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+    }
+
+    .nc-stepper li {
+        grid-template-columns: 1fr;
+        place-items: center;
+        min-height: 44px;
+        text-align: center;
+    }
+
+    .nc-stepper li::before {
+        inset: auto 0 -14px;
+        width: auto;
+        height: 3px;
+    }
+
+    .nc-stepper li small {
+        display: none;
+    }
+
+    .nc-desktop-summary {
+        display: none;
+    }
+
+    .nc-mobile-summary {
+        display: block;
+        border-bottom: 1px solid var(--ip-line);
+        background: var(--ip-white);
+        padding: 12px 16px;
+    }
+
+    .nc-mobile-summary summary {
+        color: var(--ip-brown);
+        font-weight: 850;
+        cursor: pointer;
+    }
+
+    .nc-mobile-summary .nc-wizard-summary {
+        margin-top: 12px;
+        border: 1px solid var(--ip-line);
+    }
+
+    .nc-step-frame {
+        padding: 26px 16px;
+    }
+
+    .leave-type-grid,
+    .leave-review-sections {
+        grid-template-columns: 1fr;
+    }
+
+    .leave-type-card {
+        min-height: 220px;
+    }
+
+    .leave-attachment-list > div {
+        grid-template-columns: 1fr;
+    }
+
+    .leave-wizard-actions {
+        bottom: 0;
+        width: 100%;
+        border-radius: 0;
+    }
+
+    .leave-wizard-actions > * {
+        flex: 1 1 0;
+    }
+
     .leave-metrics,
     .leave-admin-grid,
     .leave-review-grid,
@@ -497,5 +1441,14 @@
 
     .leave-date-grid {
         grid-template-columns: 1fr;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .nc-step-frame,
+    .leave-type-card,
+    .nc-spinner {
+        animation: none !important;
+        transition: none !important;
     }
 }
