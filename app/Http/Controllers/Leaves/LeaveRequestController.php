@@ -5,8 +5,6 @@ namespace App\Http\Controllers\Leaves;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Leaves\StoreLeaveRequest;
 use App\Models\LeaveRequest;
-use App\Models\LeaveType;
-use App\Services\Leaves\LeaveBalanceService;
 use App\Services\Leaves\LeaveDayCountService;
 use App\Services\Leaves\LeaveRequestWorkflowService;
 use App\Services\Leaves\LeaveValidatorService;
@@ -17,8 +15,6 @@ use Throwable;
 
 class LeaveRequestController extends Controller
 {
-    protected LeaveBalanceService $balanceService;
-
     protected LeaveRequestWorkflowService $workflowService;
 
     protected LeaveDayCountService $dayCountService;
@@ -26,12 +22,10 @@ class LeaveRequestController extends Controller
     protected LeaveValidatorService $validatorService;
 
     public function __construct(
-        LeaveBalanceService $balanceService,
         LeaveRequestWorkflowService $workflowService,
         LeaveDayCountService $dayCountService,
         LeaveValidatorService $validatorService
     ) {
-        $this->balanceService = $balanceService;
         $this->workflowService = $workflowService;
         $this->dayCountService = $dayCountService;
         $this->validatorService = $validatorService;
@@ -44,10 +38,7 @@ class LeaveRequestController extends Controller
             return redirect()->route('dashboard')->with('error', 'Profil employé manquant.');
         }
 
-        $balance = $this->balanceService->getBalance($user->employee);
-        $leaveTypes = LeaveType::where('is_active', true)->get();
-
-        return view('leaves.create', compact('balance', 'leaveTypes'));
+        return view('leaves.create');
     }
 
     public function store(StoreLeaveRequest $request)
