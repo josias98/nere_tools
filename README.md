@@ -22,7 +22,7 @@ Points notables:
   - conges dans `app/Services/Leaves/LeavePdfService.php` ;
 - archivage ZIP des feuilles de temps via `ZipArchive` ;
 - routes web decoupees par domaine dans `routes/web/*.php` ;
-- front leger avec Blade + Vite + Tailwind CSS 4 + un peu de JavaScript modulaire ;
+- front leger avec Blade, Livewire, Vite, Tailwind CSS 4 et du JavaScript modulaire ;
 - couverture de tests deja presente pour auth Microsoft, timesheets et conges.
 
 ## Organisation du depot
@@ -54,6 +54,36 @@ scripts/               Aides au HTTPS local et bundle CA
 tests/
   Feature/             Parcours applicatifs
   Unit/                Services et logique pure
+```
+
+## Deploiement ZIP
+
+Le depot contient un script de release pour produire une archive compatible avec un deploiement mutualise ou manuel.
+
+Pour inclure `vendor/`, lancer d'abord `composer install --no-dev --optimize-autoloader` localement. Lancer aussi `npm install` localement si les dependances frontend ne sont pas deja installees.
+
+Creer l'archive avec:
+
+```bash
+npm run release:zip
+```
+
+Le script lance d'abord le build Vite, puis cree un ZIP dans `dist/` sous la forme `nere-tools-release-YYYYMMDD-HHMM.zip`. L'archive exclut les fichiers locaux ou sensibles comme `.env`, les bases SQLite, les logs, `node_modules`, `dist`, `tests` et les dossiers Git/IDE. Elle recree aussi les dossiers runtime Laravel utiles avec des placeholders `.gitignore`.
+
+Uploader le ZIP puis l'extraire sur le serveur. Verifier que `.env` existe sur le serveur, que `storage/` et `bootstrap/cache/` sont accessibles en ecriture, puis lancer si besoin:
+
+```bash
+php artisan migrate --force
+php artisan storage:link
+php artisan config:cache
+php artisan route:cache
+php artisan view:cache
+```
+
+Sur un cron d'hebergement mutualise, la queue peut etre traitee avec:
+
+```bash
+php artisan queue:work --stop-when-empty
 ```
 
 ## Modules existants
@@ -255,7 +285,7 @@ qu'elle est configuree par defaut.
 ## Tests
 
 ```bash
-php artisan test
+composer test
 ```
 
 Les tests couvrent deja:
@@ -274,7 +304,8 @@ Verification conseillee apres modification:
 
 ```bash
 php artisan migrate
-php artisan test
+composer test
+vendor/bin/pint --test
 npm run build
 ```
 

@@ -16,7 +16,7 @@ Valeurs minimales :
 ```env
 APP_ENV=production
 APP_DEBUG=false
-APP_URL=https://outils.nerecapital.com
+APP_URL=https://tools.nerecapital.com
 LOG_LEVEL=error
 LEAVE_CERTIFICATE_SIGNATORY_NAME="Monsieur ZONGO P. Job"
 LEAVE_CERTIFICATE_SIGNATORY_TITLE="Directeur Général"

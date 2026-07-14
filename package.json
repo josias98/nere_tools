@@ -5,6 +5,7 @@
     "scripts": {
         "build": "vite build",
         "dev": "vite",
+        "release:zip": "node scripts/build-release.mjs",
         "setup:ca": "powershell -ExecutionPolicy Bypass -File scripts/setup-ca-bundle.ps1",
         "setup:https": "powershell -ExecutionPolicy Bypass -File scripts/setup-local-https.ps1",
         "serve:https": "concurrently -k -n laravel,queue,vite,https -c \"#fdba74,#c4b5fd,#86efac,#93c5fd\" \"php artisan serve --host=127.0.0.1 --port=8000\" \"php artisan queue:listen --tries=1 --timeout=0\" \"npm run dev -- --host 127.0.0.1\" \"node scripts/https-proxy.mjs\""
