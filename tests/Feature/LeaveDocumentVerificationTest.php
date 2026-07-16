@@ -9,8 +9,10 @@ use App\Models\LeaveRequest;
 use App\Models\LeaveType;
 use App\Models\LeaveValidator;
 use App\Models\User;
+use Illuminate\Contracts\Cache\Lock;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Tests\TestCase;
@@ -81,6 +83,22 @@ class LeaveDocumentVerificationTest extends TestCase
 
         $this->assertNotSame($first->document_reference, $second->document_reference);
         $this->assertNotSame($first->verification_token, $second->verification_token);
+    }
+
+    public function test_document_generation_uses_a_year_lock(): void
+    {
+        Storage::fake('local');
+        $lock = \Mockery::mock(Lock::class);
+        $lock->shouldReceive('block')
+            ->once()
+            ->with(10, \Mockery::type(\Closure::class))
+            ->andReturnUsing(fn (int $seconds, \Closure $callback) => $callback());
+        Cache::shouldReceive('lock')
+            ->once()
+            ->with('leave-document-reference:2026', 120)
+            ->andReturn($lock);
+
+        $this->approvedDocument();
     }
 
     public function test_admin_can_revoke_document(): void

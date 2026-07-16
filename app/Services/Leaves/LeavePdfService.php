@@ -8,6 +8,7 @@ use App\Models\LeaveRequest;
 use App\Models\LeaveSetting;
 use App\Models\User;
 use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -65,13 +66,27 @@ class LeavePdfService
             return $existing;
         }
 
+        $referenceYear = (int) ($request->reviewed_at?->format('Y') ?? now()->format('Y'));
+
+        return Cache::lock('leave-document-reference:'.$referenceYear, 120)
+            ->block(10, fn (): LeaveDocument => $this->buildDocumentLocked($request, $actor, $replaceExisting, $reason, $referenceYear));
+    }
+
+    private function buildDocumentLocked(
+        LeaveRequest $request,
+        ?User $actor,
+        bool $replaceExisting,
+        ?string $reason,
+        int $referenceYear,
+    ): LeaveDocument {
+
         $attempt = 0;
 
         while ($attempt < 3) {
             $attempt++;
 
             try {
-                return DB::transaction(function () use ($request, $actor, $replaceExisting, $reason): LeaveDocument {
+                return DB::transaction(function () use ($request, $actor, $replaceExisting, $reason, $referenceYear): LeaveDocument {
                     $request = LeaveRequest::query()
                         ->with(['employee.department', 'leaveType', 'reviewer.employee'])
                         ->lockForUpdate()
@@ -83,7 +98,6 @@ class LeavePdfService
                         return $existing;
                     }
 
-                    $referenceYear = (int) ($request->reviewed_at?->format('Y') ?? now()->format('Y'));
                     $reference = $this->references->next($referenceYear);
                     $token = $this->uniqueToken();
                     $verificationUrl = route('leaves.verify.show', $token);
