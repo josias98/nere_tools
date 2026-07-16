@@ -12,6 +12,8 @@ use App\Models\User;
 use App\Services\Leaves\LeaveAccrualService;
 use App\Services\Leaves\LeaveBalanceService;
 use App\Services\Leaves\LeaveDayCountService;
+use App\Services\Leaves\LeaveRequestWorkflowService;
+use DomainException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
@@ -71,6 +73,84 @@ class LeaveModernizationTest extends TestCase
             ->post(route('leaves.store'), ['leave_type_id' => $type->id, 'start_date' => '2026-08-01', 'end_date' => '2026-08-02'])
             ->assertOk()
             ->assertSee('Le justificatif est obligatoire pour ce type de congé.');
+    }
+
+    public function test_ineligible_employee_cannot_submit_a_request(): void
+    {
+        $employee = $this->employee();
+        $employee->update(['leave_eligible' => false]);
+        $user = User::factory()->create(['email' => $employee->email]);
+        $type = LeaveType::query()->create(['name' => 'Congé', 'slug' => 'ineligible-test']);
+
+        $this->expectException(DomainException::class);
+        $this->expectExceptionMessage("Ce collaborateur n'est pas éligible");
+
+        app(LeaveRequestWorkflowService::class)->submitRequest($employee->fresh(), [
+            'leave_type_id' => $type->id,
+            'start_date' => '2026-08-01',
+            'end_date' => '2026-08-02',
+        ], $user->id);
+    }
+
+    public function test_maximum_duration_is_enforced(): void
+    {
+        $employee = $this->employee();
+        $user = User::factory()->create(['email' => $employee->email]);
+        $type = LeaveType::query()->create(['name' => 'Permission', 'slug' => 'maximum-test', 'maximum_duration' => 2]);
+
+        $this->expectException(DomainException::class);
+        $this->expectExceptionMessage('dépasse le maximum');
+
+        app(LeaveRequestWorkflowService::class)->submitRequest($employee, [
+            'leave_type_id' => $type->id,
+            'start_date' => '2026-08-01',
+            'end_date' => '2026-08-03',
+        ], $user->id);
+    }
+
+    public function test_notice_period_is_enforced(): void
+    {
+        $this->travelTo('2026-07-01 12:00:00');
+        $employee = $this->employee();
+        $user = User::factory()->create(['email' => $employee->email]);
+        $type = LeaveType::query()->create(['name' => 'Autorisation', 'slug' => 'notice-test', 'notice_hours' => 72]);
+
+        $this->expectException(DomainException::class);
+        $this->expectExceptionMessage('préavis');
+
+        app(LeaveRequestWorkflowService::class)->submitRequest($employee, [
+            'leave_type_id' => $type->id,
+            'start_date' => '2026-07-03',
+            'end_date' => '2026-07-03',
+        ], $user->id);
+    }
+
+    public function test_annual_quota_includes_pending_requests(): void
+    {
+        $employee = $this->employee();
+        $user = User::factory()->create(['email' => $employee->email]);
+        $type = LeaveType::query()->create(['name' => 'Permission', 'slug' => 'quota-test', 'quota' => 3]);
+        LeaveRequest::query()->create([
+            'uuid' => fake()->uuid(),
+            'employee_id' => $employee->id,
+            'leave_type_id' => $type->id,
+            'start_date' => '2026-08-01',
+            'end_date' => '2026-08-02',
+            'requested_days' => 2,
+            'requested_duration' => 2,
+            'duration_unit' => 'calendar_day',
+            'status' => 'pending_supervisor',
+            'created_by_user_id' => $user->id,
+        ]);
+
+        $this->expectException(DomainException::class);
+        $this->expectExceptionMessage('quota annuel');
+
+        app(LeaveRequestWorkflowService::class)->submitRequest($employee, [
+            'leave_type_id' => $type->id,
+            'start_date' => '2026-09-01',
+            'end_date' => '2026-09-02',
+        ], $user->id);
     }
 
     public function test_admin_export_is_an_xlsx_workbook(): void

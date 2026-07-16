@@ -36,6 +36,8 @@ class LeaveRequestWorkflowService
         $unit = LeaveUnit::from($configuration['unit'] ?? $type->unit->value);
         $duration = $this->dayCountService->calculate($startDate, $endDate, $unit);
 
+        $this->ensureSubmissionRules($employee, $type, $configuration, $startDate, $endDate, $unit, $duration);
+
         if ($endDate->isBefore($startDate)) {
             throw new DomainException('La date de fin ne peut pas être antérieure à la date de début.');
         }
@@ -226,6 +228,62 @@ class LeaveRequestWorkflowService
     {
         foreach ($this->steps() as $step) {
             $request->approvals()->create($step + ['status' => LeaveRequestApproval::STATUS_PENDING]);
+        }
+    }
+
+    private function ensureSubmissionRules(
+        Employee $employee,
+        LeaveType $type,
+        array $configuration,
+        Carbon $startDate,
+        Carbon $endDate,
+        LeaveUnit $unit,
+        float $duration,
+    ): void {
+        if ($employee->is_active === false || $employee->leave_eligible === false) {
+            throw new DomainException("Ce collaborateur n'est pas éligible aux demandes de congé.");
+        }
+
+        if ($type->is_active === false) {
+            throw new DomainException("Ce type de congé n'est plus actif.");
+        }
+
+        $maximum = $configuration['maximum_duration'] ?? $type->maximum_duration;
+        if ($maximum !== null && $duration > (float) $maximum) {
+            throw new DomainException('La durée demandée dépasse le maximum autorisé pour ce type de congé.');
+        }
+
+        $noticeHours = (int) ($configuration['notice_hours'] ?? $type->notice_hours ?? 0);
+        if ($noticeHours > 0 && $startDate->lt(now()->addHours($noticeHours))) {
+            throw new DomainException("Le délai de préavis requis pour ce type de congé n'est pas respecté.");
+        }
+
+        $quota = $configuration['quota'] ?? $type->quota;
+        if ($quota === null) {
+            return;
+        }
+
+        $year = $startDate->year;
+        $yearStart = Carbon::create($year, 1, 1)->startOfDay();
+        $yearEnd = Carbon::create($year, 12, 31)->endOfDay();
+        $used = LeaveRequest::query()
+            ->where('employee_id', $employee->id)
+            ->where('leave_type_id', $type->id)
+            ->whereIn('status', ['submitted', 'under_review', 'pending_supervisor', 'pending_hr', 'pending_dg', 'approved'])
+            ->whereDate('start_date', '<=', $yearEnd)
+            ->whereDate('end_date', '>=', $yearStart)
+            ->get()
+            ->sum(function (LeaveRequest $request) use ($year, $type): float {
+                $requestUnit = LeaveUnit::tryFrom($request->duration_unit)
+                    ?? LeaveUnit::tryFrom($request->rule_snapshot['type']['unit'] ?? '')
+                    ?? $type->unit;
+
+                return $this->dayCountService->splitByYear($request->start_date, $request->end_date, $requestUnit)[$year] ?? 0;
+            });
+        $requestedThisYear = $this->dayCountService->splitByYear($startDate, $endDate, $unit)[$year] ?? 0;
+
+        if ($used + $requestedThisYear > (float) $quota) {
+            throw new DomainException('Le quota annuel de ce type de congé serait dépassé.');
         }
     }
 
