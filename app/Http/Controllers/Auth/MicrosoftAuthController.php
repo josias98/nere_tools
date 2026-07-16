@@ -79,8 +79,9 @@ class MicrosoftAuthController extends Controller
         }
 
         $email = Str::lower($profile['mail'] ?: $profile['userPrincipalName'] ?: '');
+        $microsoftId = (string) ($profile['id'] ?? '');
 
-        if ($email === '') {
+        if ($email === '' || $microsoftId === '') {
             Log::warning('Microsoft profile did not include an email address.', [
                 'microsoft_id' => $profile['id'] ?? null,
             ]);
@@ -92,9 +93,27 @@ class MicrosoftAuthController extends Controller
                 ], 403);
         }
 
-        $user = User::query()
+        $userByMicrosoftId = User::query()->where('microsoft_id', $microsoftId)->first();
+        $userByEmail = User::query()
             ->whereRaw('LOWER(email) = ?', [$email])
             ->first();
+        $identityConflict = ($userByMicrosoftId && $userByEmail && ! $userByMicrosoftId->is($userByEmail))
+            || (! $userByMicrosoftId && $userByEmail?->microsoft_id && $userByEmail->microsoft_id !== $microsoftId);
+
+        if ($identityConflict) {
+            Log::warning('Microsoft identity does not match the locally linked account.', [
+                'email' => $email,
+                'microsoft_id' => $microsoftId,
+                'local_user_id' => $userByEmail?->id,
+            ]);
+
+            return response()->view('auth.denied', [
+                'email' => $email,
+                'reason' => "L'identité Microsoft ne correspond pas au compte local autorisé. Contactez un administrateur.",
+            ], 403);
+        }
+
+        $user = $userByMicrosoftId ?? $userByEmail;
 
         if (! $user) {
             $employee = Employee::query()
@@ -106,7 +125,7 @@ class MicrosoftAuthController extends Controller
                 $user = User::query()->create([
                     'name' => $profile['displayName'] ?: $employee->name(),
                     'email' => $email,
-                    'microsoft_id' => $profile['id'] ?? null,
+                    'microsoft_id' => $microsoftId,
                     'role' => User::ROLE_USER,
                     'is_active' => true,
                     'last_login_at' => now(),
@@ -130,7 +149,7 @@ class MicrosoftAuthController extends Controller
         $user->forceFill([
             'name' => $profile['displayName'] ?: $user->name,
             'email' => $email,
-            'microsoft_id' => $profile['id'],
+            'microsoft_id' => $microsoftId,
             'last_login_at' => now(),
         ])->save();
 

@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\Employee;
 use App\Models\Tool;
 use App\Models\User;
+use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Http;
@@ -30,6 +31,7 @@ class MicrosoftAuthenticationTest extends TestCase
         User::factory()->create([
             'email' => 'finance@nerecapital.com',
             'name' => 'Ancien nom',
+            'microsoft_id' => null,
             'role' => User::ROLE_FINANCE,
             'is_active' => true,
         ]);
@@ -87,6 +89,73 @@ class MicrosoftAuthenticationTest extends TestCase
             ->assertSee('Compte non autorise');
 
         $this->assertGuest();
+    }
+
+    public function test_reassigned_email_cannot_take_over_a_linked_account(): void
+    {
+        config()->set('services.microsoft.tenant_id', 'tenant-id');
+        config()->set('services.microsoft.client_id', 'client-id');
+        config()->set('services.microsoft.client_secret', 'client-secret');
+        config()->set('services.microsoft.redirect_uri', 'http://localhost/auth/microsoft/callback');
+        $user = User::factory()->create([
+            'email' => 'linked@nerecapital.com',
+            'microsoft_id' => 'original-microsoft-id',
+            'role' => User::ROLE_ADMIN,
+        ]);
+
+        Http::fake([
+            'login.microsoftonline.com/*/oauth2/v2.0/token' => Http::response(['access_token' => 'test-access-token']),
+            'graph.microsoft.com/v1.0/me*' => Http::response([
+                'id' => 'different-microsoft-id',
+                'displayName' => 'Different User',
+                'mail' => $user->email,
+                'userPrincipalName' => $user->email,
+            ]),
+        ]);
+
+        $this->withSession(['microsoft_oauth_state' => 'state-value'])
+            ->get('/auth/microsoft/callback?code=valid-code&state=state-value')
+            ->assertForbidden();
+
+        $this->assertGuest();
+        $this->assertSame('original-microsoft-id', $user->fresh()->microsoft_id);
+    }
+
+    public function test_linked_microsoft_id_survives_an_email_change(): void
+    {
+        config()->set('services.microsoft.tenant_id', 'tenant-id');
+        config()->set('services.microsoft.client_id', 'client-id');
+        config()->set('services.microsoft.client_secret', 'client-secret');
+        config()->set('services.microsoft.redirect_uri', 'http://localhost/auth/microsoft/callback');
+        $user = User::factory()->create([
+            'email' => 'old-address@nerecapital.com',
+            'microsoft_id' => 'stable-microsoft-id',
+        ]);
+
+        Http::fake([
+            'login.microsoftonline.com/*/oauth2/v2.0/token' => Http::response(['access_token' => 'test-access-token']),
+            'graph.microsoft.com/v1.0/me*' => Http::response([
+                'id' => 'stable-microsoft-id',
+                'displayName' => 'Linked User',
+                'mail' => 'new-address@nerecapital.com',
+                'userPrincipalName' => 'new-address@nerecapital.com',
+            ]),
+        ]);
+
+        $this->withSession(['microsoft_oauth_state' => 'state-value'])
+            ->get('/auth/microsoft/callback?code=valid-code&state=state-value')
+            ->assertRedirect('/');
+
+        $this->assertAuthenticatedAs($user);
+        $this->assertSame('new-address@nerecapital.com', $user->fresh()->email);
+    }
+
+    public function test_microsoft_id_is_unique(): void
+    {
+        User::factory()->create(['microsoft_id' => 'unique-microsoft-id']);
+
+        $this->expectException(QueryException::class);
+        User::factory()->create(['microsoft_id' => 'unique-microsoft-id']);
     }
 
     public function test_timesheets_route_requires_expected_roles(): void
