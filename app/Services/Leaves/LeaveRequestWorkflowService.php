@@ -33,8 +33,8 @@ class LeaveRequestWorkflowService
 
     public function submitRequest(Employee $employee, array $data, int $userId): LeaveRequest
     {
-        $startDate = Carbon::parse($data['start_date']);
-        $endDate = Carbon::parse($data['end_date']);
+        $startDate = Carbon::parse($data['start_date'].(isset($data['start_time']) ? ' '.$data['start_time'] : ''));
+        $endDate = Carbon::parse($data['end_date'].(isset($data['end_time']) ? ' '.$data['end_time'] : ''));
         $type = LeaveType::query()->with('rules')->findOrFail($data['leave_type_id']);
         $rule = $type->ruleAt($startDate);
         $configuration = $rule?->configuration ?? [];
@@ -50,11 +50,15 @@ class LeaveRequestWorkflowService
         $overlap = LeaveRequest::query()
             ->where('employee_id', $employee->id)
             ->whereIn('status', ['submitted', 'under_review', 'pending_supervisor', 'pending_hr', 'pending_dg', 'approved'])
-            ->where(function ($query) use ($startDate, $endDate): void {
-                $query->whereBetween('start_date', [$startDate, $endDate])
-                    ->orWhereBetween('end_date', [$startDate, $endDate])
-                    ->orWhere(fn ($query) => $query->where('start_date', '<=', $startDate)->where('end_date', '>=', $endDate));
-            })
+            ->when(
+                $unit === LeaveUnit::Hour,
+                fn ($query) => $query->where('start_at', '<', $endDate)->where('end_at', '>', $startDate),
+                fn ($query) => $query->where(function ($query) use ($startDate, $endDate): void {
+                    $query->whereBetween('start_date', [$startDate, $endDate])
+                        ->orWhereBetween('end_date', [$startDate, $endDate])
+                        ->orWhere(fn ($query) => $query->where('start_date', '<=', $startDate)->where('end_date', '>=', $endDate));
+                }),
+            )
             ->exists();
 
         if ($overlap) {
@@ -306,6 +310,10 @@ class LeaveRequestWorkflowService
         LeaveUnit $unit,
         float $duration,
     ): void {
+        if ($duration <= 0) {
+            throw new DomainException('La durée demandée doit être supérieure à zéro.');
+        }
+
         if ($employee->is_active === false || $employee->leave_eligible === false) {
             throw new DomainException("Ce collaborateur n'est pas éligible aux demandes de congé.");
         }

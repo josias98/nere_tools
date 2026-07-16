@@ -1,6 +1,9 @@
 export const bootLeavePage = () => {
     const startInput = document.getElementById('leave_start_date');
     const endInput = document.getElementById('leave_end_date');
+    const startTimeInput = document.getElementById('leave_start_time');
+    const endTimeInput = document.getElementById('leave_end_time');
+    const hourFields = document.querySelector('[data-hour-fields]');
     const typeInput = document.getElementById('leave_type_id');
     const count = document.getElementById('leave_day_count');
     const balance = document.getElementById('leave_remaining_balance');
@@ -9,16 +12,33 @@ export const bootLeavePage = () => {
     if (!startInput || !endInput || !count) return;
 
     const sync = () => {
-        const start = new Date(`${startInput.value}T00:00:00`);
-        const end = new Date(`${endInput.value}T00:00:00`);
-        if (!startInput.value || !endInput.value || Number.isNaN(start.valueOf()) || Number.isNaN(end.valueOf())) return;
-        const calendarDays = Math.floor((end - start) / 86400000) + 1;
-        if (calendarDays < 1) { count.textContent = 'Erreur'; return; }
-
         const option = typeInput?.selectedOptions[0];
         const unit = option?.dataset.unit ?? 'calendar_day';
+        const isHourly = unit === 'hour';
+        if (hourFields) hourFields.hidden = !isHourly;
+        if (startTimeInput) startTimeInput.required = isHourly;
+        if (endTimeInput) endTimeInput.required = isHourly;
+
+        document.getElementById('leave_attachment_hint').textContent = option?.dataset.attachment === '1' ? 'Obligatoire' : 'Facultatif';
+        const attachments = document.getElementById('leave_attachments');
+        const attachmentRequired = option?.dataset.attachment === '1';
+        if (attachments) attachments.required = attachmentRequired;
+        const requirement = document.getElementById('leave_attachment_requirement');
+        if (requirement) requirement.textContent = attachmentRequired ? 'Requis' : 'Facultatif';
+
+        const startTime = isHourly ? startTimeInput?.value : '00:00';
+        const endTime = isHourly ? endTimeInput?.value : '00:00';
+        const start = new Date(`${startInput.value}T${startTime || '00:00'}:00`);
+        const end = new Date(`${endInput.value}T${endTime || '00:00'}:00`);
+        if (isHourly && (!startTime || !endTime)) return;
+        if (!startInput.value || !endInput.value || Number.isNaN(start.valueOf()) || Number.isNaN(end.valueOf())) return;
+        const calendarDays = Math.floor((end - start) / 86400000) + 1;
+        if (end <= start && isHourly) { count.textContent = 'Erreur'; return; }
+        if (calendarDays < 1 && !isHourly) { count.textContent = 'Erreur'; return; }
+
         let duration = calendarDays;
-        if (unit === 'working_day') {
+        if (isHourly) duration = Number(((end - start) / 3600000).toFixed(2));
+        else if (unit === 'working_day') {
             duration = 0;
             for (const date = new Date(start); date <= end; date.setDate(date.getDate() + 1)) {
                 if (date.getDay() !== 0 && date.getDay() !== 6) duration++;
@@ -28,14 +48,9 @@ export const bootLeavePage = () => {
 
         count.textContent = String(duration);
         document.getElementById('leave_unit_label').textContent = `${option?.dataset.unitLabel ?? 'jour'}(s)`;
-        document.getElementById('leave_attachment_hint').textContent = option?.dataset.attachment === '1' ? 'Obligatoire' : 'Facultatif';
-        const attachments = document.getElementById('leave_attachments');
-        const attachmentRequired = option?.dataset.attachment === '1';
-        if (attachments) attachments.required = attachmentRequired;
-        const requirement = document.getElementById('leave_attachment_requirement');
-        if (requirement) requirement.textContent = attachmentRequired ? 'Requis' : 'Facultatif';
-        const returnAt = new Date(end); returnAt.setDate(returnAt.getDate() + 1);
-        document.getElementById('leave_return_date').textContent = returnAt.toLocaleDateString('fr-FR');
+        const returnAt = new Date(end);
+        if (!isHourly) returnAt.setDate(returnAt.getDate() + 1);
+        document.getElementById('leave_return_date').textContent = isHourly ? returnAt.toLocaleString('fr-FR') : returnAt.toLocaleDateString('fr-FR');
 
         const impacts = option?.dataset.balanceImpact === '1';
         const projected = Number(form?.dataset.projectedBalance ?? 0);
@@ -45,6 +60,8 @@ export const bootLeavePage = () => {
 
     startInput.addEventListener('change', sync);
     endInput.addEventListener('change', sync);
+    startTimeInput?.addEventListener('change', sync);
+    endTimeInput?.addEventListener('change', sync);
     typeInput?.addEventListener('change', sync);
     sync();
     document.querySelector('[data-validation-summary]')?.focus();

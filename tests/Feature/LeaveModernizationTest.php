@@ -153,6 +153,47 @@ class LeaveModernizationTest extends TestCase
         ], $user->id);
     }
 
+    public function test_hourly_request_requires_times(): void
+    {
+        $employee = $this->employee();
+        $user = User::factory()->create(['email' => $employee->email]);
+        $type = LeaveType::query()->create(['name' => 'Autorisation horaire', 'slug' => 'hour-required', 'unit' => LeaveUnit::Hour]);
+
+        $this->actingAs($user)->post(route('leaves.store'), [
+            'leave_type_id' => $type->id,
+            'start_date' => '2026-08-01',
+            'end_date' => '2026-08-01',
+        ])->assertSessionHasErrors(['start_time', 'end_time']);
+    }
+
+    public function test_disjoint_hourly_requests_store_exact_times_and_duration(): void
+    {
+        $employee = $this->employee();
+        $user = User::factory()->create(['email' => $employee->email]);
+        $type = LeaveType::query()->create(['name' => 'Autorisation horaire', 'slug' => 'hour-duration', 'unit' => LeaveUnit::Hour]);
+
+        $this->actingAs($user)->post(route('leaves.store'), [
+            'leave_type_id' => $type->id,
+            'start_date' => '2026-08-01',
+            'start_time' => '09:00',
+            'end_date' => '2026-08-01',
+            'end_time' => '13:30',
+        ])->assertSessionHas('success');
+        $this->actingAs($user)->post(route('leaves.store'), [
+            'leave_type_id' => $type->id,
+            'start_date' => '2026-08-01',
+            'start_time' => '13:30',
+            'end_date' => '2026-08-01',
+            'end_time' => '15:00',
+        ])->assertSessionHas('success');
+
+        $requests = LeaveRequest::query()->orderBy('id')->get();
+        $this->assertCount(2, $requests);
+        $this->assertSame(4.5, $requests->first()->requested_duration);
+        $this->assertSame('2026-08-01 09:00', $requests->first()->start_at->format('Y-m-d H:i'));
+        $this->assertSame('2026-08-01 13:30', $requests->first()->effective_return_at->format('Y-m-d H:i'));
+    }
+
     public function test_admin_export_is_an_xlsx_workbook(): void
     {
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);

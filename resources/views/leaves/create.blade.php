@@ -55,6 +55,18 @@
                                 @error('end_date') <small id="end_date_error" class="nc-error">{{ $message }}</small> @enderror
                             </label>
                         </div>
+                        <div class="leave-date-grid" data-hour-fields hidden>
+                            <label class="nc-field" for="leave_start_time">
+                                <span>Heure de début <small>Requis pour une demande horaire</small></span>
+                                <input type="time" name="start_time" id="leave_start_time" value="{{ old('start_time') }}" @error('start_time') aria-invalid="true" aria-describedby="start_time_error" @enderror>
+                                @error('start_time') <small id="start_time_error" class="nc-error">{{ $message }}</small> @enderror
+                            </label>
+                            <label class="nc-field" for="leave_end_time">
+                                <span>Heure de fin <small>Requis pour une demande horaire</small></span>
+                                <input type="time" name="end_time" id="leave_end_time" value="{{ old('end_time') }}" @error('end_time') aria-invalid="true" aria-describedby="end_time_error" @enderror>
+                                @error('end_time') <small id="end_time_error" class="nc-error">{{ $message }}</small> @enderror
+                            </label>
+                        </div>
                     </fieldset>
 
                     <fieldset class="leave-fieldset">

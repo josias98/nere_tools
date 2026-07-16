@@ -33,6 +33,10 @@ class LeaveDayCountService
 
     public function effectiveReturn(Carbon $end, LeaveUnit $unit): Carbon
     {
+        if ($unit === LeaveUnit::Hour) {
+            return $end->copy();
+        }
+
         $return = $end->copy()->addDay()->startOfDay();
         if ($unit !== LeaveUnit::WorkingDay) {
             return $return;
