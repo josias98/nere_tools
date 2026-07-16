@@ -88,6 +88,11 @@ class LeaveDocumentVerificationTest extends TestCase
     public function test_document_generation_uses_a_year_lock(): void
     {
         Storage::fake('local');
+        $approvalLock = \Mockery::mock(Lock::class);
+        $approvalLock->shouldReceive('block')
+            ->times(3)
+            ->with(10, \Mockery::type(\Closure::class))
+            ->andReturnUsing(fn (int $seconds, \Closure $callback) => $callback());
         $lock = \Mockery::mock(Lock::class);
         $lock->shouldReceive('block')
             ->once()
@@ -97,6 +102,10 @@ class LeaveDocumentVerificationTest extends TestCase
             ->once()
             ->with('leave-document-reference:2026', 120)
             ->andReturn($lock);
+        Cache::shouldReceive('lock')
+            ->times(3)
+            ->with(\Mockery::pattern('/^leave-approval-employee:/'), 120)
+            ->andReturn($approvalLock);
 
         $this->approvedDocument();
     }
