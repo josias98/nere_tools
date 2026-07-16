@@ -56,6 +56,10 @@ class User extends Authenticatable
 
     public function canAccessAdmin(): bool
     {
+        if (! $this->is_active) {
+            return false;
+        }
+
         if ($this->hasRole(self::ROLE_ADMIN)) {
             return true;
         }
@@ -65,6 +69,10 @@ class User extends Authenticatable
 
     public function canAccessTool(string $slug): bool
     {
+        if (! $this->is_active) {
+            return false;
+        }
+
         if ($this->hasRole(self::ROLE_ADMIN)) {
             return true;
         }

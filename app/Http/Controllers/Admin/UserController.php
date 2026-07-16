@@ -82,9 +82,9 @@ class UserController extends Controller
             return back()->with('error', 'Vous ne pouvez pas supprimer votre propre compte.');
         }
 
-        $user->delete();
+        $user->forceFill(['is_active' => false])->save();
 
-        return redirect()->route('admin.users.index')->with('success', 'Utilisateur supprimé.');
+        return redirect()->route('admin.users.index')->with('success', 'Utilisateur désactivé.');
     }
 
     /**

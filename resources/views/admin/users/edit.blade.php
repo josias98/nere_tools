@@ -67,13 +67,13 @@
             </dl>
         </section>
 
-        @if (! auth()->user()->is($managedUser))
+        @if (! auth()->user()->is($managedUser) && $managedUser->is_active)
             <form method="POST" action="{{ route('admin.users.destroy', $managedUser) }}" class="nc-actions">
                 @csrf
                 @method('DELETE')
                 <button class="nc-ghost danger" type="submit">
-                    <i data-lucide="trash-2" class="nc-icon" aria-hidden="true"></i>
-                    Supprimer
+                    <i data-lucide="user-x" class="nc-icon" aria-hidden="true"></i>
+                    Désactiver
                 </button>
                 <a class="nc-ghost" href="{{ route('admin.users.index') }}">
                     <i data-lucide="arrow-left" class="nc-icon" aria-hidden="true"></i>
