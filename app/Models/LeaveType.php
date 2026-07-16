@@ -33,6 +33,10 @@ class LeaveType extends Model
 
     public function ruleAt(\DateTimeInterface $date): ?LeaveRule
     {
-        return $this->rules()->whereDate('effective_from', '<=', $date)->where(fn ($q) => $q->whereNull('effective_until')->orWhereDate('effective_until', '>=', $date))->first();
+        return $this->rules()
+            ->where('is_active', true)
+            ->whereDate('effective_from', '<=', $date)
+            ->where(fn ($q) => $q->whereNull('effective_until')->orWhereDate('effective_until', '>=', $date))
+            ->first();
     }
 }

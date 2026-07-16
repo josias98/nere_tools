@@ -19,6 +19,22 @@
 
         @include('leaves.partials.flash')
 
+        @php
+            $leaveRuleData = $leaveTypes->mapWithKeys(fn ($type) => [(string) $type->id => [
+                'defaults' => [
+                    'unit' => $type->unit->value,
+                    'counts_against_balance' => $type->counts_against_balance,
+                    'requires_attachment' => $type->requires_attachment,
+                ],
+                'rules' => $type->rules->where('is_active', true)->map(fn ($rule) => [
+                    'effective_from' => $rule->effective_from->toDateString(),
+                    'effective_until' => $rule->effective_until?->toDateString(),
+                    'configuration' => $rule->configuration,
+                ])->values(),
+            ]]);
+        @endphp
+        <script type="application/json" id="leave-rule-data">@json($leaveRuleData, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT)</script>
+
         <form action="{{ route('leaves.store') }}" method="POST" enctype="multipart/form-data" class="nc-panel leave-form" data-leave-form data-projected-balance="{{ $balance['projected_balance'] }}">
             @csrf
 

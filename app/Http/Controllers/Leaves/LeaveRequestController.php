@@ -45,7 +45,7 @@ class LeaveRequestController extends Controller
         }
 
         $balance = $this->balanceService->getBalance($user->employee);
-        $leaveTypes = LeaveType::where('is_active', true)->get();
+        $leaveTypes = LeaveType::query()->with('rules')->where('is_active', true)->get();
 
         return view('leaves.create', compact('balance', 'leaveTypes'));
     }

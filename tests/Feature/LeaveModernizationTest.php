@@ -166,6 +166,24 @@ class LeaveModernizationTest extends TestCase
         ])->assertSessionHasErrors(['start_time', 'end_time']);
     }
 
+    public function test_form_exposes_future_rule_configuration(): void
+    {
+        $employee = $this->employee();
+        $user = User::factory()->create(['email' => $employee->email]);
+        $type = LeaveType::query()->create(['name' => 'Autorisation évolutive', 'slug' => 'future-unit', 'unit' => LeaveUnit::WorkingDay, 'counts_against_balance' => false]);
+        $type->rules()->create([
+            'version' => 2,
+            'effective_from' => '2027-01-01',
+            'configuration' => ['unit' => 'hour', 'requires_attachment' => true, 'counts_against_balance' => false],
+        ]);
+
+        $this->actingAs($user)->get(route('leaves.create'))
+            ->assertOk()
+            ->assertSee('leave-rule-data')
+            ->assertSee('2027-01-01')
+            ->assertSee('"unit":"hour"', false);
+    }
+
     public function test_disjoint_hourly_requests_store_exact_times_and_duration(): void
     {
         $employee = $this->employee();

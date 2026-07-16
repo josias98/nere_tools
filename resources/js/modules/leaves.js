@@ -9,19 +9,30 @@ export const bootLeavePage = () => {
     const balance = document.getElementById('leave_remaining_balance');
     const hint = document.getElementById('leave_balance_hint');
     const form = document.querySelector('[data-leave-form]');
+    const ruleData = JSON.parse(document.getElementById('leave-rule-data')?.textContent || '{}');
     if (!startInput || !endInput || !count) return;
+
+    const effectiveConfiguration = (option) => {
+        const type = ruleData[option?.value] ?? {};
+        const date = startInput.value;
+        const rule = date
+            ? type.rules?.find((candidate) => candidate.effective_from <= date && (!candidate.effective_until || candidate.effective_until >= date))
+            : null;
+        return { ...(type.defaults ?? {}), ...(rule?.configuration ?? {}) };
+    };
 
     const sync = () => {
         const option = typeInput?.selectedOptions[0];
-        const unit = option?.dataset.unit ?? 'calendar_day';
+        const configuration = effectiveConfiguration(option);
+        const unit = configuration.unit ?? option?.dataset.unit ?? 'calendar_day';
         const isHourly = unit === 'hour';
         if (hourFields) hourFields.hidden = !isHourly;
         if (startTimeInput) startTimeInput.required = isHourly;
         if (endTimeInput) endTimeInput.required = isHourly;
 
-        document.getElementById('leave_attachment_hint').textContent = option?.dataset.attachment === '1' ? 'Obligatoire' : 'Facultatif';
+        const attachmentRequired = configuration.requires_attachment ?? option?.dataset.attachment === '1';
+        document.getElementById('leave_attachment_hint').textContent = attachmentRequired ? 'Obligatoire' : 'Facultatif';
         const attachments = document.getElementById('leave_attachments');
-        const attachmentRequired = option?.dataset.attachment === '1';
         if (attachments) attachments.required = attachmentRequired;
         const requirement = document.getElementById('leave_attachment_requirement');
         if (requirement) requirement.textContent = attachmentRequired ? 'Requis' : 'Facultatif';
@@ -47,12 +58,13 @@ export const bootLeavePage = () => {
         else if (unit === 'month') duration = Number((calendarDays / 30).toFixed(2));
 
         count.textContent = String(duration);
-        document.getElementById('leave_unit_label').textContent = `${option?.dataset.unitLabel ?? 'jour'}(s)`;
+        const unitLabels = { calendar_day: 'jour calendaire', working_day: 'jour ouvrable', hour: 'heure', week: 'semaine', month: 'mois' };
+        document.getElementById('leave_unit_label').textContent = `${unitLabels[unit] ?? option?.dataset.unitLabel ?? 'jour'}(s)`;
         const returnAt = new Date(end);
         if (!isHourly) returnAt.setDate(returnAt.getDate() + 1);
         document.getElementById('leave_return_date').textContent = isHourly ? returnAt.toLocaleString('fr-FR') : returnAt.toLocaleDateString('fr-FR');
 
-        const impacts = option?.dataset.balanceImpact === '1';
+        const impacts = configuration.counts_against_balance ?? option?.dataset.balanceImpact === '1';
         const projected = Number(form?.dataset.projectedBalance ?? 0);
         if (balance) balance.textContent = impacts ? `${(projected - duration).toFixed(2)} jours` : 'Sans impact';
         if (hint) hint.textContent = impacts && duration > projected ? 'Cette demande dépasse votre solde projeté.' : impacts ? 'Votre solde projeté couvre cette demande.' : 'Ce type utilise un quota séparé du congé annuel.';
