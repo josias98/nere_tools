@@ -14,6 +14,7 @@ use Carbon\Carbon;
 use Closure;
 use DomainException;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
@@ -114,67 +115,71 @@ class LeaveRequestWorkflowService
 
     public function approve(LeaveRequest $request, User $reviewer, ?string $comment = null, bool $override = false): LeaveRequest
     {
-        $notify = null;
+        [$request, $notify] = Cache::lock('leave-approval-employee:'.$request->employee_id, 120)
+            ->block(10, function () use ($request, $reviewer, $comment, $override): array {
+                $notify = null;
+                $request = DB::transaction(function () use ($request, $reviewer, $comment, $override, &$notify): LeaveRequest {
+                    $request = LeaveRequest::query()
+                        ->with(['employee.department', 'leaveType'])
+                        ->lockForUpdate()
+                        ->findOrFail($request->id);
 
-        $request = DB::transaction(function () use ($request, $reviewer, $comment, $override, &$notify): LeaveRequest {
-            $request = LeaveRequest::query()
-                ->with(['employee.department', 'leaveType'])
-                ->lockForUpdate()
-                ->findOrFail($request->id);
+                    $this->ensureApprovalChain($request);
+                    $approval = $this->currentApproval($request);
 
-            $this->ensureApprovalChain($request);
-            $approval = $this->currentApproval($request);
+                    if (! $approval) {
+                        throw new DomainException('Cette demande ne peut plus etre approuvee.');
+                    }
 
-            if (! $approval) {
-                throw new DomainException('Cette demande ne peut plus etre approuvee.');
-            }
+                    if (! $this->validators()->userCanValidateStep($reviewer, $request, $approval->step_key)) {
+                        throw new DomainException("Vous n'etes pas autorise a valider cette etape.");
+                    }
 
-            if (! $this->validators()->userCanValidateStep($reviewer, $request, $approval->step_key)) {
-                throw new DomainException("Vous n'etes pas autorise a valider cette etape.");
-            }
+                    $approval->forceFill([
+                        'status' => LeaveRequestApproval::STATUS_APPROVED,
+                        'validator_user_id' => $reviewer->id,
+                        'validator_employee_id' => $reviewer->employee?->id,
+                        'comment' => $comment,
+                        'decided_at' => now(),
+                    ])->save();
 
-            $approval->forceFill([
-                'status' => LeaveRequestApproval::STATUS_APPROVED,
-                'validator_user_id' => $reviewer->id,
-                'validator_employee_id' => $reviewer->employee?->id,
-                'comment' => $comment,
-                'decided_at' => now(),
-            ])->save();
+                    $next = $request->approvals()
+                        ->where('status', LeaveRequestApproval::STATUS_PENDING)
+                        ->orderBy('step_order')
+                        ->first();
 
-            $next = $request->approvals()
-                ->where('status', LeaveRequestApproval::STATUS_PENDING)
-                ->orderBy('step_order')
-                ->first();
+                    if ($next) {
+                        $request->forceFill(['status' => 'pending_'.$next->step_key])->save();
+                        $this->audit('leave.step_approved', $request, $reviewer->id, ['step' => $approval->step_key]);
+                        $notify = 'next';
 
-            if ($next) {
-                $request->forceFill(['status' => 'pending_'.$next->step_key])->save();
-                $this->audit('leave.step_approved', $request, $reviewer->id, ['step' => $approval->step_key]);
-                $notify = 'next';
+                        return $request->fresh(['employee.department', 'leaveType', 'approvals.validatorUser.employee', 'currentApproval']);
+                    }
 
-                return $request->fresh(['employee.department', 'leaveType', 'approvals.validatorUser.employee', 'currentApproval']);
-            }
+                    $balance = $this->balanceService->getBalance($request->employee);
+                    $countsAgainstBalance = (bool) ($request->rule_snapshot['type']['counts_against_balance'] ?? $request->leaveType->counts_against_balance);
 
-            $balance = $this->balanceService->getBalance($request->employee);
-            $countsAgainstBalance = (bool) ($request->rule_snapshot['type']['counts_against_balance'] ?? $request->leaveType->counts_against_balance);
+                    if ($countsAgainstBalance && ! $override && $request->requested_days > $balance['available_balance']) {
+                        throw new DomainException('Solde insuffisant pour approuver cette demande.');
+                    }
 
-            if ($countsAgainstBalance && ! $override && $request->requested_days > $balance['available_balance']) {
-                throw new DomainException('Solde insuffisant pour approuver cette demande.');
-            }
+                    $request->forceFill([
+                        'status' => 'approved',
+                        'reviewed_at' => now(),
+                        'reviewed_by_user_id' => $reviewer->id,
+                        'reviewer_comment' => $comment,
+                        'balance_before' => $balance['available_balance'],
+                        'balance_after' => $countsAgainstBalance ? $balance['available_balance'] - $request->requested_days : $balance['available_balance'],
+                    ])->save();
 
-            $request->forceFill([
-                'status' => 'approved',
-                'reviewed_at' => now(),
-                'reviewed_by_user_id' => $reviewer->id,
-                'reviewer_comment' => $comment,
-                'balance_before' => $balance['available_balance'],
-                'balance_after' => $countsAgainstBalance ? $balance['available_balance'] - $request->requested_days : $balance['available_balance'],
-            ])->save();
+                    $this->audit('leave.approved', $request, $reviewer->id, ['step' => $approval->step_key]);
+                    $notify = 'final';
 
-            $this->audit('leave.approved', $request, $reviewer->id, ['step' => $approval->step_key]);
-            $notify = 'final';
+                    return $request->fresh(['employee.department', 'leaveType', 'approvals.validatorUser.employee']);
+                });
 
-            return $request->fresh(['employee.department', 'leaveType', 'approvals.validatorUser.employee']);
-        });
+                return [$request, $notify];
+            });
 
         if ($notify === 'next') {
             $this->notifySafely(

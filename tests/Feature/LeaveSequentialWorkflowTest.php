@@ -13,7 +13,9 @@ use App\Models\NotificationLog;
 use App\Models\User;
 use App\Services\Leaves\LeaveNotificationService;
 use App\Services\Leaves\LeavePdfService;
+use Illuminate\Contracts\Cache\Lock;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -131,6 +133,26 @@ class LeaveSequentialWorkflowTest extends TestCase
 
         $approved = $leaveRequest->fresh();
         $this->assertSame($approved->balance_before - 5, $approved->balance_after);
+    }
+
+    public function test_approval_uses_an_employee_lock(): void
+    {
+        [$requester, $employee] = $this->userWithEmployee('lock-requester@nere.test', 'Requester');
+        [$supervisor] = $this->team();
+        $leaveRequest = $this->requestWithApprovals($employee, $requester);
+        $lock = \Mockery::mock(Lock::class);
+        $lock->shouldReceive('block')
+            ->once()
+            ->with(10, \Mockery::type(\Closure::class))
+            ->andReturnUsing(fn (int $seconds, \Closure $callback) => $callback());
+        Cache::shouldReceive('lock')
+            ->once()
+            ->with('leave-approval-employee:'.$employee->id, 120)
+            ->andReturn($lock);
+
+        $this->actingAs($supervisor)->post(route('leaves.validations.approve', $leaveRequest->uuid))->assertSessionHas('success');
+
+        $this->assertSame('pending_hr', $leaveRequest->fresh()->status);
     }
 
     public function test_hr_rejection_notifies_requester_and_previous_approvers_only(): void
