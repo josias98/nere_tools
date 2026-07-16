@@ -157,7 +157,7 @@ class LeaveModernizationTest extends TestCase
     {
         $employee = $this->employee();
         $user = User::factory()->create(['email' => $employee->email]);
-        $type = LeaveType::query()->create(['name' => 'Autorisation horaire', 'slug' => 'hour-required', 'unit' => LeaveUnit::Hour]);
+        $type = LeaveType::query()->create(['name' => 'Autorisation horaire', 'slug' => 'hour-required', 'unit' => LeaveUnit::Hour, 'counts_against_balance' => false]);
 
         $this->actingAs($user)->post(route('leaves.store'), [
             'leave_type_id' => $type->id,
@@ -170,7 +170,7 @@ class LeaveModernizationTest extends TestCase
     {
         $employee = $this->employee();
         $user = User::factory()->create(['email' => $employee->email]);
-        $type = LeaveType::query()->create(['name' => 'Autorisation horaire', 'slug' => 'hour-duration', 'unit' => LeaveUnit::Hour]);
+        $type = LeaveType::query()->create(['name' => 'Autorisation horaire', 'slug' => 'hour-duration', 'unit' => LeaveUnit::Hour, 'counts_against_balance' => false]);
 
         $this->actingAs($user)->post(route('leaves.store'), [
             'leave_type_id' => $type->id,
@@ -192,6 +192,109 @@ class LeaveModernizationTest extends TestCase
         $this->assertSame(4.5, $requests->first()->requested_duration);
         $this->assertSame('2026-08-01 09:00', $requests->first()->start_at->format('Y-m-d H:i'));
         $this->assertSame('2026-08-01 13:30', $requests->first()->effective_return_at->format('Y-m-d H:i'));
+    }
+
+    public function test_daily_request_blocks_an_hourly_request_on_the_same_day(): void
+    {
+        $employee = $this->employee();
+        $user = User::factory()->create(['email' => $employee->email]);
+        $daily = LeaveType::query()->create(['name' => 'Congé', 'slug' => 'daily-overlap']);
+        $hourly = LeaveType::query()->create(['name' => 'Autorisation horaire', 'slug' => 'hour-overlap', 'unit' => LeaveUnit::Hour, 'counts_against_balance' => false]);
+
+        app(LeaveRequestWorkflowService::class)->submitRequest($employee, [
+            'leave_type_id' => $daily->id,
+            'start_date' => '2026-08-01',
+            'end_date' => '2026-08-01',
+        ], $user->id);
+
+        $this->expectException(DomainException::class);
+        $this->expectExceptionMessage('existe déjà sur cette période');
+
+        app(LeaveRequestWorkflowService::class)->submitRequest($employee, [
+            'leave_type_id' => $hourly->id,
+            'start_date' => '2026-08-01',
+            'start_time' => '09:00',
+            'end_date' => '2026-08-01',
+            'end_time' => '10:00',
+        ], $user->id);
+    }
+
+    public function test_quota_is_enforced_for_every_year_crossed_by_a_request(): void
+    {
+        $employee = $this->employee();
+        $user = User::factory()->create(['email' => $employee->email]);
+        $type = LeaveType::query()->create(['name' => 'Permission', 'slug' => 'cross-year-quota', 'quota' => 3]);
+        LeaveRequest::query()->create([
+            'uuid' => fake()->uuid(),
+            'employee_id' => $employee->id,
+            'leave_type_id' => $type->id,
+            'start_date' => '2027-01-10',
+            'end_date' => '2027-01-11',
+            'requested_days' => 2,
+            'requested_duration' => 2,
+            'duration_unit' => 'calendar_day',
+            'status' => 'approved',
+            'created_by_user_id' => $user->id,
+        ]);
+
+        $this->expectException(DomainException::class);
+        $this->expectExceptionMessage('quota annuel');
+
+        app(LeaveRequestWorkflowService::class)->submitRequest($employee, [
+            'leave_type_id' => $type->id,
+            'start_date' => '2026-12-31',
+            'end_date' => '2027-01-02',
+        ], $user->id);
+    }
+
+    public function test_hourly_quota_uses_stored_hour_duration(): void
+    {
+        $employee = $this->employee();
+        $user = User::factory()->create(['email' => $employee->email]);
+        $type = LeaveType::query()->create(['name' => 'Autorisation horaire', 'slug' => 'hour-quota', 'unit' => LeaveUnit::Hour, 'quota' => 4, 'counts_against_balance' => false]);
+        LeaveRequest::query()->create([
+            'uuid' => fake()->uuid(),
+            'employee_id' => $employee->id,
+            'leave_type_id' => $type->id,
+            'start_date' => '2026-08-01',
+            'end_date' => '2026-08-01',
+            'start_at' => '2026-08-01 09:00',
+            'end_at' => '2026-08-01 12:00',
+            'requested_days' => 3,
+            'requested_duration' => 3,
+            'duration_unit' => 'hour',
+            'status' => 'approved',
+            'created_by_user_id' => $user->id,
+        ]);
+
+        $this->expectException(DomainException::class);
+        $this->expectExceptionMessage('quota annuel');
+
+        app(LeaveRequestWorkflowService::class)->submitRequest($employee, [
+            'leave_type_id' => $type->id,
+            'start_date' => '2026-08-02',
+            'start_time' => '09:00',
+            'end_date' => '2026-08-02',
+            'end_time' => '11:00',
+        ], $user->id);
+    }
+
+    public function test_hourly_leave_cannot_be_subtracted_from_a_day_balance(): void
+    {
+        $employee = $this->employee();
+        $user = User::factory()->create(['email' => $employee->email]);
+        $type = LeaveType::query()->create(['name' => 'Horaire mal configuré', 'slug' => 'hour-balance', 'unit' => LeaveUnit::Hour, 'counts_against_balance' => true]);
+
+        $this->expectException(DomainException::class);
+        $this->expectExceptionMessage('solde exprimé en jours');
+
+        app(LeaveRequestWorkflowService::class)->submitRequest($employee, [
+            'leave_type_id' => $type->id,
+            'start_date' => '2026-08-01',
+            'start_time' => '09:00',
+            'end_date' => '2026-08-01',
+            'end_time' => '10:00',
+        ], $user->id);
     }
 
     public function test_admin_export_is_an_xlsx_workbook(): void

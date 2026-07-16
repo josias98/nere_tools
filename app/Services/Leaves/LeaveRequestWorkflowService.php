@@ -41,71 +41,53 @@ class LeaveRequestWorkflowService
         $unit = LeaveUnit::from($configuration['unit'] ?? $type->unit->value);
         $duration = $this->dayCountService->calculate($startDate, $endDate, $unit);
 
-        $this->ensureSubmissionRules($employee, $type, $configuration, $startDate, $endDate, $unit, $duration);
+        $request = Cache::lock('leave-submission-employee:'.$employee->id, 120)
+            ->block(10, function () use ($employee, $data, $userId, $startDate, $endDate, $type, $duration, $rule, $configuration, $unit): LeaveRequest {
+                $this->ensureSubmissionRules($employee, $type, $configuration, $startDate, $endDate, $unit, $duration);
+                $this->ensureNoOverlap($employee, $startDate, $endDate, $unit);
 
-        if ($endDate->isBefore($startDate)) {
-            throw new DomainException('La date de fin ne peut pas être antérieure à la date de début.');
-        }
+                return DB::transaction(function () use ($employee, $data, $userId, $startDate, $endDate, $type, $duration, $rule, $configuration, $unit): LeaveRequest {
+                    $request = LeaveRequest::query()->create([
+                        'uuid' => Str::uuid(),
+                        'employee_id' => $employee->id,
+                        'leave_type_id' => $data['leave_type_id'],
+                        'start_date' => $startDate,
+                        'end_date' => $endDate,
+                        'requested_days' => $duration,
+                        'requested_duration' => $duration,
+                        'duration_unit' => $unit->value,
+                        'start_at' => $startDate,
+                        'end_at' => $endDate,
+                        'effective_return_at' => $this->dayCountService->effectiveReturn($endDate, $unit),
+                        'rule_snapshot' => [
+                            'type' => array_merge($type->only(['id', 'name', 'slug', 'category', 'unit', 'is_paid', 'counts_against_balance', 'quota', 'maximum_duration', 'legal_reference']), $configuration),
+                            'rule_version' => $rule?->version,
+                            'configuration' => $rule?->configuration ?? [],
+                            'captured_at' => now()->toIso8601String(),
+                        ],
+                        'status' => 'pending_supervisor',
+                        'requester_comment' => $data['requester_comment'] ?? null,
+                        'submitted_at' => now(),
+                        'created_by_user_id' => $userId,
+                        'relationship' => $data['relationship'] ?? null,
+                        'reason' => $data['reason'] ?? null,
+                        'replacement_needed' => (bool) ($data['replacement_needed'] ?? false),
+                        'replacement_employee_id' => $data['replacement_employee_id'] ?? null,
+                        'location' => $data['location'] ?? null,
+                        'contact' => $data['contact'] ?? null,
+                        'salary_impact' => $data['salary_impact'] ?? null,
+                    ]);
 
-        $overlap = LeaveRequest::query()
-            ->where('employee_id', $employee->id)
-            ->whereIn('status', ['submitted', 'under_review', 'pending_supervisor', 'pending_hr', 'pending_dg', 'approved'])
-            ->when(
-                $unit === LeaveUnit::Hour,
-                fn ($query) => $query->where('start_at', '<', $endDate)->where('end_at', '>', $startDate),
-                fn ($query) => $query->where(function ($query) use ($startDate, $endDate): void {
-                    $query->whereBetween('start_date', [$startDate, $endDate])
-                        ->orWhereBetween('end_date', [$startDate, $endDate])
-                        ->orWhere(fn ($query) => $query->where('start_date', '<=', $startDate)->where('end_date', '>=', $endDate));
-                }),
-            )
-            ->exists();
+                    foreach ($data['attachments'] ?? [] as $attachment) {
+                        $this->storeAttachment($request, $attachment, $userId);
+                    }
 
-        if ($overlap) {
-            throw new DomainException('Une demande de congé existe déjà sur cette période.');
-        }
+                    $this->createApprovalChain($request);
+                    $this->audit('leave.created', $request, $userId);
 
-        $request = DB::transaction(function () use ($employee, $data, $userId, $startDate, $endDate, $type, $duration, $rule, $configuration, $unit): LeaveRequest {
-            $request = LeaveRequest::query()->create([
-                'uuid' => Str::uuid(),
-                'employee_id' => $employee->id,
-                'leave_type_id' => $data['leave_type_id'],
-                'start_date' => $startDate,
-                'end_date' => $endDate,
-                'requested_days' => $duration,
-                'requested_duration' => $duration,
-                'duration_unit' => $unit->value,
-                'start_at' => $startDate,
-                'end_at' => $endDate,
-                'effective_return_at' => $this->dayCountService->effectiveReturn($endDate, $unit),
-                'rule_snapshot' => [
-                    'type' => array_merge($type->only(['id', 'name', 'slug', 'category', 'unit', 'is_paid', 'counts_against_balance', 'quota', 'maximum_duration', 'legal_reference']), $configuration),
-                    'rule_version' => $rule?->version,
-                    'configuration' => $rule?->configuration ?? [],
-                    'captured_at' => now()->toIso8601String(),
-                ],
-                'status' => 'pending_supervisor',
-                'requester_comment' => $data['requester_comment'] ?? null,
-                'submitted_at' => now(),
-                'created_by_user_id' => $userId,
-                'relationship' => $data['relationship'] ?? null,
-                'reason' => $data['reason'] ?? null,
-                'replacement_needed' => (bool) ($data['replacement_needed'] ?? false),
-                'replacement_employee_id' => $data['replacement_employee_id'] ?? null,
-                'location' => $data['location'] ?? null,
-                'contact' => $data['contact'] ?? null,
-                'salary_impact' => $data['salary_impact'] ?? null,
-            ]);
-
-            foreach ($data['attachments'] ?? [] as $attachment) {
-                $this->storeAttachment($request, $attachment, $userId);
-            }
-
-            $this->createApprovalChain($request);
-            $this->audit('leave.created', $request, $userId);
-
-            return $request->fresh(['employee.department', 'leaveType', 'currentApproval']);
-        });
+                    return $request->fresh(['employee.department', 'leaveType', 'currentApproval']);
+                });
+            });
 
         $this->notifySafely(
             $request,
@@ -322,6 +304,11 @@ class LeaveRequestWorkflowService
             throw new DomainException("Ce type de congé n'est plus actif.");
         }
 
+        $countsAgainstBalance = (bool) ($configuration['counts_against_balance'] ?? $type->counts_against_balance);
+        if ($unit === LeaveUnit::Hour && $countsAgainstBalance) {
+            throw new DomainException('Un congé horaire ne peut pas impacter un solde exprimé en jours sans règle de conversion.');
+        }
+
         $maximum = $configuration['maximum_duration'] ?? $type->maximum_duration;
         if ($maximum !== null && $duration > (float) $maximum) {
             throw new DomainException('La durée demandée dépasse le maximum autorisé pour ce type de congé.');
@@ -337,27 +324,65 @@ class LeaveRequestWorkflowService
             return;
         }
 
-        $year = $startDate->year;
-        $yearStart = Carbon::create($year, 1, 1)->startOfDay();
-        $yearEnd = Carbon::create($year, 12, 31)->endOfDay();
-        $used = LeaveRequest::query()
+        $requestedByYear = $this->dayCountService->splitByYear($startDate, $endDate, $unit);
+        $existing = LeaveRequest::query()
             ->where('employee_id', $employee->id)
             ->where('leave_type_id', $type->id)
             ->whereIn('status', ['submitted', 'under_review', 'pending_supervisor', 'pending_hr', 'pending_dg', 'approved'])
-            ->whereDate('start_date', '<=', $yearEnd)
-            ->whereDate('end_date', '>=', $yearStart)
-            ->get()
-            ->sum(function (LeaveRequest $request) use ($year, $type): float {
+            ->whereDate('start_date', '<=', Carbon::create(max(array_keys($requestedByYear)), 12, 31))
+            ->whereDate('end_date', '>=', Carbon::create(min(array_keys($requestedByYear)), 1, 1))
+            ->get();
+
+        foreach ($requestedByYear as $year => $requestedThisYear) {
+            $used = $existing->sum(function (LeaveRequest $request) use ($year, $type): float {
                 $requestUnit = LeaveUnit::tryFrom($request->duration_unit)
                     ?? LeaveUnit::tryFrom($request->rule_snapshot['type']['unit'] ?? '')
                     ?? $type->unit;
+                $requestStart = $request->start_at ?? $request->start_date->copy()->startOfDay();
+                $requestEnd = $request->end_at ?? $request->end_date->copy()->endOfDay();
 
-                return $this->dayCountService->splitByYear($request->start_date, $request->end_date, $requestUnit)[$year] ?? 0;
+                if ($requestUnit === LeaveUnit::Hour && $requestStart->year === $requestEnd->year) {
+                    return $requestStart->year === $year
+                        ? (float) ($request->requested_duration ?? $request->requested_days)
+                        : 0;
+                }
+
+                return $this->dayCountService->splitByYear($requestStart, $requestEnd, $requestUnit)[$year] ?? 0;
             });
-        $requestedThisYear = $this->dayCountService->splitByYear($startDate, $endDate, $unit)[$year] ?? 0;
 
-        if ($used + $requestedThisYear > (float) $quota) {
-            throw new DomainException('Le quota annuel de ce type de congé serait dépassé.');
+            if ($used + $requestedThisYear > (float) $quota) {
+                throw new DomainException('Le quota annuel de ce type de congé serait dépassé.');
+            }
+        }
+    }
+
+    private function ensureNoOverlap(Employee $employee, Carbon $startDate, Carbon $endDate, LeaveUnit $unit): void
+    {
+        $overlap = LeaveRequest::query()
+            ->with('leaveType')
+            ->where('employee_id', $employee->id)
+            ->whereIn('status', ['submitted', 'under_review', 'pending_supervisor', 'pending_hr', 'pending_dg', 'approved'])
+            ->whereDate('start_date', '<=', $endDate)
+            ->whereDate('end_date', '>=', $startDate)
+            ->get()
+            ->contains(function (LeaveRequest $request) use ($startDate, $endDate, $unit): bool {
+                $existingUnit = LeaveUnit::tryFrom($request->duration_unit)
+                    ?? LeaveUnit::tryFrom($request->rule_snapshot['type']['unit'] ?? '')
+                    ?? $request->leaveType?->unit;
+
+                if ($unit !== LeaveUnit::Hour || $existingUnit !== LeaveUnit::Hour) {
+                    return true;
+                }
+
+                if (! $request->start_at || ! $request->end_at) {
+                    return true;
+                }
+
+                return $request->start_at->lt($endDate) && $request->end_at->gt($startDate);
+            });
+
+        if ($overlap) {
+            throw new DomainException('Une demande de congé existe déjà sur cette période.');
         }
     }
 
