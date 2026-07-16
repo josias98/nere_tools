@@ -43,6 +43,7 @@ class LeaveAdminController extends Controller
             'next_30_days' => LeaveRequest::query()->where('status', 'approved')->whereBetween('start_date', [now()->addDay(), now()->addDays(30)])->count(),
             'pending' => LeaveRequest::query()->whereIn('status', ['pending_supervisor', 'pending_hr', 'pending_dg'])->count(),
             'missing_attachments' => LeaveRequest::query()->whereHas('leaveType', fn ($q) => $q->where('requires_attachment', true))->doesntHave('attachments')->count(),
+            'missing_documents' => LeaveRequest::query()->where('status', 'approved')->doesntHave('document')->count(),
         ];
 
         return view('leaves.admin.index', [

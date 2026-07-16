@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Jobs\SendGraphMailJob;
+use App\Models\AuditLog;
 use App\Models\Employee;
 use App\Models\LeaveBalance;
 use App\Models\LeaveRequest;
@@ -10,6 +11,8 @@ use App\Models\LeaveType;
 use App\Models\LeaveValidator;
 use App\Models\NotificationLog;
 use App\Models\User;
+use App\Services\Leaves\LeaveNotificationService;
+use App\Services\Leaves\LeavePdfService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Storage;
@@ -69,6 +72,48 @@ class LeaveSequentialWorkflowTest extends TestCase
 
         $this->actingAs($supervisor)->post(route('leaves.validations.approve', $leaveRequest->uuid))->assertRedirect();
         $this->actingAs($hr)->get(route('leaves.validations.show', $leaveRequest->uuid))->assertOk();
+    }
+
+    public function test_submission_succeeds_when_notification_dispatch_fails(): void
+    {
+        [$requester] = $this->userWithEmployee('notification-failure@nere.test', 'Requester');
+        $type = LeaveType::query()->create(['name' => 'Congé annuel', 'slug' => 'notification-failure']);
+        $notifications = \Mockery::mock(LeaveNotificationService::class);
+        $notifications->shouldReceive('notifyCurrentStepValidators')->once()->andThrow(new \RuntimeException('Queue unavailable'));
+        app()->instance(LeaveNotificationService::class, $notifications);
+
+        $this->actingAs($requester)->post(route('leaves.store'), [
+            'leave_type_id' => $type->id,
+            'start_date' => '2026-08-01',
+            'end_date' => '2026-08-02',
+        ])->assertSessionHas('success');
+
+        $leaveRequest = LeaveRequest::query()->firstOrFail();
+        $this->assertSame('pending_supervisor', $leaveRequest->status);
+        $this->assertDatabaseHas('notification_logs', [
+            'related_id' => $leaveRequest->id,
+            'event' => 'leave.pending_supervisor',
+            'status' => 'failed',
+        ]);
+    }
+
+    public function test_final_approval_survives_pdf_generation_failure(): void
+    {
+        [$requester, $employee] = $this->userWithEmployee('pdf-failure@nere.test', 'Requester');
+        [$supervisor, , $hr, $dg] = $this->team();
+        $leaveRequest = $this->requestWithApprovals($employee, $requester);
+        $pdfs = \Mockery::mock(LeavePdfService::class);
+        $pdfs->shouldReceive('generate')->once()->andThrow(new \RuntimeException('Renderer unavailable'));
+        app()->instance(LeavePdfService::class, $pdfs);
+
+        foreach ([$supervisor, $hr] as $validator) {
+            $this->actingAs($validator)->post(route('leaves.validations.approve', $leaveRequest->uuid))->assertSessionHas('success');
+        }
+        $this->actingAs($dg)->post(route('leaves.validations.approve', $leaveRequest->uuid))->assertSessionHas('success');
+
+        $this->assertSame('approved', $leaveRequest->fresh()->status);
+        $this->assertNull($leaveRequest->fresh()->document);
+        $this->assertTrue(AuditLog::query()->where('action', 'leave.pdf_generation_failed')->where('auditable_id', $leaveRequest->id)->exists());
     }
 
     public function test_final_approval_uses_the_submitted_rule_snapshot(): void

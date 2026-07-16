@@ -8,13 +8,17 @@ use App\Models\Employee;
 use App\Models\LeaveRequest;
 use App\Models\LeaveRequestApproval;
 use App\Models\LeaveType;
+use App\Models\NotificationLog;
 use App\Models\User;
 use Carbon\Carbon;
+use Closure;
 use DomainException;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Throwable;
 
 class LeaveRequestWorkflowService
 {
@@ -98,7 +102,12 @@ class LeaveRequestWorkflowService
             return $request->fresh(['employee.department', 'leaveType', 'currentApproval']);
         });
 
-        $this->notifications()->notifyCurrentStepValidators($request);
+        $this->notifySafely(
+            $request,
+            'leave.pending_'.($request->currentApproval?->step_key ?? 'supervisor'),
+            $userId,
+            fn () => $this->notifications()->notifyCurrentStepValidators($request),
+        );
 
         return $request;
     }
@@ -168,10 +177,20 @@ class LeaveRequestWorkflowService
         });
 
         if ($notify === 'next') {
-            $this->notifications()->notifyCurrentStepValidators($request);
+            $this->notifySafely(
+                $request,
+                'leave.pending_'.($request->currentApproval?->step_key ?? 'unknown'),
+                $reviewer->id,
+                fn () => $this->notifications()->notifyCurrentStepValidators($request),
+            );
         } elseif ($notify === 'final') {
-            $this->pdfs()->generate($request, $reviewer);
-            $this->notifications()->notifyFinalApprovalRecipients($request->fresh(['employee', 'document', 'approvals.validatorUser.employee']));
+            $this->generatePdfSafely($request, $reviewer);
+            $this->notifySafely(
+                $request,
+                'leave.approved',
+                $reviewer->id,
+                fn () => $this->notifications()->notifyFinalApprovalRecipients($request->fresh(['employee', 'document', 'approvals.validatorUser.employee'])),
+            );
         }
 
         return $request;
@@ -220,7 +239,12 @@ class LeaveRequestWorkflowService
             return $request->fresh(['employee.department', 'leaveType', 'approvals.validatorUser.employee']);
         });
 
-        $this->notifications()->notifyRejectionRecipients($request);
+        $this->notifySafely(
+            $request,
+            'leave.rejected',
+            $reviewer->id,
+            fn () => $this->notifications()->notifyRejectionRecipients($request),
+        );
 
         return $request;
     }
@@ -229,6 +253,42 @@ class LeaveRequestWorkflowService
     {
         foreach ($this->steps() as $step) {
             $request->approvals()->create($step + ['status' => LeaveRequestApproval::STATUS_PENDING]);
+        }
+    }
+
+    private function generatePdfSafely(LeaveRequest $request, User $reviewer): void
+    {
+        try {
+            $this->pdfs()->generate($request, $reviewer);
+        } catch (Throwable $exception) {
+            Log::error('Leave PDF generation failed after approval.', ['exception' => $exception, 'leave_request_id' => $request->id]);
+            $this->audit('leave.pdf_generation_failed', $request, $reviewer->id, ['message' => Str::limit($exception->getMessage(), 500)]);
+        }
+    }
+
+    private function notifySafely(LeaveRequest $request, string $event, int $userId, Closure $notify): void
+    {
+        try {
+            $notify();
+        } catch (Throwable $exception) {
+            Log::error('Leave notification dispatch failed.', ['exception' => $exception, 'leave_request_id' => $request->id, 'event' => $event]);
+            $notification = NotificationLog::query()
+                ->where('related_type', LeaveRequest::class)
+                ->where('related_id', $request->id)
+                ->where('event', $event)
+                ->latest('id')
+                ->first() ?? new NotificationLog([
+                    'event' => $event,
+                    'related_type' => LeaveRequest::class,
+                    'related_id' => $request->id,
+                    'subject' => 'Notification de congé à relancer',
+                ]);
+            $notification->forceFill([
+                'status' => 'failed',
+                'error_message' => Str::limit($exception->getMessage(), 1000),
+                'failed_at' => now(),
+            ])->save();
+            $this->audit('leave.notification_failed', $request, $userId, ['event' => $event, 'message' => Str::limit($exception->getMessage(), 500)]);
         }
     }
 
