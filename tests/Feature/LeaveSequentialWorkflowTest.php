@@ -71,6 +71,23 @@ class LeaveSequentialWorkflowTest extends TestCase
         $this->actingAs($hr)->get(route('leaves.validations.show', $leaveRequest->uuid))->assertOk();
     }
 
+    public function test_final_approval_uses_the_submitted_rule_snapshot(): void
+    {
+        Storage::fake('local');
+        [$requester, $employee] = $this->userWithEmployee('snapshot-requester@nere.test', 'Requester');
+        [$supervisor, , $hr, $dg] = $this->team();
+        $leaveRequest = $this->requestWithApprovals($employee, $requester);
+        $leaveRequest->forceFill(['rule_snapshot' => ['type' => ['counts_against_balance' => true]]])->save();
+        $leaveRequest->leaveType()->update(['counts_against_balance' => false]);
+
+        foreach ([$supervisor, $hr, $dg] as $validator) {
+            $this->actingAs($validator)->post(route('leaves.validations.approve', $leaveRequest->uuid))->assertRedirect();
+        }
+
+        $approved = $leaveRequest->fresh();
+        $this->assertSame($approved->balance_before - 5, $approved->balance_after);
+    }
+
     public function test_hr_rejection_notifies_requester_and_previous_approvers_only(): void
     {
         Queue::fake();

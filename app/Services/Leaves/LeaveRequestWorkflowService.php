@@ -146,8 +146,9 @@ class LeaveRequestWorkflowService
             }
 
             $balance = $this->balanceService->getBalance($request->employee);
+            $countsAgainstBalance = (bool) ($request->rule_snapshot['type']['counts_against_balance'] ?? $request->leaveType->counts_against_balance);
 
-            if ($request->leaveType->counts_against_balance && ! $override && $request->requested_days > $balance['available_balance']) {
+            if ($countsAgainstBalance && ! $override && $request->requested_days > $balance['available_balance']) {
                 throw new DomainException('Solde insuffisant pour approuver cette demande.');
             }
 
@@ -157,7 +158,7 @@ class LeaveRequestWorkflowService
                 'reviewed_by_user_id' => $reviewer->id,
                 'reviewer_comment' => $comment,
                 'balance_before' => $balance['available_balance'],
-                'balance_after' => $request->leaveType->counts_against_balance ? $balance['available_balance'] - $request->requested_days : $balance['available_balance'],
+                'balance_after' => $countsAgainstBalance ? $balance['available_balance'] - $request->requested_days : $balance['available_balance'],
             ])->save();
 
             $this->audit('leave.approved', $request, $reviewer->id, ['step' => $approval->step_key]);
