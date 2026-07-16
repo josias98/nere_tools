@@ -225,6 +225,19 @@ class LeaveModernizationTest extends TestCase
         ])->assertSessionHasErrors(['start_time', 'end_time']);
     }
 
+    public function test_invalid_start_date_returns_validation_error(): void
+    {
+        $employee = $this->employee();
+        $user = User::factory()->create(['email' => $employee->email]);
+        $type = LeaveType::query()->create(['name' => 'Congé', 'slug' => 'invalid-date']);
+
+        $this->actingAs($user)->post(route('leaves.store'), [
+            'leave_type_id' => $type->id,
+            'start_date' => 'not-a-date',
+            'end_date' => '2026-08-01',
+        ])->assertSessionHasErrors('start_date');
+    }
+
     public function test_form_exposes_future_rule_configuration(): void
     {
         $employee = $this->employee();

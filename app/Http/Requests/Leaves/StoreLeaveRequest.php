@@ -17,7 +17,8 @@ class StoreLeaveRequest extends FormRequest
     public function rules(): array
     {
         $type = LeaveType::query()->find($this->integer('leave_type_id'));
-        $configuration = $type?->ruleAt(new \DateTimeImmutable($this->string('start_date')->toString() ?: 'now'))?->configuration ?? [];
+        $startDate = \DateTimeImmutable::createFromFormat('!Y-m-d', $this->string('start_date')->toString()) ?: new \DateTimeImmutable;
+        $configuration = $type?->ruleAt($startDate)?->configuration ?? [];
         $requiresTime = ($configuration['unit'] ?? $type?->unit?->value) === LeaveUnit::Hour->value;
 
         return [
