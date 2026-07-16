@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\LeaveUnit;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -29,6 +30,41 @@ class LeaveRequest extends Model
     public function statusLabel(): string
     {
         return self::statusLabels()[$this->status] ?? $this->status;
+    }
+
+    public function displayUnit(): LeaveUnit
+    {
+        return LeaveUnit::tryFrom($this->duration_unit)
+            ?? LeaveUnit::tryFrom($this->rule_snapshot['type']['unit'] ?? '')
+            ?? $this->leaveType?->unit
+            ?? LeaveUnit::CalendarDay;
+    }
+
+    public function durationLabel(): string
+    {
+        $value = rtrim(rtrim(number_format((float) ($this->requested_duration ?? $this->requested_days), 2, ',', ' '), '0'), ',');
+        $label = $this->displayUnit()->label();
+
+        return $value.' '.$label.(((float) ($this->requested_duration ?? $this->requested_days) > 1 && $label !== 'mois') ? 's' : '');
+    }
+
+    public function startLabel(): string
+    {
+        return $this->displayUnit() === LeaveUnit::Hour
+            ? ($this->start_at ?? $this->start_date)?->format('d/m/Y H:i') ?? '-'
+            : $this->start_date?->format('d/m/Y') ?? '-';
+    }
+
+    public function endLabel(): string
+    {
+        return $this->displayUnit() === LeaveUnit::Hour
+            ? ($this->end_at ?? $this->end_date)?->format('d/m/Y H:i') ?? '-'
+            : $this->end_date?->format('d/m/Y') ?? '-';
+    }
+
+    public function periodLabel(): string
+    {
+        return 'du '.$this->startLabel().' au '.$this->endLabel();
     }
 
     protected function casts(): array

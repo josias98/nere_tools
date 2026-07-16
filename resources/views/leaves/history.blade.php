@@ -58,8 +58,8 @@
                                 <tr>
                                     <td>{{ $request->created_at->format('d/m/Y') }}</td>
                                     <td>{{ $request->leaveType?->name ?? 'Conge' }}</td>
-                                    <td>{{ $request->start_date->format('d/m/Y') }} au {{ $request->end_date->format('d/m/Y') }}</td>
-                                    <td>{{ number_format($request->requested_days, 2) }}</td>
+                                    <td>{{ $request->periodLabel() }}</td>
+                                    <td>{{ $request->durationLabel() }}</td>
                                     <td><span class="leave-status is-{{ $request->status }}">{{ $request->statusLabel() }}</span></td>
                                     <td>
                                         <a href="{{ route('leaves.show', $request->uuid) }}" class="nc-link">

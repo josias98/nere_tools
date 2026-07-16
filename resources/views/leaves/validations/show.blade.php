@@ -25,13 +25,13 @@
                 <div class="nc-panel-heading">
                     <div>
                         <h2>{{ $leaveRequest->leaveType?->name ?? 'Conge' }}</h2>
-                        <p>{{ $leaveRequest->start_date->format('d/m/Y') }} au {{ $leaveRequest->end_date->format('d/m/Y') }}</p>
+                        <p>{{ $leaveRequest->periodLabel() }}</p>
                     </div>
                     <span class="leave-status is-{{ $leaveRequest->status }}">{{ $leaveRequest->statusLabel() }}</span>
                 </div>
 
                 <dl class="leave-detail-grid">
-                    <div><dt>Jours demandes</dt><dd>{{ number_format($leaveRequest->requested_days, 2) }}</dd></div>
+                    <div><dt>Durée demandée</dt><dd>{{ $leaveRequest->durationLabel() }}</dd></div>
                     <div><dt>Solde disponible</dt><dd>{{ number_format($balance['available_balance'], 2) }}</dd></div>
                     <div><dt>En attente</dt><dd>{{ number_format($balance['pending_days'], 2) }}</dd></div>
                     <div><dt>Solde projete</dt><dd>{{ number_format($balance['projected_balance'], 2) }}</dd></div>

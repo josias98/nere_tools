@@ -33,7 +33,7 @@ class LeaveExportService
         $headers = ['Référence', 'Salarié', 'Département', 'Type', 'Catégorie', 'Unité', 'Durée', 'Début', 'Fin', 'Reprise', 'Statut', 'Étape', 'Validateurs', 'Règle appliquée'];
         $writer->addRow(Row::fromValues($headers));
         foreach ($requests as $request) {
-            $writer->addRow(Row::fromValues([$request->uuid, $request->employee?->name(), $request->employee?->department?->name, $request->leaveType?->name, $request->leaveType?->category?->value, $request->duration_unit, $request->requested_duration ?? $request->requested_days, $request->start_date?->format('d/m/Y'), $request->end_date?->format('d/m/Y'), $request->effective_return_at?->format('d/m/Y H:i'), $request->statusLabel(), $request->currentApproval?->step_label, $request->approvals->pluck('validatorUser.name')->filter()->join(', '), 'v'.($request->rule_snapshot['rule_version'] ?? 'historique')]));
+            $writer->addRow(Row::fromValues([$request->uuid, $request->employee?->name(), $request->employee?->department?->name, $request->leaveType?->name, $request->leaveType?->category?->value, $request->duration_unit, $request->requested_duration ?? $request->requested_days, $request->startLabel(), $request->endLabel(), $request->effective_return_at?->format('d/m/Y H:i'), $request->statusLabel(), $request->currentApproval?->step_label, $request->approvals->pluck('validatorUser.name')->filter()->join(', '), 'v'.($request->rule_snapshot['rule_version'] ?? 'historique')]));
         }
         $sheet->setAutoFilter(new AutoFilter(0, 1, count($headers) - 1, max(1, $requests->count() + 1)))->setSheetView((new SheetView)->withFreezeRow(2));
         $sheet->setColumnWidthForRange(18, 1, count($headers));

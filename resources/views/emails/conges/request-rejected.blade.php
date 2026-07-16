@@ -10,8 +10,8 @@
         <strong>{{ $approval?->step_label ?? '-' }}</strong> par <strong>{{ $approval?->validatorUser?->name ?? '-' }}</strong>.
     </p>
     <p style="margin:0 0 16px; font-size:15px; line-height:1.7;">
-        {{ $leaveRequest->leaveType?->name ?? 'Conge' }}, {{ number_format((float) $leaveRequest->requested_days, 1, ',', ' ') }} jour(s),
-        du {{ $leaveRequest->start_date?->format('d/m/Y') }} au {{ $leaveRequest->end_date?->format('d/m/Y') }}.
+        {{ $leaveRequest->leaveType?->name ?? 'Conge' }}, {{ $leaveRequest->durationLabel() }},
+        {{ $leaveRequest->periodLabel() }}.
     </p>
     <p style="margin:0 0 24px; padding:16px; background:#fbefef; border-left:4px solid #b42318; font-size:14px; line-height:1.7;">
         Motif : {{ $approval?->comment ?: $leaveRequest->reviewer_comment }}

@@ -30,7 +30,6 @@ class LeavePdfRenderer
         $company = $employee?->entity ?: 'NERE CAPITAL PARTNERS';
         $signatoryName = (string) ($data['signed_by_label'] ?? 'Monsieur ZONGO P. Job');
         $signatoryTitle = (string) ($data['signed_by_role'] ?? 'Directeur Général');
-        $days = rtrim(rtrim(number_format((float) $request->requested_days, 2, ',', ' '), '0'), ',');
         $generatedAt = now();
         $content = "0.32 0.15 0.04 RG\n0.8 w\n";
 
@@ -46,15 +45,14 @@ class LeavePdfRenderer
         $this->textTop($content, 'ATTESTATION DE CONGES', self::PAGE_WIDTH / 2, 181, 19, 'F2', 'center');
 
         $body = sprintf(
-            'Je soussigné, %s, %s, atteste que %s, employé(e) à %s en qualité de %s, bénéficie d\'un congé de %s jours allant du %s au %s inclus.',
+            'Je soussigné, %s, %s, atteste que %s, employé(e) à %s en qualité de %s, bénéficie d\'une absence de %s sur la période %s.',
             $signatoryName,
             $signatoryTitle,
             $employee?->name() ?: '-',
             $company,
             $employee?->job_title ?: '-',
-            $days,
-            $this->date($request->start_date),
-            $this->date($request->end_date),
+            $request->durationLabel(),
+            $request->periodLabel(),
         );
 
         $this->multilineTextTop($content, $body, 82, 260, 430, 11.5, 'F1', 19);

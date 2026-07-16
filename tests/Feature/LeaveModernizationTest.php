@@ -210,6 +210,8 @@ class LeaveModernizationTest extends TestCase
         $this->assertSame(4.5, $requests->first()->requested_duration);
         $this->assertSame('2026-08-01 09:00', $requests->first()->start_at->format('Y-m-d H:i'));
         $this->assertSame('2026-08-01 13:30', $requests->first()->effective_return_at->format('Y-m-d H:i'));
+        $this->assertSame('4,5 heures', $requests->first()->durationLabel());
+        $this->assertSame('du 01/08/2026 09:00 au 01/08/2026 13:30', $requests->first()->periodLabel());
     }
 
     public function test_daily_request_blocks_an_hourly_request_on_the_same_day(): void

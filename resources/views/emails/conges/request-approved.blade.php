@@ -7,8 +7,8 @@
 @section('content')
     <p style="margin:0 0 16px; font-size:15px; line-height:1.7;">
         La demande de {{ $leaveRequest->employee?->name() }} est approuvee :
-        {{ $leaveRequest->leaveType?->name ?? 'conge' }}, {{ number_format((float) $leaveRequest->requested_days, 1, ',', ' ') }} jour(s),
-        du {{ $leaveRequest->start_date?->format('d/m/Y') }} au {{ $leaveRequest->end_date?->format('d/m/Y') }}.
+        {{ $leaveRequest->leaveType?->name ?? 'conge' }}, {{ $leaveRequest->durationLabel() }},
+        {{ $leaveRequest->periodLabel() }}.
     </p>
     @if ($pdfUrl)
         <p style="margin:0 0 16px; font-size:14px; line-height:1.7;">

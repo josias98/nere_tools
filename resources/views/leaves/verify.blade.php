@@ -80,11 +80,11 @@
                             </div>
                             <div>
                                 <dt>Periode</dt>
-                                <dd>{{ $document->leaveRequest?->start_date?->format('d/m/Y') }} au {{ $document->leaveRequest?->end_date?->format('d/m/Y') }}</dd>
+                                <dd>{{ $document->leaveRequest?->periodLabel() ?? '-' }}</dd>
                             </div>
                             <div>
-                                <dt>Jours</dt>
-                                <dd>{{ number_format((float) ($document->leaveRequest?->requested_days ?? 0), 2) }}</dd>
+                                <dt>Durée</dt>
+                                <dd>{{ $document->leaveRequest?->durationLabel() ?? '-' }}</dd>
                             </div>
                         </dl>
 
