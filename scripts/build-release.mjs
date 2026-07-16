@@ -73,8 +73,7 @@ function shouldSkip(relPath, dirent) {
     if (localOnlyFiles.has(name) || localOnlyFiles.has(zipPath)) return true;
     if (name === '.env' || name.startsWith('.env.')) return true;
     if (name === 'npm-debug.log' || name.startsWith('npm-debug.log.')) return true;
-    if (name.endsWith('.log') || name.endsWith('.zip')) return true;
-    if (name.endsWith('.sqlite') || name.endsWith('.sqlite3')) return true;
+    if (/\.(?:bak|csv|db|dump|key|log|p12|pem|pfx|sql|sqlite3?|xls|xlsx|zip)$/i.test(name)) return true;
 
     if (zipPath === 'public/hot' || zipPath === 'public/storage') return true;
     if (zipPath === 'bootstrap/cache') return true;

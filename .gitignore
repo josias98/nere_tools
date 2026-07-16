@@ -27,3 +27,16 @@ Homestead.json
 Homestead.yaml
 Thumbs.db
 *zip
+*.sqlite
+*.sqlite3
+*.db
+*.sql
+*.dump
+*.bak
+*.csv
+*.xls
+*.xlsx
+*.pem
+*.key
+*.p12
+*.pfx
