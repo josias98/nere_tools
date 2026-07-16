@@ -102,6 +102,16 @@ class LeaveRequest extends Model
         return $this->belongsTo(LeaveType::class);
     }
 
+    public function renewalOf(): BelongsTo
+    {
+        return $this->belongsTo(self::class, 'renewal_of_request_id');
+    }
+
+    public function renewals(): HasMany
+    {
+        return $this->hasMany(self::class, 'renewal_of_request_id');
+    }
+
     public function reviewer(): BelongsTo
     {
         return $this->belongsTo(User::class, 'reviewed_by_user_id');

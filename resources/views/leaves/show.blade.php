@@ -66,6 +66,9 @@
                         Telecharger le PDF
                     </a>
                 @endif
+                @if ($leaveRequest->status === 'approved' && ($leaveRequest->rule_snapshot['type']['maximum_renewals'] ?? $leaveRequest->leaveType?->maximum_renewals ?? 0) > 0)
+                    <a href="{{ route('leaves.create', ['renewal_of' => $leaveRequest->id]) }}" class="nc-button is-secondary">Renouveler</a>
+                @endif
             </div>
 
             @if ($leaveRequest->document)

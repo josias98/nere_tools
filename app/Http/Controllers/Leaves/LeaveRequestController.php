@@ -46,8 +46,16 @@ class LeaveRequestController extends Controller
 
         $balance = $this->balanceService->getBalance($user->employee);
         $leaveTypes = LeaveType::query()->with('rules')->where('is_active', true)->get();
+        $renewalOf = null;
+        if (request()->filled('renewal_of')) {
+            $renewalOf = LeaveRequest::query()
+                ->whereKey(request()->integer('renewal_of'))
+                ->where('employee_id', $user->employee->id)
+                ->where('status', 'approved')
+                ->firstOrFail();
+        }
 
-        return view('leaves.create', compact('balance', 'leaveTypes'));
+        return view('leaves.create', compact('balance', 'leaveTypes', 'renewalOf'));
     }
 
     public function store(StoreLeaveRequest $request)

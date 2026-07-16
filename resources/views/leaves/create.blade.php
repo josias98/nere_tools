@@ -19,6 +19,10 @@
 
         @include('leaves.partials.flash')
 
+        @if ($renewalOf)
+            <div class="nc-panel"><strong>Renouvellement</strong><p>Cette demande renouvelle {{ $renewalOf->leaveType?->name }} ({{ $renewalOf->periodLabel() }}).</p></div>
+        @endif
+
         @php
             $leaveRuleData = $leaveTypes->mapWithKeys(fn ($type) => [(string) $type->id => [
                 'defaults' => [
@@ -37,6 +41,7 @@
 
         <form action="{{ route('leaves.store') }}" method="POST" enctype="multipart/form-data" class="nc-panel leave-form" data-leave-form data-projected-balance="{{ $balance['projected_balance'] }}">
             @csrf
+            @if ($renewalOf)<input type="hidden" name="renewal_of_request_id" value="{{ $renewalOf->id }}">@endif
 
             <div class="leave-split">
                 <div class="leave-form-sections">
@@ -48,7 +53,7 @@
                             <span>Type de congé <small>Requis</small></span>
                             <select name="leave_type_id" id="leave_type_id" required aria-required="true" @error('leave_type_id') aria-invalid="true" aria-describedby="leave_type_id_error" @enderror>
                             @foreach ($leaveTypes as $type)
-                                <option value="{{ $type->id }}" data-unit="{{ $type->unit->value }}" data-unit-label="{{ $type->unit->label() }}" data-balance-impact="{{ $type->counts_against_balance ? 1 : 0 }}" data-attachment="{{ $type->requires_attachment ? 1 : 0 }}" @selected(old('leave_type_id') == $type->id)>{{ $type->name }}</option>
+                                <option value="{{ $type->id }}" data-unit="{{ $type->unit->value }}" data-unit-label="{{ $type->unit->label() }}" data-balance-impact="{{ $type->counts_against_balance ? 1 : 0 }}" data-attachment="{{ $type->requires_attachment ? 1 : 0 }}" @selected(old('leave_type_id', $renewalOf?->leave_type_id) == $type->id)>{{ $type->name }}</option>
                             @endforeach
                             </select>
                             @error('leave_type_id') <small id="leave_type_id_error" class="nc-error">{{ $message }}</small> @enderror

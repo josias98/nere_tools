@@ -376,6 +376,32 @@ class LeaveModernizationTest extends TestCase
         ], $user->id);
     }
 
+    public function test_renewal_limit_is_enforced_on_the_request_chain(): void
+    {
+        $employee = $this->employee();
+        $user = User::factory()->create(['email' => $employee->email]);
+        $type = LeaveType::query()->create(['name' => 'Congé renouvelable', 'slug' => 'renewable', 'maximum_renewals' => 1, 'counts_against_balance' => false]);
+        $original = LeaveRequest::query()->create([
+            'uuid' => fake()->uuid(), 'employee_id' => $employee->id, 'leave_type_id' => $type->id,
+            'start_date' => '2026-08-01', 'end_date' => '2026-08-02', 'start_at' => '2026-08-01 00:00', 'end_at' => '2026-08-02 00:00',
+            'requested_days' => 2, 'status' => 'approved', 'created_by_user_id' => $user->id,
+        ]);
+
+        $renewal = app(LeaveRequestWorkflowService::class)->submitRequest($employee, [
+            'leave_type_id' => $type->id, 'renewal_of_request_id' => $original->id,
+            'start_date' => '2026-08-03', 'end_date' => '2026-08-04',
+        ], $user->id);
+        $renewal->update(['status' => 'approved']);
+
+        $this->expectException(DomainException::class);
+        $this->expectExceptionMessage('nombre maximal de renouvellements');
+
+        app(LeaveRequestWorkflowService::class)->submitRequest($employee, [
+            'leave_type_id' => $type->id, 'renewal_of_request_id' => $renewal->id,
+            'start_date' => '2026-08-05', 'end_date' => '2026-08-06',
+        ], $user->id);
+    }
+
     public function test_admin_export_is_an_xlsx_workbook(): void
     {
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);

@@ -22,6 +22,7 @@ class StoreLeaveRequest extends FormRequest
 
         return [
             'leave_type_id' => ['required', Rule::exists('leave_types', 'id')->where('is_active', true)],
+            'renewal_of_request_id' => ['nullable', 'integer', 'exists:leave_requests,id'],
             'start_date' => ['required', 'date'],
             'end_date' => ['required', 'date', 'after_or_equal:start_date'],
             'start_time' => [Rule::requiredIf($requiresTime), 'nullable', 'date_format:H:i'],

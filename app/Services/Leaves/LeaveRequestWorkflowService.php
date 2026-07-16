@@ -44,6 +44,7 @@ class LeaveRequestWorkflowService
         $request = Cache::lock('leave-submission-employee:'.$employee->id, 120)
             ->block(10, function () use ($employee, $data, $userId, $startDate, $endDate, $type, $duration, $rule, $configuration, $unit): LeaveRequest {
                 $this->ensureSubmissionRules($employee, $type, $configuration, $startDate, $endDate, $unit, $duration);
+                $this->ensureRenewalRules($employee, $type, $configuration, $data['renewal_of_request_id'] ?? null, $startDate);
                 $this->ensureNoOverlap($employee, $startDate, $endDate, $unit);
 
                 return DB::transaction(function () use ($employee, $data, $userId, $startDate, $endDate, $type, $duration, $rule, $configuration, $unit): LeaveRequest {
@@ -51,6 +52,7 @@ class LeaveRequestWorkflowService
                         'uuid' => Str::uuid(),
                         'employee_id' => $employee->id,
                         'leave_type_id' => $data['leave_type_id'],
+                        'renewal_of_request_id' => $data['renewal_of_request_id'] ?? null,
                         'start_date' => $startDate,
                         'end_date' => $endDate,
                         'requested_days' => $duration,
@@ -60,7 +62,7 @@ class LeaveRequestWorkflowService
                         'end_at' => $endDate,
                         'effective_return_at' => $this->dayCountService->effectiveReturn($endDate, $unit),
                         'rule_snapshot' => [
-                            'type' => array_merge($type->only(['id', 'name', 'slug', 'category', 'unit', 'is_paid', 'counts_against_balance', 'quota', 'maximum_duration', 'legal_reference']), $configuration),
+                            'type' => array_merge($type->only(['id', 'name', 'slug', 'category', 'unit', 'is_paid', 'counts_against_balance', 'quota', 'maximum_duration', 'maximum_renewals', 'legal_reference']), $configuration),
                             'rule_version' => $rule?->version,
                             'configuration' => $rule?->configuration ?? [],
                             'captured_at' => now()->toIso8601String(),
@@ -410,6 +412,38 @@ class LeaveRequestWorkflowService
             if ($allowed !== [] && ! in_array($employee->{$attribute}, $allowed, true)) {
                 throw new DomainException("Ce collaborateur ne satisfait pas les règles d'éligibilité de ce type de congé.");
             }
+        }
+    }
+
+    private function ensureRenewalRules(Employee $employee, LeaveType $type, array $configuration, ?int $renewalOfId, Carbon $startDate): void
+    {
+        if (! $renewalOfId) {
+            return;
+        }
+
+        $maximumRenewals = (int) ($configuration['maximum_renewals'] ?? $type->maximum_renewals ?? 0);
+        if ($maximumRenewals < 1) {
+            throw new DomainException("Ce type de congé n'autorise pas de renouvellement.");
+        }
+
+        $original = LeaveRequest::query()->findOrFail($renewalOfId);
+        if ($original->employee_id !== $employee->id || $original->leave_type_id !== $type->id || $original->status !== 'approved') {
+            throw new DomainException('La demande indiquée ne peut pas être renouvelée.');
+        }
+
+        $originalEnd = $original->end_at ?? $original->end_date->copy()->endOfDay();
+        if (! $startDate->gt($originalEnd)) {
+            throw new DomainException('Le renouvellement doit commencer après la fin de la demande précédente.');
+        }
+
+        $renewalCount = 1;
+        while ($original->renewal_of_request_id) {
+            $renewalCount++;
+            $original = LeaveRequest::query()->findOrFail($original->renewal_of_request_id);
+        }
+
+        if ($renewalCount > $maximumRenewals) {
+            throw new DomainException('Le nombre maximal de renouvellements est atteint.');
         }
     }
 
