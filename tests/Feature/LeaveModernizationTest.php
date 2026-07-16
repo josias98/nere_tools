@@ -108,6 +108,65 @@ class LeaveModernizationTest extends TestCase
         ], $user->id);
     }
 
+    public function test_admin_only_leave_type_cannot_be_requested_in_self_service(): void
+    {
+        $employee = $this->employee();
+        $user = User::factory()->create(['email' => $employee->email]);
+        $type = LeaveType::query()->create(['name' => 'Décision administrative', 'slug' => 'admin-only', 'requester_scope' => 'admin']);
+
+        $this->expectException(DomainException::class);
+        $this->expectExceptionMessage('pas disponible en libre-service');
+
+        app(LeaveRequestWorkflowService::class)->submitRequest($employee, [
+            'leave_type_id' => $type->id,
+            'start_date' => '2026-08-01',
+            'end_date' => '2026-08-01',
+        ], $user->id);
+    }
+
+    public function test_configured_eligibility_rules_are_enforced(): void
+    {
+        $employee = $this->employee();
+        $user = User::factory()->create(['email' => $employee->email]);
+        $type = LeaveType::query()->create([
+            'name' => 'Congé ancienneté',
+            'slug' => 'seniority-only',
+            'eligibility_rules' => ['minimum_service_months' => 36],
+        ]);
+
+        $this->expectException(DomainException::class);
+        $this->expectExceptionMessage("L'ancienneté minimale");
+
+        app(LeaveRequestWorkflowService::class)->submitRequest($employee, [
+            'leave_type_id' => $type->id,
+            'start_date' => '2026-08-01',
+            'end_date' => '2026-08-01',
+        ], $user->id);
+    }
+
+    public function test_admin_can_version_requester_and_eligibility_rules(): void
+    {
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $type = LeaveType::query()->create(['name' => 'Permission', 'slug' => 'admin-rules']);
+
+        $this->actingAs($admin)->put(route('admin.leaves.types.update', $type), [
+            'name' => 'Permission encadrée',
+            'category' => 'permission',
+            'unit' => 'working_day',
+            'notice_hours' => 24,
+            'maximum_renewals' => 1,
+            'requester_scope' => 'both',
+            'eligibility_rules' => json_encode(['minimum_service_months' => 12, 'allowed_entities' => ['NERE']]),
+            'effective_from' => now()->toDateString(),
+        ])->assertSessionHas('success');
+
+        $type->refresh();
+        $this->assertSame('both', $type->requester_scope);
+        $this->assertSame(1, $type->maximum_renewals);
+        $this->assertSame(['minimum_service_months' => 12, 'allowed_entities' => ['NERE']], $type->eligibility_rules);
+        $this->assertSame('both', $type->rules()->firstOrFail()->configuration['requester_scope']);
+    }
+
     public function test_notice_period_is_enforced(): void
     {
         $this->travelTo('2026-07-01 12:00:00');

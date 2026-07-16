@@ -304,6 +304,13 @@ class LeaveRequestWorkflowService
             throw new DomainException("Ce type de congé n'est plus actif.");
         }
 
+        $requesterScope = $configuration['requester_scope'] ?? $type->requester_scope;
+        if (! in_array($requesterScope, ['employee', 'both'], true)) {
+            throw new DomainException("Ce type de congé n'est pas disponible en libre-service.");
+        }
+
+        $this->ensureEligibilityRules($employee, $configuration['eligibility_rules'] ?? $type->eligibility_rules ?? []);
+
         $countsAgainstBalance = (bool) ($configuration['counts_against_balance'] ?? $type->counts_against_balance);
         if ($unit === LeaveUnit::Hour && $countsAgainstBalance) {
             throw new DomainException('Un congé horaire ne peut pas impacter un solde exprimé en jours sans règle de conversion.');
@@ -383,6 +390,26 @@ class LeaveRequestWorkflowService
 
         if ($overlap) {
             throw new DomainException('Une demande de congé existe déjà sur cette période.');
+        }
+    }
+
+    private function ensureEligibilityRules(Employee $employee, array $rules): void
+    {
+        $supported = ['minimum_service_months', 'allowed_entities', 'allowed_locations', 'allowed_job_titles'];
+        if (array_diff(array_keys($rules), $supported) !== []) {
+            throw new DomainException("Les règles d'éligibilité de ce type de congé contiennent un critère non pris en charge.");
+        }
+
+        $minimumServiceMonths = (int) ($rules['minimum_service_months'] ?? 0);
+        if ($minimumServiceMonths > 0 && (! $employee->hire_date || $employee->hire_date->copy()->addMonths($minimumServiceMonths)->isFuture())) {
+            throw new DomainException("L'ancienneté minimale requise pour ce type de congé n'est pas atteinte.");
+        }
+
+        foreach (['allowed_entities' => 'entity', 'allowed_locations' => 'location', 'allowed_job_titles' => 'job_title'] as $rule => $attribute) {
+            $allowed = $rules[$rule] ?? [];
+            if ($allowed !== [] && ! in_array($employee->{$attribute}, $allowed, true)) {
+                throw new DomainException("Ce collaborateur ne satisfait pas les règles d'éligibilité de ce type de congé.");
+            }
         }
     }
 
