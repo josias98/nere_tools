@@ -11,16 +11,22 @@ class LeaveValidatorController extends Controller
 {
     public function store(Request $request): RedirectResponse
     {
+        $data = $request->validate([
+            'employee_id' => ['required', 'exists:employees,id'],
+            'step_key' => ['required', 'in:supervisor,hr,dg'],
+            'scope' => ['required', 'in:global,department,employee'],
+            'department_id' => ['nullable', 'required_if:scope,department', 'exists:departments,id'],
+            'target_employee_id' => ['nullable', 'required_if:scope,employee', 'exists:employees,id'],
+            'notify_by_email' => ['nullable', 'boolean'],
+        ]);
+        unset($data['notify_by_email']);
+        $data['department_id'] = $data['scope'] === 'department' ? $data['department_id'] : null;
+        $data['target_employee_id'] = $data['scope'] === 'employee' ? $data['target_employee_id'] : null;
+
         LeaveValidator::query()->updateOrCreate(
-            $request->validate([
-                'employee_id' => ['required', 'exists:employees,id'],
-                'step_key' => ['required', 'in:supervisor,hr,dg'],
-                'scope' => ['required', 'in:global,department,employee'],
-                'department_id' => ['nullable', 'exists:departments,id'],
-                'target_employee_id' => ['nullable', 'exists:employees,id'],
-            ]),
+            $data,
             [
-                'notify_by_email' => $request->boolean('notify_by_email', true),
+                'notify_by_email' => $request->boolean('notify_by_email'),
                 'is_active' => true,
             ]
         );

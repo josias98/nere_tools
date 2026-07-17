@@ -468,7 +468,7 @@
 
 .leave-admin-table input[type="email"],
 .leave-admin-table input[type="date"] {
-    min-height: 38px;
+    min-height: 42px;
     border: 1px solid var(--ip-line);
     border-radius: var(--radius);
     padding: 8px;
