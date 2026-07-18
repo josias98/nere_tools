@@ -37,7 +37,7 @@ class LeaveTypeCatalogTest extends TestCase
         $this->seed(LeaveTypeSeeder::class);
         LeaveType::query()->where('slug', 'annual_leave')->update(['is_active' => false]);
 
-        $response = $this->actingAs($admin)->get(route('admin.leaves.index'))->assertOk();
+        $response = $this->actingAs($admin)->get(route('admin.leaves.index', ['section' => 'rules']))->assertOk();
 
         foreach (LeaveType::query()->whereIn('slug', LeaveType::CATALOG_SLUGS)->pluck('name') as $name) {
             $response->assertSee($name);

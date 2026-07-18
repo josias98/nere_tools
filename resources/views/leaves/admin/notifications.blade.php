@@ -1,21 +1,22 @@
 @extends('layouts.app', [
-    'title' => 'Notifications conges - Nere Tools',
+    'title' => 'Notifications des congés - Néré Tools',
     'breadcrumbs' => [
         ['label' => 'Dashboard', 'url' => route('dashboard')],
         ['label' => 'Administration', 'url' => route('admin.index')],
-        ['label' => 'Conges', 'url' => route('admin.leaves.index')],
+        ['label' => 'Congés', 'url' => route('admin.leaves.index')],
         ['label' => 'Notifications'],
     ],
 ])
 
 @section('content')
+@php($statusLabels = ['queued' => 'En attente', 'sent' => 'Envoyée', 'failed' => 'En échec', 'skipped' => 'Ignorée'])
 <x-admin.layout>
     <section class="nc-page leave-workbench">
         <div class="nc-title-row">
             <div>
-                <p class="nc-kicker">Debug Office 365</p>
-                <h1 class="nc-title">Notifications conges</h1>
-                <p class="nc-lead">Lecture des statuts, erreurs Graph et relances sures des notifications du module Conges.</p>
+                <p class="nc-kicker">Administration · Congés</p>
+                <h1 class="nc-title">Notifications</h1>
+                <p class="nc-lead">Suivre les envois Office 365 et relancer uniquement ceux qui peuvent l’être sans risque.</p>
             </div>
         </div>
 
@@ -27,24 +28,24 @@
 
         <div class="leave-metrics leave-metrics--compact">
             <article class="nc-panel leave-metric">
-                <span>Queued</span>
+                <span>En attente</span>
                 <strong>{{ $counts['queued'] ?? 0 }}</strong>
-                <small>en attente</small>
+                <small>notifications</small>
             </article>
             <article class="nc-panel leave-metric">
-                <span>Sent</span>
+                <span>Envoyées</span>
                 <strong>{{ $counts['sent'] ?? 0 }}</strong>
-                <small>envoyees</small>
+                <small>notifications</small>
             </article>
             <article class="nc-panel leave-metric">
-                <span>Failed</span>
+                <span>En échec</span>
                 <strong>{{ $counts['failed'] ?? 0 }}</strong>
-                <small>en echec</small>
+                <small>notifications</small>
             </article>
             <article class="nc-panel leave-metric">
-                <span>Skipped</span>
+                <span>Ignorées</span>
                 <strong>{{ $counts['skipped'] ?? 0 }}</strong>
-                <small>ignorees</small>
+                <small>notifications</small>
             </article>
         </div>
 
@@ -52,7 +53,7 @@
             <div class="nc-panel-heading">
                 <div>
                     <h2>Filtres</h2>
-                    <p>Le debug reste volontairement simple: pas de corps d'email stocke, seulement les metadonnees utiles.</p>
+                    <p>Seules les métadonnées utiles sont conservées ; le contenu des emails n’est pas stocké.</p>
                 </div>
             </div>
 
@@ -61,13 +62,13 @@
                     <span>Statut</span>
                     <select name="status">
                         <option value="">Tous</option>
-                        @foreach (['queued', 'sent', 'failed', 'skipped'] as $status)
-                            <option value="{{ $status }}" @selected($filters['status'] === $status)>{{ $status }}</option>
+                        @foreach ($statusLabels as $status => $label)
+                            <option value="{{ $status }}" @selected($filters['status'] === $status)>{{ $label }}</option>
                         @endforeach
                     </select>
                 </label>
                 <label class="nc-field">
-                    <span>Evenement</span>
+                    <span>Événement</span>
                     <select name="event">
                         <option value="">Tous</option>
                         @foreach ($events as $event)
@@ -90,7 +91,7 @@
             <div class="nc-panel-heading">
                 <div>
                     <h2>Journal</h2>
-                    <p>Relancer est permis seulement pour les notifications Conges en echec ou ignorees.</p>
+                    <p>La relance est disponible uniquement pour les notifications en échec ou ignorées.</p>
                 </div>
             </div>
 
@@ -98,7 +99,7 @@
                 <table class="nc-table notification-table">
                     <thead>
                         <tr>
-                            <th>Evenement</th>
+                            <th>Événement</th>
                             <th>Destinataires</th>
                             <th>Statut</th>
                             <th>Contexte</th>
@@ -129,14 +130,14 @@
                                         @else
                                             <i data-lucide="circle-slash" class="nc-icon" aria-hidden="true"></i>
                                         @endif
-                                        {{ $notification->status }}
+                                        {{ $statusLabels[$notification->status] ?? $notification->status }}
                                     </span>
                                     <div class="notification-meta">
                                         <span>Tentatives: {{ $notification->attempts }}</span>
                                         @if ($notification->sent_at)
-                                            <span>Envoye: {{ $notification->sent_at->format('d/m/Y H:i') }}</span>
+                                            <span>Envoyée : {{ $notification->sent_at->format('d/m/Y H:i') }}</span>
                                         @elseif ($notification->queued_at)
-                                            <span>Queue: {{ $notification->queued_at->format('d/m/Y H:i') }}</span>
+                                            <span>Mise en attente : {{ $notification->queued_at->format('d/m/Y H:i') }}</span>
                                         @endif
                                     </div>
                                 </td>
@@ -144,7 +145,7 @@
                                     @if ($leaveRequest)
                                         <strong>Demande #{{ $leaveRequest->id }}</strong><br>
                                         <span class="nc-muted">{{ $leaveRequest->employee?->name() ?? 'Collaborateur inconnu' }}</span><br>
-                                        <span class="nc-muted">Etat actuel: {{ $leaveRequest->status }}</span>
+                                        <span class="nc-muted">État actuel : {{ $leaveRequest->status }}</span>
                                     @else
                                         <span class="nc-muted">Aucun lien metier</span>
                                     @endif

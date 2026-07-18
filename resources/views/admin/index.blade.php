@@ -36,7 +36,7 @@
         </section>
 
         <div class="admin-columns">
-            <x-admin.recommendation-card title="Valider les circuits avant ouverture" source="Bonne pratique" recommended="Un valideur principal et un suppléant par étape" risk="Une demande peut rester bloquée pendant une absence." example="Le responsable hiérarchique valide, puis RH contrôle le solde." :url="route('admin.leaves.index').'#workflow'" />
+            <x-admin.recommendation-card title="Valider les circuits avant ouverture" source="Bonne pratique" recommended="Un valideur principal et un suppléant par étape" risk="Une demande peut rester bloquée pendant une absence." example="Le responsable hiérarchique valide, puis RH contrôle le solde." :url="route('admin.leaves.index', ['section' => 'workflow'])" />
             <section class="admin-panel"><p class="nc-kicker">Historique</p><h2>Dernières modifications</h2><ol class="admin-timeline">@forelse($recentChanges as $change)<li><strong>{{ str_replace('.', ' · ', $change->action) }}</strong><small>{{ $change->created_at->diffForHumans() }}</small></li>@empty<li>Aucune modification enregistrée.</li>@endforelse</ol></section>
         </div>
 </x-admin.layout>

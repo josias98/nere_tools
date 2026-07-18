@@ -36,7 +36,7 @@ class AdminLeaveNotificationLogTest extends TestCase
         $this->actingAs($admin)
             ->get(route('admin.leaves.notifications.index'))
             ->assertOk()
-            ->assertSee('Notifications conges')
+            ->assertSee('Notifications')
             ->assertSee('Graph said no.');
     }
 

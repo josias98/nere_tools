@@ -22,8 +22,12 @@ use Illuminate\View\View;
 
 class LeaveAdminController extends Controller
 {
+    private const SECTIONS = ['overview', 'requests', 'people', 'workflow', 'settings', 'rules', 'calendar', 'data'];
+
     public function index(Request $request, LeaveReportQuery $reports, LeaveBalanceService $balances): View
     {
+        $section = (string) $request->query('section', 'overview');
+        $section = in_array($section, self::SECTIONS, true) ? $section : 'overview';
         $filters = [
             'status' => (string) $request->string('status'),
             'step' => (string) $request->string('step'),
@@ -33,32 +37,49 @@ class LeaveAdminController extends Controller
             'to' => (string) $request->string('to'),
         ];
 
-        $requests = $reports->requests($filters)
-            ->paginate(15)
-            ->withQueryString();
-
-        $today = now()->toDateString();
-        $summary = [
-            'absent_today' => LeaveRequest::query()->where('status', 'approved')->whereDate('start_date', '<=', $today)->whereDate('end_date', '>=', $today)->count(),
-            'next_30_days' => LeaveRequest::query()->where('status', 'approved')->whereBetween('start_date', [now()->addDay(), now()->addDays(30)])->count(),
-            'pending' => LeaveRequest::query()->whereIn('status', ['pending_supervisor', 'pending_hr', 'pending_dg'])->count(),
-            'missing_attachments' => LeaveRequest::query()->whereHas('leaveType', fn ($q) => $q->where('requires_attachment', true))->doesntHave('attachments')->count(),
-            'missing_documents' => LeaveRequest::query()->where('status', 'approved')->doesntHave('document')->count(),
+        $data = [
+            'section' => $section,
+            'filters' => $filters,
         ];
 
-        return view('leaves.admin.index', [
-            'employees' => Employee::query()->with('department')->orderBy('display_name')->get(),
-            'departments' => Department::query()->orderBy('name')->get(),
-            'settings' => LeaveSetting::query()->orderBy('key')->get()->keyBy('key'),
-            'validators' => LeaveValidator::query()->with(['employee', 'department', 'targetEmployee'])->latest()->get(),
-            'requests' => $requests,
-            'filters' => $filters,
-            'signatureExists' => is_file(storage_path('app/signatures/dg-signature.png')) || is_file(public_path('brand/dg-signature.png')),
-            'summary' => $summary,
-            'personnel' => $reports->employees($filters)->paginate(20, ['*'], 'personnel_page')->withQueryString()->through(fn ($employee) => ['employee' => $employee, 'balance' => $balances->getBalance($employee)]),
-            'leaveTypes' => LeaveType::query()->with('rules')->whereIn('slug', LeaveType::CATALOG_SLUGS)->orderBy('name')->get(),
-            'holidays' => LeaveHoliday::query()->orderBy('date')->get(),
-        ]);
+        if ($section === 'overview') {
+            $today = now()->toDateString();
+            $data['summary'] = [
+                'absent_today' => LeaveRequest::query()->where('status', 'approved')->whereDate('start_date', '<=', $today)->whereDate('end_date', '>=', $today)->count(),
+                'next_30_days' => LeaveRequest::query()->where('status', 'approved')->whereBetween('start_date', [now()->addDay(), now()->addDays(30)])->count(),
+                'pending' => LeaveRequest::query()->whereIn('status', ['pending_supervisor', 'pending_hr', 'pending_dg'])->count(),
+                'missing_attachments' => LeaveRequest::query()->whereHas('leaveType', fn ($q) => $q->where('requires_attachment', true))->doesntHave('attachments')->count(),
+                'missing_documents' => LeaveRequest::query()->where('status', 'approved')->doesntHave('document')->count(),
+            ];
+        } elseif ($section === 'requests') {
+            $data += [
+                'employees' => Employee::query()->with('department')->orderBy('display_name')->get(),
+                'departments' => Department::query()->orderBy('name')->get(),
+                'requests' => $reports->requests($filters)->paginate(15)->withQueryString(),
+            ];
+        } elseif ($section === 'people') {
+            $data['personnel'] = $reports->employees($filters)
+                ->paginate(20, ['*'], 'personnel_page')
+                ->withQueryString()
+                ->through(fn ($employee) => ['employee' => $employee, 'balance' => $balances->getBalance($employee)]);
+        } elseif ($section === 'workflow') {
+            $data += [
+                'employees' => Employee::query()->with('department')->orderBy('display_name')->get(),
+                'departments' => Department::query()->orderBy('name')->get(),
+                'validators' => LeaveValidator::query()->with(['employee', 'department', 'targetEmployee'])->latest()->get(),
+            ];
+        } elseif ($section === 'settings') {
+            $data += [
+                'settings' => LeaveSetting::query()->orderBy('key')->get()->keyBy('key'),
+                'signatureExists' => is_file(storage_path('app/signatures/dg-signature.png')) || is_file(public_path('brand/dg-signature.png')),
+            ];
+        } elseif ($section === 'rules') {
+            $data['leaveTypes'] = LeaveType::query()->with('rules')->whereIn('slug', LeaveType::CATALOG_SLUGS)->orderBy('name')->get();
+        } elseif ($section === 'calendar') {
+            $data['holidays'] = LeaveHoliday::query()->orderBy('date')->get();
+        }
+
+        return view('leaves.admin.index', $data);
     }
 
     public function notifications(Request $request): View

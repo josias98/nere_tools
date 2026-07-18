@@ -55,21 +55,49 @@ class AdminConfigurationCenterTest extends TestCase
             route('admin.users.index'),
             route('admin.leaves.index'),
             route('timesheets.index'),
-            route('admin.leaves.index').'#workflow',
+            route('admin.leaves.index', ['section' => 'overview']),
+            route('admin.leaves.index', ['section' => 'requests']),
+            route('admin.leaves.index', ['section' => 'people']),
+            route('admin.leaves.index', ['section' => 'workflow']),
+            route('admin.leaves.index', ['section' => 'settings']),
+            route('admin.leaves.index', ['section' => 'rules']),
+            route('admin.leaves.index', ['section' => 'calendar']),
+            route('admin.leaves.index', ['section' => 'data']),
             route('admin.leaves.notifications.index'),
-            route('admin.leaves.index').'#imports',
         ] as $url) {
             $response->assertSee('href="'.$url.'"', false);
         }
 
-        $response->assertDontSee('Congés & absences');
+        $response->assertSee('Organisation')
+            ->assertSee('Configuration')
+            ->assertDontSee('Workflows et validations');
+    }
+
+    public function test_leave_admin_only_renders_the_selected_section(): void
+    {
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+
+        $this->actingAs($admin)->get('/admin/conges')
+            ->assertOk()
+            ->assertSee('Situation opérationnelle à cet instant.')
+            ->assertDontSee('Suivi des demandes')
+            ->assertDontSee('Paramètres de calcul et de documents');
+
+        $this->actingAs($admin)->get('/admin/conges?section=requests')
+            ->assertOk()
+            ->assertSee('Suivi des demandes')
+            ->assertDontSee('Personnel et soldes');
+
+        $this->actingAs($admin)->get('/admin/conges?section=unknown')
+            ->assertOk()
+            ->assertSee('Situation opérationnelle à cet instant.');
     }
 
     public function test_admin_can_access_initial_leave_balance_upload(): void
     {
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
 
-        $this->actingAs($admin)->get('/admin/conges')
+        $this->actingAs($admin)->get('/admin/conges?section=data')
             ->assertOk()
             ->assertSee('Importer les soldes initiaux')
             ->assertSee('action="'.route('admin.leaves.import').'"', false)
@@ -88,7 +116,7 @@ class AdminConfigurationCenterTest extends TestCase
             'rows_updated' => 0,
             'rows_skipped' => 1,
             'errors' => ['Ligne 3 : collaborateur introuvable.'],
-        ]])->get('/admin/conges#imports')
+        ]])->get('/admin/conges?section=data')
             ->assertOk()
             ->assertSee('Résultat du dernier import')
             ->assertSee('3 lignes lues')
@@ -101,7 +129,7 @@ class AdminConfigurationCenterTest extends TestCase
     {
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
 
-        $this->actingAs($admin)->get('/admin/conges')
+        $this->actingAs($admin)->get('/admin/conges?section=settings')
             ->assertOk()
             ->assertSee('Paramètres de calcul et de documents')
             ->assertSee('action="'.route('admin.leaves.settings.update').'"', false)
@@ -127,7 +155,7 @@ class AdminConfigurationCenterTest extends TestCase
             'is_active' => true,
         ]);
 
-        $this->actingAs($admin)->get('/admin/conges')
+        $this->actingAs($admin)->get('/admin/conges?section=workflow')
             ->assertOk()
             ->assertSee('Responsabilités de validation')
             ->assertSee('action="'.route('admin.leaves.validators.store').'"', false)
@@ -144,7 +172,7 @@ class AdminConfigurationCenterTest extends TestCase
     {
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
 
-        $this->actingAs($admin)->get(route('admin.leaves.index'))
+        $this->actingAs($admin)->get(route('admin.leaves.index', ['section' => 'workflow']))
             ->assertOk()
             ->assertSee('data-tooltip-title="Ajouter au circuit"', false)
             ->assertSee('Le validateur recevra les demandes correspondant à l’étape et à la portée choisies.', false);
@@ -155,13 +183,13 @@ class AdminConfigurationCenterTest extends TestCase
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
         $validator = $this->employee('Responsable Test');
 
-        $this->actingAs($admin)->from('/admin/conges#workflow')->post(route('admin.leaves.validators.store'), [
+        $this->actingAs($admin)->from('/admin/conges?section=workflow')->post(route('admin.leaves.validators.store'), [
             'employee_id' => $validator->id,
             'step_key' => 'supervisor',
             'scope' => 'department',
         ])->assertSessionHasErrors('department_id');
 
-        $this->actingAs($admin)->from('/admin/conges#workflow')->post(route('admin.leaves.validators.store'), [
+        $this->actingAs($admin)->from('/admin/conges?section=workflow')->post(route('admin.leaves.validators.store'), [
             'employee_id' => $validator->id,
             'step_key' => 'supervisor',
             'scope' => 'employee',
@@ -192,10 +220,13 @@ class AdminConfigurationCenterTest extends TestCase
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
         $employee = $this->employee('Profil Congés');
 
-        $this->actingAs($admin)->get('/admin/conges?step=supervisor')
+        $this->actingAs($admin)->get('/admin/conges?section=requests&step=supervisor')
             ->assertOk()
             ->assertSee('name="step"', false)
-            ->assertSee('<option value="supervisor" selected', false)
+            ->assertSee('<option value="supervisor" selected', false);
+
+        $this->actingAs($admin)->get('/admin/conges?section=people')
+            ->assertOk()
             ->assertSee('Profils RH des collaborateurs')
             ->assertSee('action="'.route('admin.leaves.employees.update', $employee).'"', false)
             ->assertSee('name="email"', false)

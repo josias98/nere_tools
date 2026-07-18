@@ -1,0 +1,24 @@
+<section class="nc-panel" id="workflow">
+    <div class="nc-panel-heading">
+        <div>
+            <h2>Responsabilités de validation</h2>
+            <p>Affectez les responsables du circuit : responsable hiérarchique → RH / Admin-Finance → DG.</p>
+        </div>
+    </div>
+    <form method="POST" action="{{ route('admin.leaves.validators.store') }}" class="nc-form-grid">
+        @csrf
+        <label class="nc-field"><span>Validateur</span><select name="employee_id" required>@foreach ($employees as $employee)<option value="{{ $employee->id }}" @selected(old('employee_id') == $employee->id)>{{ $employee->name() }}</option>@endforeach</select></label>
+        <label class="nc-field"><span>Responsabilité</span><select name="step_key" required><option value="supervisor" @selected(old('step_key', 'supervisor') === 'supervisor')>Responsable hiérarchique</option><option value="hr" @selected(old('step_key') === 'hr')>RH / Admin-Finance</option><option value="dg" @selected(old('step_key') === 'dg')>DG / Direction</option></select></label>
+        <label class="nc-field"><span>Portée</span><select name="scope" required><option value="global" @selected(old('scope', 'global') === 'global')>Toutes les demandes</option><option value="department" @selected(old('scope') === 'department')>Un département</option><option value="employee" @selected(old('scope') === 'employee')>Un collaborateur</option></select></label>
+        <label class="nc-field"><span>Département concerné</span><select name="department_id"><option value="">Non applicable</option>@foreach ($departments as $department)<option value="{{ $department->id }}" @selected(old('department_id') == $department->id)>{{ $department->name }}</option>@endforeach</select><small>Obligatoire pour une portée par département.</small></label>
+        <label class="nc-field"><span>Collaborateur concerné</span><select name="target_employee_id"><option value="">Non applicable</option>@foreach ($employees as $employee)<option value="{{ $employee->id }}" @selected(old('target_employee_id') == $employee->id)>{{ $employee->name() }}</option>@endforeach</select><small>Obligatoire pour une portée individuelle.</small></label>
+        <label class="nc-mini-check"><input type="hidden" name="notify_by_email" value="0"><input type="checkbox" name="notify_by_email" value="1" @checked((string) old('notify_by_email', '1') === '1')> Notifier ce validateur par email</label>
+        <button class="nc-button" type="submit" data-tooltip-title="Ajouter au circuit" data-tooltip="Le validateur recevra les demandes correspondant à l’étape et à la portée choisies."><i data-lucide="user-check" aria-hidden="true"></i>Ajouter la responsabilité</button>
+    </form>
+    <div class="nc-table-wrap"><table class="nc-table"><thead><tr><th>Validateur</th><th>Responsabilité</th><th>Portée</th><th>Notifications</th><th>État</th><th>Actions</th></tr></thead><tbody>
+    @forelse ($validators as $validator)<tr><td>{{ $validator->employee?->name() }}</td><td>{{ $validator->step_key === 'supervisor' ? 'Responsable hiérarchique' : $validator->stepLabel() }}</td><td>{{ match ($validator->scope) { 'department' => $validator->department?->name ?? 'Département non défini', 'employee' => $validator->targetEmployee?->name() ?? 'Collaborateur non défini', default => 'Toutes les demandes' } }}</td><td>{{ $validator->notify_by_email ? 'Email actif' : 'Sans email' }}</td><td><span class="leave-status {{ $validator->is_active ? 'is-approved' : 'is-cancelled' }}">{{ $validator->is_active ? 'actif' : 'inactif' }}</span></td><td><div class="leave-inline-form">
+    <form method="POST" action="{{ route('admin.leaves.validators.update', $validator) }}" class="leave-inline-form">@csrf @method('PUT')<label class="nc-mini-check"><input type="checkbox" name="notify_by_email" value="1" @checked($validator->notify_by_email)> Email</label><label class="nc-mini-check"><input type="checkbox" name="is_active" value="1" @checked($validator->is_active)> Actif</label><button class="nc-ghost" type="submit" data-tooltip-title="Mettre à jour le validateur" data-tooltip="Active ou suspend cette responsabilité et ajuste l’envoi des notifications par email.">Enregistrer</button></form>
+    <form method="POST" action="{{ route('admin.leaves.validators.destroy', $validator) }}" onsubmit="return confirm('Supprimer cette responsabilité de validation ?')">@csrf @method('DELETE')<button class="nc-ghost danger" type="submit" data-tooltip-title="Retirer du circuit" data-tooltip="Supprime cette responsabilité pour les prochaines validations, sans effacer les décisions passées.">Supprimer</button></form>
+    </div></td></tr>@empty<tr><td colspan="6"><div class="nc-empty">Aucune responsabilité nominative configurée.</div></td></tr>@endforelse
+    </tbody></table></div>
+</section>

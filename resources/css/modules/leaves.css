@@ -1,9 +1,14 @@
+/* Hallmark · genre: modern-minimal · macrostructure: Workbench · design-system: design.md · designed-as-app
+ * pre-emit critique: P5 H5 E5 S5 R5 V4 · contrast: pass · mobile: pass
+ */
 .leave-workbench {
     display: grid;
-    gap: 18px;
+    min-width: 0;
+    gap: 20px;
 }
 
-.leave-admin-main { width: min(1380px, calc(100% - 40px)); }
+.leave-workbench > .nc-title-row { margin-bottom: 0; }
+.leave-admin-main { width: 100%; }
 .leave-metric > i { width: 20px; color: var(--ip-blue); }
 .leave-timeline { display: grid; gap: 10px; padding-left: 24px; color: var(--ip-grey); }
 .leave-rule-list { display: grid; gap: 12px; }
@@ -25,19 +30,20 @@
 }
 
 .leave-overview-panel {
-    margin-bottom: 24px;
+    margin-bottom: 0;
 }
 
 .leave-overview-panel .leave-metrics {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(148px, 1fr));
 }
 
 .leave-overview-panel .leave-metric {
-    min-height: 132px;
-    padding: 18px;
+    min-width: 0;
+    min-height: 128px;
+    padding: 16px;
     background: var(--ip-ivory);
     border: 1px solid var(--ip-line);
-    border-left: 5px solid var(--ip-brown);
+    border-top: 3px solid var(--ip-brown);
 }
 
 .leave-metrics--compact {
@@ -93,7 +99,7 @@
 .leave-metric {
     display: grid;
     gap: 4px;
-    border-left: 6px solid var(--ip-brown);
+    border-top: 3px solid var(--ip-brown);
 }
 
 .leave-metric span,
@@ -231,10 +237,14 @@
 
 .leave-filter {
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr)) auto;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) auto;
     gap: 12px;
     align-items: end;
     margin-bottom: 18px;
+}
+
+#calendar .leave-filter {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) auto;
 }
 
 .leave-status {

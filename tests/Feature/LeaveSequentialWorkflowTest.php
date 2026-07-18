@@ -212,7 +212,7 @@ class LeaveSequentialWorkflowTest extends TestCase
         ]);
 
         $this->actingAs($admin)
-            ->get(route('admin.leaves.index', ['status' => 'pending_hr']))
+            ->get(route('admin.leaves.index', ['section' => 'requests', 'status' => 'pending_hr']))
             ->assertOk()
             ->assertSee('Suivi des demandes')
             ->assertSee('Requester Test')

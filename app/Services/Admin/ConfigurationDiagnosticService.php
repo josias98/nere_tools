@@ -18,12 +18,12 @@ class ConfigurationDiagnosticService
             LeaveValidator::query()->where('is_active', true)->exists() ? null : $this->issue(
                 'conges', 'critical', 'Aucun validateur actif',
                 'Les nouvelles demandes ne peuvent pas terminer leur circuit de validation.',
-                route('admin.leaves.index').'#workflow'
+                route('admin.leaves.index', ['section' => 'workflow'])
             ),
             LeaveType::query()->where('is_active', true)->exists() ? null : $this->issue(
                 'conges', 'error', 'Aucun type de congé actif',
                 'Les collaborateurs ne peuvent pas créer de demande exploitable.',
-                route('admin.leaves.index').'#rules'
+                route('admin.leaves.index', ['section' => 'rules'])
             ),
             NotificationLog::query()->whereIn('status', ['failed', 'skipped'])->exists() ? $this->issue(
                 'conges', 'warning', 'Des notifications sont en échec',
