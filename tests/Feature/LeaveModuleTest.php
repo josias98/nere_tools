@@ -10,6 +10,7 @@ use App\Models\LeaveType;
 use App\Models\LeaveValidator;
 use App\Models\User;
 use App\Services\Leaves\LeavePdfService;
+use Database\Seeders\LeaveTypeSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Storage;
@@ -38,10 +39,28 @@ class LeaveModuleTest extends TestCase
             ->get(route('leaves.create'))
             ->assertOk()
             ->assertSee('Sélectionnez les dates pour vérifier le solde.')
-            ->assertSee('Quel congé souhaitez-vous prendre ?')
+            ->assertSee('Quel type de congé souhaitez-vous prendre ?')
             ->assertSee('aria-live="polite"', false)
             ->assertSee('for="leave_start_date"', false)
             ->assertDontSee('SÃ©lectionnez');
+    }
+
+    public function test_death_and_other_leave_types_require_their_context(): void
+    {
+        [$user] = $this->userWithEmployee();
+        $this->seed(LeaveTypeSeeder::class);
+
+        $this->actingAs($user)->post(route('leaves.store'), [
+            'leave_type_id' => LeaveType::query()->where('slug', 'family_event')->value('id'),
+            'start_date' => '2026-08-01',
+            'end_date' => '2026-08-01',
+        ])->assertSessionHasErrors('relationship');
+
+        $this->actingAs($user)->post(route('leaves.store'), [
+            'leave_type_id' => LeaveType::query()->where('slug', 'other_absence')->value('id'),
+            'start_date' => '2026-08-01',
+            'end_date' => '2026-08-01',
+        ])->assertSessionHasErrors('reason');
     }
 
     public function test_user_without_employee_is_redirected_from_leave_dashboard(): void

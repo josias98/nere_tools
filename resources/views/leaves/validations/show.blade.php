@@ -61,7 +61,7 @@
                             <span>Commentaire optionnel</span>
                             <textarea name="reviewer_comment" rows="3"></textarea>
                         </label>
-                        <button class="nc-button" type="submit">
+                        <button class="nc-button" type="submit" data-tooltip-title="Valider cette étape" data-tooltip="Confirme votre décision et transmet la demande à l’étape suivante lorsqu’elle existe.">
                             <i data-lucide="check-circle-2" class="nc-icon" aria-hidden="true"></i>
                             Approuver
                         </button>
@@ -73,13 +73,13 @@
                             <span>Motif du rejet</span>
                             <textarea name="reviewer_comment" rows="3" required></textarea>
                         </label>
-                        <button class="nc-ghost danger" type="submit">
+                        <button class="nc-ghost danger" type="submit" data-tooltip-title="Rejeter la demande" data-tooltip="Arrête le circuit de validation et enregistre le motif communiqué au demandeur.">
                             <i data-lucide="x-circle" class="nc-icon" aria-hidden="true"></i>
                             Rejeter
                         </button>
                     </form>
                 @else
-                    <p>Décision déjà9 enregistrée.</p>
+                    <p>Décision déjà enregistrée.</p>
                 @endif
             </aside>
         </div>

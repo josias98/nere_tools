@@ -9,6 +9,16 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class LeaveType extends Model
 {
+    public const CATALOG_SLUGS = [
+        'annual_leave',
+        'maternity',
+        'internal_paternity',
+        'family_event',
+        'non_occupational_illness',
+        'occupational_injury',
+        'other_absence',
+    ];
+
     protected $guarded = [];
 
     protected function casts(): array

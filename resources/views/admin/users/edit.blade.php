@@ -47,7 +47,7 @@
                         <label class="nc-mini-check"><input type="checkbox" name="tool_ids[]" value="{{ $tool->id }}" @checked($managedUser->canAccessTool($tool->slug))> {{ $tool->name }}</label>
                     @endforeach
                 </div>
-                <button class="nc-button" type="submit">
+                <button class="nc-button" type="submit" data-tooltip-title="Enregistrer les accès" data-tooltip="Applique le rôle, les modules et l’état choisis à ce compte.">
                     <i data-lucide="save" class="nc-icon" aria-hidden="true"></i>
                     Enregistrer
                 </button>
@@ -71,11 +71,11 @@
             <form method="POST" action="{{ route('admin.users.destroy', $managedUser) }}" class="nc-actions">
                 @csrf
                 @method('DELETE')
-                <button class="nc-ghost danger" type="submit">
+                <button class="nc-ghost danger" type="submit" data-tooltip-title="Désactiver le compte" data-tooltip="Bloque les prochaines connexions sans supprimer l’historique de l’utilisateur.">
                     <i data-lucide="user-x" class="nc-icon" aria-hidden="true"></i>
                     Désactiver
                 </button>
-                <a class="nc-ghost" href="{{ route('admin.users.index') }}">
+                <a class="nc-ghost" href="{{ route('admin.users.index') }}" data-tooltip-title="Retour aux utilisateurs" data-tooltip="Quitte cette fiche sans autre modification.">
                     <i data-lucide="arrow-left" class="nc-icon" aria-hidden="true"></i>
                     Retour
                 </a>

@@ -51,7 +51,7 @@
                         <label class="nc-mini-check"><input type="checkbox" name="tool_ids[]" value="{{ $tool->id }}" @checked(old('tool_ids') && in_array($tool->id, old('tool_ids', [])))> {{ $tool->name }}</label>
                     @endforeach
                 </div>
-                <button class="nc-button" type="submit">
+                <button class="nc-button" type="submit" data-tooltip-title="Créer l’accès" data-tooltip="Autorise cette adresse Microsoft 365 à entrer dans Néré Tools avec le rôle et les modules choisis.">
                     <i data-lucide="plus" class="nc-icon" aria-hidden="true"></i>
                     Creer le compte
                 </button>
@@ -92,7 +92,7 @@
                                 </td>
                                 <td><span class="leave-status {{ $user->is_active ? 'is-approved' : 'is-cancelled' }}">{{ $user->is_active ? 'actif' : 'inactif' }}</span></td>
                                 <td>
-                                    <a class="nc-ghost" href="{{ route('admin.users.edit', $user) }}">
+                                    <a class="nc-ghost" href="{{ route('admin.users.edit', $user) }}" data-tooltip-title="Modifier l’utilisateur" data-tooltip="Ajuste son rôle, ses outils accessibles ou l’état de son compte.">
                                         <i data-lucide="settings" class="nc-icon" aria-hidden="true"></i>
                                         Modifier
                                     </a>

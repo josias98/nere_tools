@@ -13,7 +13,7 @@
             <div class="admin-section-heading"><div><p class="nc-kicker">Modules</p><h2 id="health-title">Santé de la configuration</h2></div><span class="nc-badge">{{ $activeUsers }} comptes actifs</span></div>
             <div class="admin-health-grid">
                 @foreach ($modules as $key => $module)
-                    <a class="admin-health-card" href="{{ $module['url'] }}" data-searchable="{{ $module['name'] }}">
+                    <a class="admin-health-card" href="{{ $module['url'] }}" data-searchable="{{ $module['name'] }}" data-tooltip-title="Configurer {{ $module['name'] }}" data-tooltip="Ouvre le module et ses points de configuration à vérifier.">
                         <span class="nc-card-symbol"><i data-lucide="{{ $module['icon'] }}"></i></span>
                         <span><strong>{{ $module['name'] }}</strong><small>{{ $module['issues']->count() }} point(s) à vérifier</small></span>
                         <x-admin.configuration-health :health="$module['health']" />
@@ -24,7 +24,7 @@
 
         <section class="admin-panel" aria-labelledby="issues-title">
             <div class="admin-section-heading"><div><p class="nc-kicker">À traiter</p><h2 id="issues-title">Recommandations prioritaires</h2></div>
-                <form class="admin-filters" method="GET"><select name="module" aria-label="Filtrer par module"><option value="">Tous les modules</option><option value="conges" @selected(request('module') === 'conges')>Congés</option><option value="timesheets" @selected(request('module') === 'timesheets')>Feuilles de temps</option></select><select name="status" aria-label="Filtrer par criticité"><option value="">Toutes les criticités</option><option value="error" @selected(request('status') === 'error')>Erreurs</option><option value="warning" @selected(request('status') === 'warning')>Attention</option><option value="info" @selected(request('status') === 'info')>Information</option></select><button class="nc-ghost">Filtrer</button></form>
+                <form class="admin-filters" method="GET"><select name="module" aria-label="Filtrer par module"><option value="">Tous les modules</option><option value="conges" @selected(request('module') === 'conges')>Congés</option><option value="timesheets" @selected(request('module') === 'timesheets')>Feuilles de temps</option></select><select name="status" aria-label="Filtrer par criticité"><option value="">Toutes les criticités</option><option value="error" @selected(request('status') === 'error')>Erreurs</option><option value="warning" @selected(request('status') === 'warning')>Attention</option><option value="info" @selected(request('status') === 'info')>Information</option></select><button class="nc-ghost" data-tooltip-title="Filtrer les recommandations" data-tooltip="Affiche uniquement les alertes correspondant au module et au niveau de criticité choisis.">Filtrer</button></form>
             </div>
             <div class="admin-issue-list">
                 @forelse ($issues as $issue)

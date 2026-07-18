@@ -1,5 +1,6 @@
 import { bootLeavePage } from './modules/leaves';
 import { bootTimesheetPage } from './modules/timesheets';
+import { bootTooltips } from './modules/tooltips';
 import { createIcons, icons } from 'lucide';
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -7,6 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     bootTimesheetPage();
     bootLeavePage();
+    bootTooltips();
 
     const search = document.querySelector('[data-admin-search]');
     search?.addEventListener('input', ({ target }) => {

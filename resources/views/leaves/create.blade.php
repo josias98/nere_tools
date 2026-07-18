@@ -52,7 +52,7 @@
                             <span>Type de congé <small>Requis</small></span>
                             <select name="leave_type_id" id="leave_type_id" required aria-required="true" @error('leave_type_id') aria-invalid="true" aria-describedby="leave_type_id_error" @enderror>
                             @foreach ($leaveTypes as $type)
-                                <option value="{{ $type->id }}" data-unit="{{ $type->unit->value }}" data-unit-label="{{ $type->unit->label() }}" data-balance-impact="{{ $type->counts_against_balance ? 1 : 0 }}" data-attachment="{{ $type->requires_attachment ? 1 : 0 }}" @selected(old('leave_type_id', $renewalOf?->leave_type_id) == $type->id)>{{ $type->name }}</option>
+                                <option value="{{ $type->id }}" data-slug="{{ $type->slug }}" data-unit="{{ $type->unit->value }}" data-unit-label="{{ $type->unit->label() }}" data-balance-impact="{{ $type->counts_against_balance ? 1 : 0 }}" data-attachment="{{ $type->requires_attachment ? 1 : 0 }}" @selected(old('leave_type_id', $renewalOf?->leave_type_id) == $type->id)>{{ $type->name }}</option>
                             @endforeach
                             </select>
                             @error('leave_type_id') <small id="leave_type_id_error" class="nc-error">{{ $message }}</small> @enderror
@@ -92,8 +92,8 @@
                     <fieldset class="leave-fieldset">
                         <legend>3. Ajoutez un contexte si nécessaire</legend>
                         <div class="leave-date-grid">
-                            <label class="nc-field"><span>Motif</span><input name="reason" value="{{ old('reason') }}"></label>
-                            <label class="nc-field"><span>Lien de parenté</span><input name="relationship" value="{{ old('relationship') }}"></label>
+                            <label class="nc-field" data-leave-context="reason"><span>Motif <small data-leave-context-required hidden>Requis</small></span><input name="reason" value="{{ old('reason') }}"></label>
+                            <label class="nc-field" data-leave-context="relationship"><span>Lien de parenté <small data-leave-context-required hidden>Requis</small></span><input name="relationship" value="{{ old('relationship') }}"></label>
                             <label class="nc-field"><span>Lieu</span><input name="location" value="{{ old('location') }}"></label>
                             <label class="nc-field"><span>Contact pendant l’absence</span><input name="contact" value="{{ old('contact') }}"></label>
                             <label class="nc-field"><span>Incidence sur le traitement</span><input name="salary_impact" value="{{ old('salary_impact') }}"></label>

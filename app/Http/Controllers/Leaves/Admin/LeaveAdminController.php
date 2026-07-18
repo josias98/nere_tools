@@ -56,7 +56,7 @@ class LeaveAdminController extends Controller
             'signatureExists' => is_file(storage_path('app/signatures/dg-signature.png')) || is_file(public_path('brand/dg-signature.png')),
             'summary' => $summary,
             'personnel' => $reports->employees($filters)->paginate(20, ['*'], 'personnel_page')->withQueryString()->through(fn ($employee) => ['employee' => $employee, 'balance' => $balances->getBalance($employee)]),
-            'leaveTypes' => LeaveType::query()->with('rules')->orderBy('name')->get(),
+            'leaveTypes' => LeaveType::query()->with('rules')->whereIn('slug', LeaveType::CATALOG_SLUGS)->orderBy('name')->get(),
             'holidays' => LeaveHoliday::query()->orderBy('date')->get(),
         ]);
     }

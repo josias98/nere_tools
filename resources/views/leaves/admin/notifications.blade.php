@@ -79,7 +79,7 @@
                     <span>Recherche</span>
                     <input type="text" name="search" value="{{ $filters['search'] }}" placeholder="Sujet ou erreur">
                 </label>
-                <button class="nc-button" type="submit">
+                <button class="nc-button" type="submit" data-tooltip-title="Filtrer le journal" data-tooltip="Recherche les notifications par statut, événement, sujet ou message d’erreur.">
                     <i data-lucide="filter" class="nc-icon" aria-hidden="true"></i>
                     Filtrer
                 </button>
@@ -163,7 +163,7 @@
                                     @if ($canRetry)
                                         <form method="POST" action="{{ route('admin.leaves.notifications.retry', $notification) }}">
                                             @csrf
-                                            <button class="nc-ghost" type="submit">
+                                            <button class="nc-ghost" type="submit" data-tooltip-title="Relancer la notification" data-tooltip="Rejoue l’envoi uniquement si l’état actuel de la demande correspond encore à cet événement.">
                                                 <i data-lucide="refresh-cw" class="nc-icon" aria-hidden="true"></i>
                                                 Relancer
                                             </button>

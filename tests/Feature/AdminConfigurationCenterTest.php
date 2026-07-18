@@ -140,6 +140,16 @@ class AdminConfigurationCenterTest extends TestCase
             ->assertSee('action="'.route('admin.leaves.validators.destroy', $responsibility).'"', false);
     }
 
+    public function test_leave_workflow_actions_explain_their_effects(): void
+    {
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+
+        $this->actingAs($admin)->get(route('admin.leaves.index'))
+            ->assertOk()
+            ->assertSee('data-tooltip-title="Ajouter au circuit"', false)
+            ->assertSee('Le validateur recevra les demandes correspondant à l’étape et à la portée choisies.', false);
+    }
+
     public function test_validation_responsibility_scope_requires_its_target(): void
     {
         $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);

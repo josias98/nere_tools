@@ -24,6 +24,12 @@ export const bootLeavePage = () => {
     const sync = () => {
         const option = typeInput?.selectedOptions[0];
         const configuration = effectiveConfiguration(option);
+        const requiredContext = { family_event: 'relationship', other_absence: 'reason' }[option?.dataset.slug];
+        document.querySelectorAll('[data-leave-context]').forEach((field) => {
+            const required = field.dataset.leaveContext === requiredContext;
+            field.querySelector('input').required = required;
+            field.querySelector('[data-leave-context-required]').hidden = !required;
+        });
         const unit = configuration.unit ?? option?.dataset.unit ?? 'calendar_day';
         const isHourly = unit === 'hour';
         if (hourFields) hourFields.hidden = !isHourly;
