@@ -2,9 +2,9 @@
     'title' => 'Validation demande - Nere Tools',
     'breadcrumbs' => [
         ['label' => 'Dashboard', 'url' => route('dashboard')],
-        ['label' => 'Conges', 'url' => route('leaves.index')],
+        ['label' => 'Congés', 'url' => route('leaves.index')],
         ['label' => 'Validations', 'url' => route('leaves.validations.index')],
-        ['label' => 'Detail'],
+        ['label' => 'Détails'],
     ],
 ])
 
@@ -12,9 +12,8 @@
     <section class="nc-page leave-workbench">
         <div class="nc-title-row">
             <div>
-                <p class="nc-kicker">Validation</p>
-                <h1 class="nc-title">Examiner la demande</h1>
-                <p class="nc-lead">{{ $leaveRequest->employee?->name() }} - {{ $leaveRequest->employee?->department?->name ?? 'Departement non renseigne' }}</p>
+                <h1 class="nc-title">Examiner la demande de congés</h1>
+                <p class="nc-lead">{{ $leaveRequest->employee?->name() }} - {{ $leaveRequest->employee?->department?->name ?? 'Département non renseigné' }}</p>
             </div>
         </div>
 
@@ -24,7 +23,7 @@
             <section class="nc-panel">
                 <div class="nc-panel-heading">
                     <div>
-                        <h2>{{ $leaveRequest->leaveType?->name ?? 'Conge' }}</h2>
+                        <h2>{{ $leaveRequest->leaveType?->name ?? 'Congé' }}</h2>
                         <p>{{ $leaveRequest->periodLabel() }}</p>
                     </div>
                     <span class="leave-status is-{{ $leaveRequest->status }}">{{ $leaveRequest->statusLabel() }}</span>
@@ -34,9 +33,9 @@
                     <div><dt>Durée demandée</dt><dd>{{ $leaveRequest->durationLabel() }}</dd></div>
                     <div><dt>Solde disponible</dt><dd>{{ number_format($balance['available_balance'], 2) }}</dd></div>
                     <div><dt>En attente</dt><dd>{{ number_format($balance['pending_days'], 2) }}</dd></div>
-                    <div><dt>Solde projete</dt><dd>{{ number_format($balance['projected_balance'], 2) }}</dd></div>
+                    <div><dt>Solde projeté</dt><dd>{{ number_format($balance['projected_balance'], 2) }}</dd></div>
                     <div><dt>Commentaire</dt><dd>{{ $leaveRequest->requester_comment ?: '-' }}</dd></div>
-                    <div><dt>Etape courante</dt><dd>{{ $leaveRequest->currentApproval?->step_label ?? '-' }}</dd></div>
+                    <div><dt>Étape courante</dt><dd>{{ $leaveRequest->currentApproval?->step_label ?? '-' }}</dd></div>
                 </dl>
 
                 <div class="leave-timeline">
@@ -54,7 +53,7 @@
             </section>
 
             <aside class="nc-panel leave-decision">
-                <h2>Decision</h2>
+                <h2>Décision</h2>
                 @if (in_array($leaveRequest->status, ['pending_supervisor', 'pending_hr', 'pending_dg'], true))
                     <form method="POST" action="{{ route('leaves.validations.approve', $leaveRequest->uuid) }}">
                         @csrf
@@ -80,7 +79,7 @@
                         </button>
                     </form>
                 @else
-                    <p>Decision deja enregistree.</p>
+                    <p>Décision déjà9 enregistrée.</p>
                 @endif
             </aside>
         </div>

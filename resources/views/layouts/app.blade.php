@@ -19,28 +19,7 @@
                     </a>
 
                     <nav class="nc-nav-links" aria-label="Navigation principale">
-                        <a href="{{ route('dashboard') }}" @class(['is-active' => request()->routeIs('dashboard')]) @if(request()->routeIs('dashboard')) aria-current="page" @endif>
-                            <i data-lucide="layout-grid" class="nc-icon" aria-hidden="true"></i>
-                            Accueil
-                        </a>
-                        @if (auth()->user()->canAccessTool('conges'))
-                            <a href="{{ route('leaves.index') }}" @class(['is-active' => request()->routeIs('leaves.*') && ! request()->routeIs('admin.leaves.*')]) @if(request()->routeIs('leaves.*') && ! request()->routeIs('admin.leaves.*')) aria-current="page" @endif>
-                                <i data-lucide="calendar-range" class="nc-icon" aria-hidden="true"></i>
-                                Congés
-                            </a>
-                        @endif
-                        @if (auth()->user()->canAccessTool('timesheets'))
-                            <a href="{{ route('timesheets.index') }}" @class(['is-active' => request()->routeIs('timesheets.*')]) @if(request()->routeIs('timesheets.*')) aria-current="page" @endif>
-                                <i data-lucide="file-text" class="nc-icon" aria-hidden="true"></i>
-                                Feuilles de temps
-                            </a>
-                        @endif
-                        @if (auth()->user()->canAccessAdmin())
-                            <a href="{{ route('admin.index') }}" @class(['is-active' => request()->routeIs('admin.*')]) @if(request()->routeIs('admin.*')) aria-current="page" @endif>
-                                <i data-lucide="settings" class="nc-icon" aria-hidden="true"></i>
-                                Administration
-                            </a>
-                        @endif
+                        
                     </nav>
 
                     <div class="nc-nav">

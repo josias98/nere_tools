@@ -12,9 +12,9 @@ class LeaveTypeSeeder extends Seeder
     {
         $types = [
             ['annual_leave', 'Congé annuel', 'leave', 'calendar_day', true, true, false, 30, null, 0, 'Code du travail burkinabè', ['monthly_accrual' => 2.5, 'normal_use_after_months' => 12, 'seniority_bonuses' => ['20' => 2, '25' => 4, '30' => 6], 'minor_worker_extra_unpaid_days' => 30, 'under_22_child_bonus_working_days' => 2]],
-            ['family_event', 'Événement familial', 'permission', 'working_day', true, false, true, 15, 15, 0, 'Plafond commun annuel configurable', ['event_durations' => []]],
             ['maternity', 'Maternité', 'leave', 'week', true, false, true, null, 17, 0, 'Durée légale : 14 semaines, extension médicale maximale : 3 semaines', ['base_weeks' => 14, 'medical_extension_weeks' => 3, 'breastfeeding_hours_per_day' => 1.5, 'breastfeeding_months_after_return' => 15]],
-            ['internal_paternity', 'Paternité (dispositif interne)', 'permission', 'working_day', true, false, true, null, null, 0, 'Avantage interne configurable — ne constitue pas un droit légal autonome', ['internal_policy' => true]],
+            ['internal_paternity', 'Paternité', 'permission', 'working_day', true, false, true, null, null, 0, 'Avantage interne configurable — ne constitue pas un droit légal autonome', ['internal_policy' => true]],
+            ['family_event', 'Événement familial', 'permission', 'working_day', true, false, true, 15, 15, 0, 'Plafond commun annuel configurable', ['event_durations' => []]],
             ['non_occupational_illness', 'Maladie non professionnelle', 'leave', 'calendar_day', true, false, true, null, null, 0, 'Maintien de salaire selon ancienneté', ['salary_caps_months' => [['max_years' => 0, 'full' => 1, 'half' => 1], ['max_years' => 5, 'full' => 1, 'half' => 3], ['max_years' => 10, 'full' => 3, 'half' => 3], ['max_years' => 15, 'full' => 4, 'half' => 4], ['max_years' => null, 'full' => 5, 'half' => 5]]]],
             ['occupational_injury', 'Accident du travail ou maladie professionnelle', 'leave', 'calendar_day', true, false, true, null, null, 0, null, []],
             ['child_care', 'Entretien d’un enfant', 'leave', 'month', false, false, true, null, 6, 1, null, []],

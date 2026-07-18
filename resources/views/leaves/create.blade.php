@@ -1,5 +1,5 @@
 @extends('layouts.app', [
-    'title' => 'Nouvelle demande - Nere Tools',
+    'title' => 'Nouvelle demande - Néré Tools',
     'breadcrumbs' => [
         ['label' => 'Dashboard', 'url' => route('dashboard')],
         ['label' => 'Congés', 'url' => route('leaves.index')],
@@ -11,8 +11,7 @@
     <section class="nc-page leave-workbench">
         <div class="nc-title-row">
             <div>
-                <p class="nc-kicker">Congés</p>
-                <h1 class="nc-title">Nouvelle demande</h1>
+                <h1 class="nc-title">Nouvelle demande de congés</h1>
                 <p class="nc-lead">Choisissez une période. Le nombre de jours calendaires est calculé automatiquement.</p>
             </div>
         </div>
@@ -46,8 +45,8 @@
             <div class="leave-split">
                 <div class="leave-form-sections">
                     <fieldset class="leave-fieldset">
-                        <legend>1. Quel congé souhaitez-vous prendre ?</legend>
-                        <p class="leave-fieldset-help">Les champs marqués « requis » doivent être renseignés.</p>
+                        <legend>1. Quel type de congé souhaitez-vous prendre ?</legend>
+                        <p class="leave-fieldset-help my-2">Les champs marqués « requis » doivent être renseignés.</p>
 
                         <label class="nc-field" for="leave_type_id">
                             <span>Type de congé <small>Requis</small></span>

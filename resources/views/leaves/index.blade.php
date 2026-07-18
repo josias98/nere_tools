@@ -10,9 +10,9 @@
     <section class="nc-page leave-workbench">
         <div class="nc-title-row">
             <div>
-                <p class="nc-kicker">Conges</p>
+{{--                <p class="nc-kicker">Conges</p>--}}
                 <h1 class="nc-title">Demandes de congé</h1>
-                <p class="nc-lead">Consultez votre solde, envoyez une demande et suivez son avancement en toute simplicite.</p>
+                <p class="nc-lead">Soumettez et suivez vos demandes de congés auprès de l'administration.</p>
             </div>
         </div>
 
@@ -30,7 +30,7 @@
                 <small>jours</small>
             </article>
             <article class="nc-panel leave-metric">
-                <span>Projete</span>
+                <span>Projeté</span>
                 <strong>{{ number_format($balance['projected_balance'], 2) }}</strong>
                 <small>jours</small>
             </article>
@@ -39,24 +39,24 @@
         <section class="nc-panel">
             <div class="nc-panel-heading">
                 <div>
-                    <h2>Vos dernieres demandes</h2>
-                    <p>Le calcul se fait en jours calendaires, week-ends inclus.</p>
+                    <h2>Vos dernières demandes</h2>
+                    <p>Consultez la liste et l'état de vos dernières demandes de congés.</p>
                 </div>
                 <div class="nc-actions">
+                    <a href="{{ route('leaves.create') }}" class="nc-button">
+                        <i data-lucide="plus" class="nc-icon" aria-hidden="true"></i>
+                        Nouvelle demande
+                    </a>
+                    <a href="{{ route('leaves.history') }}" class="nc-ghost">
+                        <i data-lucide="history" class="nc-icon" aria-hidden="true"></i>
+                        Historique
+                    </a>
                     @if ($canValidateLeaves)
                         <a href="{{ route('leaves.validations.index') }}" class="nc-ghost">
                             <i data-lucide="shield-check" class="nc-icon" aria-hidden="true"></i>
                             Validations
                         </a>
                     @endif
-                    <a href="{{ route('leaves.history') }}" class="nc-ghost">
-                        <i data-lucide="history" class="nc-icon" aria-hidden="true"></i>
-                        Historique
-                    </a>
-                    <a href="{{ route('leaves.create') }}" class="nc-button">
-                        <i data-lucide="plus" class="nc-icon" aria-hidden="true"></i>
-                        Nouvelle demande
-                    </a>
                 </div>
             </div>
 
@@ -67,7 +67,7 @@
                     <table class="nc-table">
                         <thead>
                             <tr>
-                                <th>Periode</th>
+                                <th>Période</th>
                                 <th>Type</th>
                                 <th>Jours</th>
                                 <th>Statut</th>

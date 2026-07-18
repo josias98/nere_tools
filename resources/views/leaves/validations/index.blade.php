@@ -11,9 +11,8 @@
     <section class="nc-page leave-workbench">
         <div class="nc-title-row">
             <div>
-                <p class="nc-kicker">Validation</p>
-                <h1 class="nc-title">Demandes en attente</h1>
-                <p class="nc-lead">Traitez les demandes soumises dans votre perimetre.</p>
+                <h1 class="nc-title">Demandes en attente de validation</h1>
+                <p class="nc-lead">Ci-dessous, toutes les  demandes soumises dans votre périmetre.</p>
             </div>
         </div>
 
@@ -27,8 +26,8 @@
                     <thead>
                         <tr>
                             <th>Demandeur</th>
-                            <th>Departement</th>
-                            <th>Periode</th>
+                            <th>Département</th>
+                            <th>Période</th>
                             <th>Jours</th>
                             <th>Statut</th>
                             <th>Etape</th>

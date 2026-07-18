@@ -18,7 +18,7 @@
             <div>
                 <p class="nc-kicker">Portail interne</p>
                 <h1 class="nc-title">Nere Tools</h1>
-                <p class="nc-lead">Bonjour {{ auth()->user()->name }}. Accédez directement à votre espace de travail.</p>
+                <p class="nc-lead">Bonjour {{ auth()->user()->name }}. Que souhaitez vous faire aujourd'hui ?</p>
             </div>
         </div>
 
@@ -32,7 +32,7 @@
                             </span>
                             <div>
                                 <h2>Administration</h2>
-                                <p>Gérez les accès, les rôles et les réglages métier depuis un espace de pilotage unique.</p>
+                                <p>Gérez les accès, les rôles et les réglages de tous les outils de la plateforme.</p>
                             </div>
                         </div>
                         <span class="nc-badge active">

@@ -7,9 +7,8 @@
                 <img class="nc-logo" src="{{ asset('brand/nere-capital-rgb.png') }}" alt="Nere Capital">
                 <div class="nc-title-row">
                     <div>
-                        <p class="nc-kicker">Connexion securisee</p>
                         <h1 class="nc-title">Nere Tools</h1>
-                        <p class="nc-lead">Connectez-vous avec votre compte Microsoft 365 professionnel pour acceder au portail interne.</p>
+                        <p class="nc-lead">Connectez-vous avec votre compte Microsoft 365 professionnel pour accéder au portail interne.</p>
                     </div>
                 </div>
 

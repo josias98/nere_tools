@@ -1,8 +1,8 @@
 @extends('layouts.app', [
-    'title' => 'Historique conges - Nere Tools',
+    'title' => 'Historique congés - Néré Tools',
     'breadcrumbs' => [
         ['label' => 'Dashboard', 'url' => route('dashboard')],
-        ['label' => 'Conges', 'url' => route('leaves.index')],
+        ['label' => 'Congés', 'url' => route('leaves.index')],
         ['label' => 'Historique'],
     ],
 ])
@@ -11,16 +11,15 @@
     <section class="nc-page leave-workbench">
         <div class="nc-title-row">
             <div>
-                <p class="nc-kicker">Conges</p>
-                <h1 class="nc-title">Historique</h1>
-                <p class="nc-lead">Toutes vos demandes, filtrables par annee et statut.</p>
+                <h1 class="nc-title">Historique des demandes</h1>
+                <p class="nc-lead">Consultez toutes vos demandes présentes et passées.</p>
             </div>
         </div>
 
         <section class="nc-panel">
             <form class="leave-filter" method="GET">
                 <label class="nc-field">
-                    <span>Annee</span>
+                    <span>Année</span>
                     <input type="number" name="year" value="{{ request('year') }}" min="2020" max="2100">
                 </label>
                 <label class="nc-field">
@@ -47,7 +46,7 @@
                             <tr>
                                 <th>Date</th>
                                 <th>Type</th>
-                                <th>Periode</th>
+                                <th>Période</th>
                                 <th>Jours</th>
                                 <th>Statut</th>
                                 <th></th>

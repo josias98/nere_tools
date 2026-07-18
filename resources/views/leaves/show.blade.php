@@ -11,8 +11,7 @@
     <section class="nc-page leave-workbench">
         <div class="nc-title-row">
             <div>
-                <p class="nc-kicker">Conges</p>
-                <h1 class="nc-title">Detail de la demande</h1>
+                <h1 class="nc-title">Détails de votre demande.</h1>
                 <p class="nc-lead">{{ $leaveRequest->employee?->name() }} - {{ $leaveRequest->periodLabel() }}</p>
             </div>
         </div>
@@ -32,10 +31,10 @@
                 <div><dt>Soumise le</dt><dd>{{ $leaveRequest->submitted_at?->format('d/m/Y H:i') ?? '-' }}</dd></div>
                 <div><dt>Debut</dt><dd>{{ $leaveRequest->startLabel() }}</dd></div>
                 <div><dt>Fin</dt><dd>{{ $leaveRequest->endLabel() }}</dd></div>
-                <div><dt>Decision</dt><dd>{{ $leaveRequest->reviewed_at?->format('d/m/Y H:i') ?? 'En attente' }}</dd></div>
+                <div><dt>Décision</dt><dd>{{ $leaveRequest->reviewed_at?->format('d/m/Y H:i') ?? 'En attente' }}</dd></div>
                 <div><dt>Commentaire demandeur</dt><dd>{{ $leaveRequest->requester_comment ?: '-' }}</dd></div>
                 <div><dt>Commentaire validateur</dt><dd>{{ $leaveRequest->reviewer_comment ?: '-' }}</dd></div>
-                <div><dt>Etape courante</dt><dd>{{ $leaveRequest->currentApproval?->step_label ?? '-' }}</dd></div>
+                <div><dt>Etape Actuelle de la demande</dt><dd>{{ $leaveRequest->currentApproval?->step_label ?? '-' }}</dd></div>
                 @if ($leaveRequest->document)
                     <div><dt>Reference document</dt><dd>{{ $leaveRequest->document->document_reference ?: '-' }}</dd></div>
                     <div><dt>Statut documentaire</dt><dd>{{ $leaveRequest->document->status }}</dd></div>
