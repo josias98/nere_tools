@@ -7,6 +7,7 @@ use App\Http\Controllers\Leaves\Admin\LeaveDocumentAdminController;
 use App\Http\Controllers\Leaves\Admin\LeaveExportController;
 use App\Http\Controllers\Leaves\Admin\LeaveHolidayController;
 use App\Http\Controllers\Leaves\Admin\LeaveImportController;
+use App\Http\Controllers\Leaves\Admin\LeaveRequestController;
 use App\Http\Controllers\Leaves\Admin\LeaveTypeController;
 use App\Http\Controllers\Leaves\Admin\LeaveValidatorController;
 use App\Models\LeaveSetting;
@@ -140,6 +141,8 @@ Route::middleware(['auth', 'admin-area'])->group(function (): void {
     Route::delete('/admin/users/{user}', [UserController::class, 'destroy'])->name('admin.users.destroy');
 
     Route::get('/admin/conges', [LeaveAdminController::class, 'index'])->name('admin.leaves.index');
+    Route::get('/admin/conges/demandes/creer', [LeaveRequestController::class, 'create'])->name('admin.leaves.requests.create');
+    Route::post('/admin/conges/demandes', [LeaveRequestController::class, 'store'])->name('admin.leaves.requests.store');
     Route::get('/admin/conges/notifications', [LeaveAdminController::class, 'notifications'])->name('admin.leaves.notifications.index');
     Route::post('/admin/conges/notifications/{notificationLog}/retry', [LeaveAdminController::class, 'retryNotification'])->name('admin.leaves.notifications.retry');
     Route::post('/admin/conges/documents/{document}/revoke', [LeaveDocumentAdminController::class, 'revoke'])->name('admin.leaves.documents.revoke');

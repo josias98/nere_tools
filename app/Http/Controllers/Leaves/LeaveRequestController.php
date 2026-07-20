@@ -85,7 +85,7 @@ class LeaveRequestController extends Controller
     public function show(LeaveRequest $leaveRequest)
     {
         $user = Auth::user();
-        $leaveRequest->load(['employee.department', 'leaveType', 'reviewer', 'document', 'approvals.validatorUser.employee', 'currentApproval']);
+        $leaveRequest->load(['employee.department', 'leaveType', 'createdBy.employee', 'reviewer', 'document', 'approvals.validatorUser.employee', 'currentApproval']);
 
         if (! $this->validatorService->userCanAccessDocument($user, $leaveRequest)) {
             abort(403);

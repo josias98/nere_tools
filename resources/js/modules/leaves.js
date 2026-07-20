@@ -10,6 +10,8 @@ export const bootLeavePage = () => {
     const hint = document.getElementById('leave_balance_hint');
     const form = document.querySelector('[data-leave-form]');
     const ruleData = JSON.parse(document.getElementById('leave-rule-data')?.textContent || '{}');
+    const employeeInput = document.getElementById('leave_employee_id');
+    const employeeBalances = JSON.parse(document.getElementById('leave-employee-balance-data')?.textContent || '{}');
     if (!startInput || !endInput || !count) return;
 
     const effectiveConfiguration = (option) => {
@@ -22,6 +24,11 @@ export const bootLeavePage = () => {
     };
 
     const sync = () => {
+        if (employeeInput && employeeBalances[employeeInput.value]) {
+            form.dataset.projectedBalance = employeeBalances[employeeInput.value].projected_balance;
+            document.getElementById('leave_projected_balance').textContent = `${Number(form.dataset.projectedBalance).toFixed(2)} jours`;
+        }
+
         const option = typeInput?.selectedOptions[0];
         const configuration = effectiveConfiguration(option);
         const requiredContext = { family_event: 'relationship', other_absence: 'reason' }[option?.dataset.slug];
@@ -81,6 +88,7 @@ export const bootLeavePage = () => {
     startTimeInput?.addEventListener('change', sync);
     endTimeInput?.addEventListener('change', sync);
     typeInput?.addEventListener('change', sync);
+    employeeInput?.addEventListener('change', sync);
     sync();
     document.querySelector('[data-validation-summary]')?.focus();
 };

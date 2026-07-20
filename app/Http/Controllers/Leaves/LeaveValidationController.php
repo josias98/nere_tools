@@ -34,7 +34,7 @@ class LeaveValidationController extends Controller
 
     public function show(Request $request, LeaveRequest $leaveRequest): View
     {
-        $leaveRequest->load(['employee.department', 'leaveType', 'document', 'approvals.validatorUser.employee', 'currentApproval']);
+        $leaveRequest->load(['employee.department', 'leaveType', 'createdBy.employee', 'document', 'approvals.validatorUser.employee', 'currentApproval']);
         abort_unless($this->validators->userCanValidate($request->user(), $leaveRequest), 403);
 
         return view('leaves.validations.show', [

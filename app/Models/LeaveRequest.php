@@ -117,6 +117,11 @@ class LeaveRequest extends Model
         return $this->belongsTo(User::class, 'reviewed_by_user_id');
     }
 
+    public function createdBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'created_by_user_id');
+    }
+
     public function document(): HasOne
     {
         return $this->hasOne(LeaveDocument::class)

@@ -11,7 +11,7 @@ class LeaveReportQuery
     public function requests(array $filters): Builder
     {
         return LeaveRequest::query()
-            ->with(['employee.department', 'leaveType', 'currentApproval', 'document', 'approvals.validatorUser.employee'])
+            ->with(['employee.department', 'createdBy.employee', 'leaveType', 'currentApproval', 'document', 'approvals.validatorUser.employee'])
             ->when($filters['status'] ?? null, fn ($q, $value) => $q->where('status', $value))
             ->when($filters['step'] ?? null, fn ($q, $value) => $q->where('status', 'pending_'.$value))
             ->when($filters['department_id'] ?? null, fn ($q, $value) => $q->whereHas('employee', fn ($employee) => $employee->where('department_id', $value)))

@@ -13,6 +13,9 @@
             <div>
                 <h1 class="nc-title">Détails de votre demande.</h1>
                 <p class="nc-lead">{{ $leaveRequest->employee?->name() }} - {{ $leaveRequest->periodLabel() }}</p>
+                @if ($leaveRequest->createdBy && $leaveRequest->createdBy->employee?->id !== $leaveRequest->employee_id)
+                    <p class="nc-alert is-info">Demande saisie par {{ $leaveRequest->createdBy->name }} pour {{ $leaveRequest->employee?->name() }}</p>
+                @endif
             </div>
         </div>
 

@@ -33,6 +33,16 @@ class LeaveRequestWorkflowService
 
     public function submitRequest(Employee $employee, array $data, int $userId): LeaveRequest
     {
+        return $this->submit($employee, $data, $userId);
+    }
+
+    public function submitRequestForEmployee(Employee $employee, array $data, User $creator): LeaveRequest
+    {
+        return $this->submit($employee, $data, $creator->id, $creator);
+    }
+
+    private function submit(Employee $employee, array $data, int $userId, ?User $onBehalfCreator = null): LeaveRequest
+    {
         $startDate = Carbon::parse($data['start_date'].(isset($data['start_time']) ? ' '.$data['start_time'] : ''));
         $endDate = Carbon::parse($data['end_date'].(isset($data['end_time']) ? ' '.$data['end_time'] : ''));
         $type = LeaveType::query()->with('rules')->findOrFail($data['leave_type_id']);
@@ -42,12 +52,12 @@ class LeaveRequestWorkflowService
         $duration = $this->dayCountService->calculate($startDate, $endDate, $unit);
 
         $request = Cache::lock('leave-submission-employee:'.$employee->id, 120)
-            ->block(10, function () use ($employee, $data, $userId, $startDate, $endDate, $type, $duration, $rule, $configuration, $unit): LeaveRequest {
-                $this->ensureSubmissionRules($employee, $type, $configuration, $startDate, $endDate, $unit, $duration);
+            ->block(10, function () use ($employee, $data, $userId, $onBehalfCreator, $startDate, $endDate, $type, $duration, $rule, $configuration, $unit): LeaveRequest {
+                $this->ensureSubmissionRules($employee, $type, $configuration, $startDate, $endDate, $unit, $duration, $onBehalfCreator !== null);
                 $this->ensureRenewalRules($employee, $type, $configuration, $data['renewal_of_request_id'] ?? null, $startDate);
                 $this->ensureNoOverlap($employee, $startDate, $endDate, $unit);
 
-                return DB::transaction(function () use ($employee, $data, $userId, $startDate, $endDate, $type, $duration, $rule, $configuration, $unit): LeaveRequest {
+                return DB::transaction(function () use ($employee, $data, $userId, $onBehalfCreator, $startDate, $endDate, $type, $duration, $rule, $configuration, $unit): LeaveRequest {
                     $request = LeaveRequest::query()->create([
                         'uuid' => Str::uuid(),
                         'employee_id' => $employee->id,
@@ -86,6 +96,27 @@ class LeaveRequestWorkflowService
 
                     $this->createApprovalChain($request);
                     $this->audit('leave.created', $request, $userId);
+
+                    if ($onBehalfCreator && $this->validators()->userCanValidateStep($onBehalfCreator, $request, 'supervisor')) {
+                        $supervisorApproval = $request->approvals()
+                            ->where('step_key', 'supervisor')
+                            ->firstOrFail();
+                        $comment = 'Validation hiérarchique automatique — demande introduite par le responsable RH';
+
+                        $supervisorApproval->forceFill([
+                            'status' => LeaveRequestApproval::STATUS_APPROVED,
+                            'validator_user_id' => $onBehalfCreator->id,
+                            'validator_employee_id' => $onBehalfCreator->employee?->id,
+                            'comment' => $comment,
+                            'decided_at' => now(),
+                        ])->save();
+                        $request->forceFill(['status' => 'pending_hr'])->save();
+                        $this->audit('leave.step_approved', $request, $onBehalfCreator->id, [
+                            'step' => 'supervisor',
+                            'automatic' => true,
+                            'comment' => $comment,
+                        ]);
+                    }
 
                     return $request->fresh(['employee.department', 'leaveType', 'currentApproval']);
                 });
@@ -293,6 +324,7 @@ class LeaveRequestWorkflowService
         Carbon $endDate,
         LeaveUnit $unit,
         float $duration,
+        bool $administrativeSubmission = false,
     ): void {
         if ($duration <= 0) {
             throw new DomainException('La durée demandée doit être supérieure à zéro.');
@@ -307,7 +339,7 @@ class LeaveRequestWorkflowService
         }
 
         $requesterScope = $configuration['requester_scope'] ?? $type->requester_scope;
-        if (! in_array($requesterScope, ['employee', 'both'], true)) {
+        if (! $administrativeSubmission && ! in_array($requesterScope, ['employee', 'both'], true)) {
             throw new DomainException("Ce type de congé n'est pas disponible en libre-service.");
         }
 
@@ -499,7 +531,7 @@ class LeaveRequestWorkflowService
     private function steps(): array
     {
         return [
-            ['step_order' => 1, 'step_key' => 'supervisor', 'step_label' => 'Superviseur'],
+            ['step_order' => 1, 'step_key' => 'supervisor', 'step_label' => 'Supérieur hiérarchique'],
             ['step_order' => 2, 'step_key' => 'hr', 'step_label' => 'RH / Admin-Finance'],
             ['step_order' => 3, 'step_key' => 'dg', 'step_label' => 'DG / Direction'],
         ];

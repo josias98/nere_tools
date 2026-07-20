@@ -1,17 +1,29 @@
+@php
+    $adminMode = $adminMode ?? false;
+    $pageTitle = $adminMode ? 'Créer une demande pour un collaborateur - Néré Tools' : 'Nouvelle demande - Néré Tools';
+    $breadcrumbs = $adminMode
+        ? [
+            ['label' => 'Dashboard', 'url' => route('dashboard')],
+            ['label' => 'Administration', 'url' => route('admin.index')],
+            ['label' => 'Congés', 'url' => route('admin.leaves.index', ['section' => 'requests'])],
+            ['label' => 'Créer une demande'],
+        ]
+        : [
+            ['label' => 'Dashboard', 'url' => route('dashboard')],
+            ['label' => 'Congés', 'url' => route('leaves.index')],
+            ['label' => 'Nouvelle demande'],
+        ];
+@endphp
 @extends('layouts.app', [
-    'title' => 'Nouvelle demande - Néré Tools',
-    'breadcrumbs' => [
-        ['label' => 'Dashboard', 'url' => route('dashboard')],
-        ['label' => 'Congés', 'url' => route('leaves.index')],
-        ['label' => 'Nouvelle demande'],
-    ],
+    'title' => $pageTitle,
+    'breadcrumbs' => $breadcrumbs,
 ])
 
 @section('content')
     <section class="nc-page leave-workbench">
         <div class="nc-title-row">
             <div>
-                <h1 class="nc-title">Nouvelle demande de congés</h1>
+                <h1 class="nc-title">{{ $adminMode ? 'Créer une demande pour un collaborateur' : 'Nouvelle demande de congés' }}</h1>
                 <p class="nc-lead">Choisissez une période. Le nombre de jours calendaires est calculé automatiquement.</p>
             </div>
         </div>
@@ -37,13 +49,33 @@
             ]]);
         @endphp
         <script type="application/json" id="leave-rule-data">@json($leaveRuleData, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT)</script>
+        @if ($adminMode)
+            <script type="application/json" id="leave-employee-balance-data">@json($employeeBalances->map(fn ($employeeBalance) => ['projected_balance' => $employeeBalance['projected_balance']]), JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT)</script>
+        @endif
 
-        <form action="{{ route('leaves.store') }}" method="POST" enctype="multipart/form-data" class="nc-panel leave-form" data-leave-form data-projected-balance="{{ $balance['projected_balance'] }}">
+        <form action="{{ $adminMode ? route('admin.leaves.requests.store') : route('leaves.store') }}" method="POST" enctype="multipart/form-data" class="nc-panel leave-form" data-leave-form data-projected-balance="{{ $balance['projected_balance'] }}">
             @csrf
             @if ($renewalOf)<input type="hidden" name="renewal_of_request_id" value="{{ $renewalOf->id }}">@endif
 
             <div class="leave-split">
                 <div class="leave-form-sections">
+                    @if ($adminMode)
+                        <fieldset class="leave-fieldset">
+                            <legend>Collaborateur bénéficiaire</legend>
+                            @if ($employees->isEmpty())
+                                <p class="nc-alert is-warning" role="alert">Aucun collaborateur actif et éligible aux congés n’est disponible. Vérifiez les profils RH dans l’administration.</p>
+                            @endif
+                            <label class="nc-field" for="leave_employee_id">
+                                <span>Collaborateur <small>Requis</small></span>
+                                <select name="employee_id" id="leave_employee_id" required aria-required="true" @disabled($employees->isEmpty()) @error('employee_id') aria-invalid="true" aria-describedby="leave_employee_id_error" @enderror>
+                                    @foreach ($employees as $employee)
+                                        <option value="{{ $employee->id }}" @selected(old('employee_id', $employees->first()?->id) == $employee->id)>{{ $employee->name() }}</option>
+                                    @endforeach
+                                </select>
+                                @error('employee_id') <small id="leave_employee_id_error" class="nc-error">{{ $message }}</small> @enderror
+                            </label>
+                        </fieldset>
+                    @endif
                     <fieldset class="leave-fieldset">
                         <legend>1. Quel type de congé souhaitez-vous prendre ?</legend>
                         <p class="leave-fieldset-help my-2">Les champs marqués « requis » doivent être renseignés.</p>
@@ -115,7 +147,7 @@
                         <small id="leave_unit_label">unité calculée</small>
                     </div>
                     <dl class="leave-summary-facts">
-                        <div><dt>Solde projeté actuel</dt><dd>{{ number_format($balance['projected_balance'], 2) }} jours</dd></div>
+                        <div><dt>Solde projeté actuel</dt><dd id="leave_projected_balance" role="status" aria-live="polite">{{ number_format($balance['projected_balance'], 2) }} jours</dd></div>
                         <div><dt>Solde après demande</dt><dd id="leave_remaining_balance">-</dd></div>
                         <div><dt>Reprise estimée</dt><dd id="leave_return_date">-</dd></div>
                         <div><dt>Justificatif</dt><dd id="leave_attachment_hint">Selon le type</dd></div>
@@ -125,13 +157,13 @@
             </div>
 
             <div class="nc-actions leave-form-actions">
-                <a href="{{ route('leaves.index') }}" class="nc-ghost">
+                <a href="{{ $adminMode ? route('admin.leaves.index', ['section' => 'requests']) : route('leaves.index') }}" class="nc-ghost">
                     <i data-lucide="arrow-left" class="nc-icon" aria-hidden="true"></i>
                     Annuler
                 </a>
-                <button type="submit" class="nc-button">
+                <button type="submit" class="nc-button" @disabled($adminMode && $employees->isEmpty())>
                     <i data-lucide="send" class="nc-icon" aria-hidden="true"></i>
-                    Envoyer la demande
+                    {{ $adminMode ? 'Créer la demande' : 'Envoyer la demande' }}
                 </button>
             </div>
         </form>
