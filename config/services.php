@@ -58,4 +58,9 @@ return [
         'test_recipient' => env('GRAPH_MAIL_TEST_RECIPIENT'),
     ],
 
+    'webcron' => [
+        'username' => env('WEBCRON_USERNAME'),
+        'password' => env('WEBCRON_PASSWORD'),
+    ],
+
 ];

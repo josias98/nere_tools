@@ -80,11 +80,8 @@ php artisan route:cache
 php artisan view:cache
 ```
 
-Sur un cron d'hebergement mutualise, la queue peut etre traitee avec:
-
-```bash
-php artisan queue:work --stop-when-empty
-```
+Sur un Hebergement Web Infomaniak, configurer le WebCron HTTPS protege
+`/webcron/queue` comme decrit dans `DEPLOYMENT.md`.
 
 ## Modules existants
 
@@ -356,13 +353,15 @@ puis vider le cache de configuration/routes si necessaire.
 Aucun process manager, Docker, Supervisor ou systemd n'est requis. Pulse ingere
 les donnees pendant le cycle de vie des requetes/commandes Laravel.
 
-Si l'hebergement propose deja une tache cron, les commandes optionnelles
-compatibles sont:
+Si l'hebergement propose deja une tache cron shell, la commande optionnelle
+compatible est:
 
 ```bash
 php artisan pulse:check
-php artisan queue:work --stop-when-empty
 ```
+
+Sur un Hebergement Web Infomaniak sans cron shell, la queue est traitee par
+le WebCron HTTPS protege `/webcron/queue`.
 
 `pulse:work` est utile avec un worker persistant, mais il n'est pas requis pour
 cette installation mutualisee.
@@ -431,11 +430,9 @@ php artisan view:cache
 - `storage/`
 - `bootstrap/cache/`
 
-6. Sur hebergement mutualise, traiter la queue par cron si vous gardez la queue `database` en production:
-
-```bash
-php artisan queue:work --stop-when-empty
-```
+6. Sur un Hebergement Web Infomaniak, configurer le WebCron HTTPS protege
+   `/webcron/queue` selon `DEPLOYMENT.md` si la queue `database` est utilisee
+   en production.
 
 ## Limites et observations utiles
 

@@ -24,6 +24,14 @@ LEAVE_CERTIFICATE_SIGNATORY_TITLE="Directeur Général"
 
 Configurer également la base de données, Microsoft 365, Microsoft Graph Mail, la queue et une clé `APP_KEY` persistante. Vérifier que `storage/` et `bootstrap/cache/` sont accessibles en écriture par PHP.
 
+Sur un Hébergement Web Infomaniak, ajouter aussi ces identifiants dédiés dans
+le `.env` avant de mettre la configuration en cache :
+
+```env
+WEBCRON_USERNAME=nere-tools-cron
+WEBCRON_PASSWORD=<mot-de-passe-aleatoire-long>
+```
+
 Pour Sentry, définir `SENTRY_LARAVEL_DSN` uniquement dans le `.env` serveur. Conserver `SENTRY_SEND_DEFAULT_PII=false` et régler `SENTRY_TRACES_SAMPLE_RATE` selon le volume attendu. La configuration PHP doit contenir `zend.exception_ignore_args = Off` et un magasin de certificats valide via `curl.cainfo` (ou le magasin CA du système).
 
 ## Après chaque livraison
@@ -35,11 +43,25 @@ php artisan route:cache
 php artisan view:cache
 ```
 
-Sur un hébergement mutualisé, planifier régulièrement :
+Le planificateur Infomaniak appelle une URL plutôt qu'une commande shell.
+Créer la tâche WebCron avec :
 
-```bash
-php artisan queue:work --stop-when-empty
-```
+- nom : `Nere Tools - worker emails` ;
+- tâche activée ;
+- protocole : `https` ;
+- URL : `tools.nerecapital.com` ;
+- chemin du script : `webcron/queue` ;
+- URL protégée : oui, avec `WEBCRON_USERNAME` et `WEBCRON_PASSWORD` ;
+- fréquence : toutes les 15 minutes ;
+- notifications en cas d'échec : activées.
+
+Chaque appel traite au plus un job et s'arrête lorsque la queue est vide. Avec
+l'intervalle mutualisé de 15 minutes, le débit maximal est donc de quatre lots
+d'e-mails par heure. Après toute modification des identifiants, relancer
+`php artisan config:cache`.
+
+Sur un Serveur Cloud disposant d'un cron shell ou d'un superviseur de
+processus, utiliser directement `php artisan queue:work`.
 
 Ne jamais exécuter `php artisan key:generate` sur une application déjà en production : changer la clé rendrait illisibles les données chiffrées et invaliderait les sessions.
 
