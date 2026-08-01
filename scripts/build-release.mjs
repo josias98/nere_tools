@@ -27,7 +27,6 @@ const localOnlyDirs = new Set([
     '.vscode',
     '.zed',
     'node_modules',
-    'dist',
     'release',
     'releases',
     'tests',
@@ -69,6 +68,7 @@ function shouldSkip(relPath, dirent) {
     const name = dirent.name;
     const zipPath = toZipPath(relPath);
 
+    if (zipPath === 'dist') return true;
     if (localOnlyDirs.has(name) || localOnlyDirs.has(zipPath)) return true;
     if (localOnlyFiles.has(name) || localOnlyFiles.has(zipPath)) return true;
     if (name === '.env' || name.startsWith('.env.')) return true;
