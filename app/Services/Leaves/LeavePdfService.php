@@ -32,20 +32,54 @@ class LeavePdfService
 
     public function revoke(LeaveDocument $document, User $actor, ?string $reason = null): LeaveDocument
     {
+        if (blank($reason)) {
+            throw new \RuntimeException('Le motif de revocation est obligatoire.');
+        }
+
         if ($document->status !== LeaveDocument::STATUS_ACTIVE) {
             throw new \RuntimeException('Seul un document actif peut etre revoque.');
         }
 
         $document->forceFill([
             'status' => LeaveDocument::STATUS_REVOKED,
-            'status_reason' => $reason,
+            'status_reason' => trim($reason),
         ])->save();
 
         $this->audit('leave_document.revoked', $document, $actor->id, [
-            'reason' => $reason,
+            'reason' => trim($reason),
         ]);
 
         return $document->refresh();
+    }
+
+    public function restore(LeaveDocument $document, User $actor): LeaveDocument
+    {
+        return DB::transaction(function () use ($document, $actor): LeaveDocument {
+            $document = LeaveDocument::query()->lockForUpdate()->findOrFail($document->id);
+
+            if ($document->status !== LeaveDocument::STATUS_REVOKED) {
+                throw new \RuntimeException('Seul un document révoqué peut être réactivé.');
+            }
+
+            if (LeaveDocument::query()
+                ->where('leave_request_id', $document->leave_request_id)
+                ->where('status', LeaveDocument::STATUS_ACTIVE)
+                ->exists()) {
+                throw new \RuntimeException('Un autre document actif existe déjà pour cette demande.');
+            }
+
+            $reason = $document->status_reason;
+            $document->forceFill([
+                'status' => LeaveDocument::STATUS_ACTIVE,
+                'status_reason' => null,
+            ])->save();
+
+            $this->audit('leave_document.revocation_cancelled', $document, $actor->id, [
+                'revocation_reason' => $reason,
+            ]);
+
+            return $document->refresh();
+        });
     }
 
     private function buildDocument(

@@ -8,6 +8,7 @@
 ])
 
 @section('content')
+    @php($managedDocument = $leaveRequest->document ?? $leaveRequest->documents->first())
     <section class="nc-page leave-workbench">
         <div class="nc-title-row">
             <div>
@@ -38,9 +39,9 @@
                 <div><dt>Commentaire demandeur</dt><dd>{{ $leaveRequest->requester_comment ?: '-' }}</dd></div>
                 <div><dt>Commentaire validateur</dt><dd>{{ $leaveRequest->reviewer_comment ?: '-' }}</dd></div>
                 <div><dt>Etape Actuelle de la demande</dt><dd>{{ $leaveRequest->currentApproval?->step_label ?? '-' }}</dd></div>
-                @if ($leaveRequest->document)
-                    <div><dt>Reference document</dt><dd>{{ $leaveRequest->document->document_reference ?: '-' }}</dd></div>
-                    <div><dt>Statut documentaire</dt><dd>{{ $leaveRequest->document->status }}</dd></div>
+                @if ($managedDocument)
+                    <div><dt>Reference document</dt><dd>{{ $managedDocument->document_reference ?: '-' }}</dd></div>
+                    <div><dt>Statut documentaire</dt><dd>{{ $managedDocument->status }}</dd></div>
                 @endif
             </dl>
 
@@ -73,21 +74,30 @@
                 @endif
             </div>
 
-            @if ($leaveRequest->document)
+            @if ($managedDocument)
                 <div class="leave-document-admin">
-                    <p>Verification publique : <a class="nc-link" href="{{ $leaveRequest->document->verification_url }}">{{ $leaveRequest->document->verification_url }}</a></p>
+                    <p>Verification publique : <a class="nc-link" href="{{ $managedDocument->verification_url }}">{{ $managedDocument->verification_url }}</a></p>
 
                     @if (auth()->user()?->canAccessAdmin())
-                        @if ($leaveRequest->document->status === \App\Models\LeaveDocument::STATUS_ACTIVE)
-                            <form method="POST" action="{{ route('admin.leaves.documents.revoke', $leaveRequest->document) }}">
+                        @if ($managedDocument->status === \App\Models\LeaveDocument::STATUS_ACTIVE)
+                            <form method="POST" action="{{ route('admin.leaves.documents.revoke', $managedDocument) }}">
                                 @csrf
                                 <label class="nc-field">
                                     <span>Motif de revocation</span>
-                                    <textarea name="reason" rows="2" placeholder="Motif optionnel"></textarea>
+                                    <textarea name="reason" rows="2" placeholder="Expliquez la révocation" required></textarea>
                                 </label>
                                 <button class="nc-ghost danger" type="submit">
                                     <i data-lucide="shield-off" class="nc-icon" aria-hidden="true"></i>
                                     Revoquer le document
+                                </button>
+                            </form>
+                        @elseif ($managedDocument->status === \App\Models\LeaveDocument::STATUS_REVOKED)
+                            <p>Motif de révocation : {{ $managedDocument->status_reason }}</p>
+                            <form method="POST" action="{{ route('admin.leaves.documents.restore', $managedDocument) }}">
+                                @csrf
+                                <button class="nc-button is-secondary" type="submit">
+                                    <i data-lucide="undo-2" class="nc-icon" aria-hidden="true"></i>
+                                    Annuler la révocation
                                 </button>
                             </form>
                         @endif

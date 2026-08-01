@@ -146,6 +146,7 @@ Route::middleware(['auth', 'admin-area'])->group(function (): void {
     Route::get('/admin/conges/notifications', [LeaveAdminController::class, 'notifications'])->name('admin.leaves.notifications.index');
     Route::post('/admin/conges/notifications/{notificationLog}/retry', [LeaveAdminController::class, 'retryNotification'])->name('admin.leaves.notifications.retry');
     Route::post('/admin/conges/documents/{document}/revoke', [LeaveDocumentAdminController::class, 'revoke'])->name('admin.leaves.documents.revoke');
+    Route::post('/admin/conges/documents/{document}/restore', [LeaveDocumentAdminController::class, 'restore'])->name('admin.leaves.documents.restore');
     Route::post('/admin/conges/{leaveRequest:uuid}/regenerate-document', [LeaveDocumentAdminController::class, 'regenerate'])->name('admin.leaves.documents.regenerate');
     Route::put('/admin/conges/collaborateurs/{employee}', [LeaveAdminController::class, 'updateEmployee'])->name('admin.leaves.employees.update');
     Route::put('/admin/conges/parametres', [LeaveAdminController::class, 'updateSettings'])->name('admin.leaves.settings.update');

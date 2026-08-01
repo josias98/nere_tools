@@ -19,11 +19,11 @@ class LeaveDocumentAdminController extends Controller
     public function revoke(Request $request, LeaveDocument $document): RedirectResponse
     {
         $data = $request->validate([
-            'reason' => ['nullable', 'string', 'max:2000'],
+            'reason' => ['required', 'string', 'max:2000'],
         ]);
 
         try {
-            $this->pdfService->revoke($document, $request->user(), $data['reason'] ?? null);
+            $this->pdfService->revoke($document, $request->user(), $data['reason']);
         } catch (RuntimeException $exception) {
             return back()->withErrors([
                 'document' => $exception->getMessage(),
@@ -56,5 +56,20 @@ class LeaveDocumentAdminController extends Controller
         }
 
         return back()->with('success', 'Document regenere : '.$document->document_reference.'.');
+    }
+
+    public function restore(Request $request, LeaveDocument $document): RedirectResponse
+    {
+        try {
+            $this->pdfService->restore($document, $request->user());
+        } catch (RuntimeException $exception) {
+            return back()->withErrors(['document' => $exception->getMessage()]);
+        } catch (Throwable $exception) {
+            Log::error('Leave document restoration failed.', ['exception' => $exception, 'document_id' => $document->id]);
+
+            return back()->withErrors(['document' => "La révocation n'a pas pu être annulée. Veuillez réessayer."]);
+        }
+
+        return back()->with('success', 'Révocation annulée.');
     }
 }

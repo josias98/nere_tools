@@ -24,7 +24,7 @@ class LeaveNotificationService
             : $this->notifyRejectionRecipients($request);
     }
 
-    public function notifyCurrentStepValidators(LeaveRequest $request): void
+    public function notifyCurrentStepValidators(LeaveRequest $request, bool $reminder = false): void
     {
         $request->loadMissing(['employee', 'leaveType']);
         $approval = $request->approvals()
@@ -39,16 +39,16 @@ class LeaveNotificationService
         $recipients = $this->stepRecipientEmails($request, $approval->step_key);
 
         $this->queue(
-            action: 'leave.pending_'.$approval->step_key,
+            action: 'leave.'.($reminder ? 'reminder_' : '').'pending_'.$approval->step_key,
             request: $request,
             recipients: $recipients,
-            subject: 'Demande de conge a valider - '.$approval->step_label,
+            subject: ($reminder ? 'Relance - ' : '').'Demande de conge a valider - '.$approval->step_label,
             html: view('emails.conges.request-submitted', [
                 'leaveRequest' => $request,
                 'approval' => $approval,
                 'actionUrl' => route('leaves.validations.show', $request->uuid),
             ])->render(),
-            text: "Une demande de conge attend l'etape {$approval->step_label}. Voir: ".route('leaves.validations.show', $request->uuid),
+            text: ($reminder ? 'Relance : ' : '')."Une demande de conge attend l'etape {$approval->step_label}. Voir: ".route('leaves.validations.show', $request->uuid),
         );
     }
 

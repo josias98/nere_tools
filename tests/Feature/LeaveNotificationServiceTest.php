@@ -5,10 +5,12 @@ namespace Tests\Feature;
 use App\Jobs\SendGraphMailJob;
 use App\Models\Employee;
 use App\Models\LeaveRequest;
+use App\Models\LeaveSetting;
 use App\Models\LeaveType;
 use App\Models\LeaveValidator;
 use App\Models\NotificationLog;
 use App\Models\User;
+use App\Services\Leaves\LeaveApprovalReminderService;
 use App\Services\Leaves\LeaveNotificationService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;
@@ -115,6 +117,46 @@ class LeaveNotificationServiceTest extends TestCase
 
         $this->assertSame('failed', $notification->status);
         $this->assertNotNull($notification->failed_at);
+    }
+
+    public function test_pending_validation_is_reminded_after_the_configured_delay_without_duplicates(): void
+    {
+        Queue::fake();
+        $this->travelTo('2026-08-01 08:00:00');
+
+        [$requester, $employee] = $this->userWithEmployee('late-requester@nere.test', 'Requester');
+        [, $validatorEmployee] = $this->userWithEmployee('late-validator@nere.test', 'Validator');
+        $leaveRequest = $this->leaveRequestFor($employee, $requester);
+        LeaveSetting::query()->create(['key' => 'approval_reminder_hours', 'value' => '48', 'value_type' => 'integer']);
+        LeaveValidator::query()->create([
+            'employee_id' => $validatorEmployee->id,
+            'step_key' => 'supervisor',
+            'scope' => 'global',
+            'is_active' => true,
+            'notify_by_email' => true,
+        ]);
+        $leaveRequest->approvals()->create([
+            'step_order' => 1,
+            'step_key' => 'supervisor',
+            'step_label' => 'Superviseur',
+            'status' => 'pending',
+        ]);
+        $leaveRequest->forceFill(['status' => 'pending_supervisor'])->save();
+        app(LeaveNotificationService::class)->notifyCurrentStepValidators($leaveRequest);
+
+        $this->travelTo('2026-08-03 07:59:00');
+        $this->assertSame(0, app(LeaveApprovalReminderService::class)->sendDue());
+
+        $this->travelTo('2026-08-03 08:00:00');
+        $this->assertSame(1, app(LeaveApprovalReminderService::class)->sendDue());
+        $this->assertSame(0, app(LeaveApprovalReminderService::class)->sendDue());
+
+        $this->assertDatabaseHas('notification_logs', [
+            'related_id' => $leaveRequest->id,
+            'event' => 'leave.reminder_pending_supervisor',
+            'status' => 'queued',
+        ]);
+        Queue::assertPushed(SendGraphMailJob::class, 2);
     }
 
     /**

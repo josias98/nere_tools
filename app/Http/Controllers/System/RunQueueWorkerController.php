@@ -3,13 +3,16 @@
 namespace App\Http\Controllers\System;
 
 use App\Http\Controllers\Controller;
+use App\Services\Leaves\LeaveApprovalReminderService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
+use Throwable;
 
 class RunQueueWorkerController extends Controller
 {
-    public function __invoke(Request $request): Response
+    public function __invoke(Request $request, LeaveApprovalReminderService $reminders): Response
     {
         $username = config('services.webcron.username');
         $password = config('services.webcron.password');
@@ -23,6 +26,12 @@ class RunQueueWorkerController extends Controller
             return response('Unauthorized', 401, [
                 'WWW-Authenticate' => 'Basic realm="Nere Tools WebCron"',
             ]);
+        }
+
+        try {
+            $reminders->sendDue();
+        } catch (Throwable $exception) {
+            Log::error('Leave approval reminder check failed.', ['exception' => $exception]);
         }
 
         // ponytail: one job keeps a cold Graph send inside the shared-hosting

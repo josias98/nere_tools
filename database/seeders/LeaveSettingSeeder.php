@@ -21,6 +21,7 @@ class LeaveSettingSeeder extends Seeder
             ['key' => 'normal_use_after_months', 'value' => '12', 'value_type' => 'integer'],
             ['key' => 'working_hours_per_day', 'value' => '8', 'value_type' => 'decimal'],
             ['key' => 'working_weekdays', 'value' => '[1,2,3,4,5]', 'value_type' => 'json'],
+            ['key' => 'approval_reminder_hours', 'value' => (string) config('leaves.approval_reminder_hours'), 'value_type' => 'integer'],
             ['key' => 'LEAVE_CERTIFICATE_SIGNATORY_NAME', 'value' => config('leaves.certificate_signatory_name'), 'value_type' => 'string'],
             ['key' => 'LEAVE_CERTIFICATE_SIGNATORY_TITLE', 'value' => config('leaves.certificate_signatory_title'), 'value_type' => 'string'],
         ];

@@ -149,7 +149,7 @@ class LeaveAdminController extends Controller
 
         $event = $notificationLog->event;
 
-        if ($event === 'leave.submitted' || str_starts_with((string) $event, 'leave.pending_')) {
+        if ($event === 'leave.submitted' || str_starts_with((string) $event, 'leave.pending_') || str_starts_with((string) $event, 'leave.reminder_pending_')) {
             if (! in_array($leaveRequest->status, ['pending_supervisor', 'pending_hr', 'pending_dg'], true)) {
                 return back()->withErrors([
                     'notification' => "La demande n'est plus en attente: relance bloquee pour eviter un envoi obsolete.",

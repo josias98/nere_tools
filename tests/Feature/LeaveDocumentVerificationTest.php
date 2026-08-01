@@ -126,6 +126,71 @@ class LeaveDocumentVerificationTest extends TestCase
         $this->assertSame(LeaveDocument::STATUS_REVOKED, $document->fresh()->status);
     }
 
+    public function test_revocation_requires_a_reason(): void
+    {
+        Storage::fake('local');
+
+        $document = $this->approvedDocument();
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+
+        $this->actingAs($admin)
+            ->post(route('admin.leaves.documents.revoke', $document))
+            ->assertSessionHasErrors('reason');
+
+        $this->assertSame(LeaveDocument::STATUS_ACTIVE, $document->fresh()->status);
+    }
+
+    public function test_admin_can_cancel_a_revocation(): void
+    {
+        Storage::fake('local');
+
+        $document = $this->approvedDocument();
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $document->forceFill([
+            'status' => LeaveDocument::STATUS_REVOKED,
+            'status_reason' => 'Révocation erronée.',
+        ])->save();
+
+        $this->actingAs($admin)
+            ->get(route('leaves.show', $document->leaveRequest->uuid))
+            ->assertOk()
+            ->assertSee('Annuler la révocation');
+
+        $this->actingAs($admin)
+            ->post(route('admin.leaves.documents.restore', $document))
+            ->assertRedirect();
+
+        $document->refresh();
+        $this->assertSame(LeaveDocument::STATUS_ACTIVE, $document->status);
+        $this->assertNull($document->status_reason);
+        $this->assertDatabaseHas('audit_logs', [
+            'action' => 'leave_document.revocation_cancelled',
+            'auditable_type' => LeaveDocument::class,
+            'auditable_id' => $document->id,
+        ]);
+    }
+
+    public function test_revocation_cannot_be_cancelled_when_another_document_is_active(): void
+    {
+        Storage::fake('local');
+
+        $document = $this->approvedDocument();
+        $admin = User::factory()->create(['role' => User::ROLE_ADMIN]);
+        $document->forceFill(['status' => LeaveDocument::STATUS_REVOKED])->save();
+        LeaveDocument::query()->create([
+            'leave_request_id' => $document->leave_request_id,
+            'document_reference' => 'NERE-CONGES-2026-999999',
+            'file_name' => 'replacement.pdf',
+            'status' => LeaveDocument::STATUS_ACTIVE,
+        ]);
+
+        $this->actingAs($admin)
+            ->post(route('admin.leaves.documents.restore', $document))
+            ->assertSessionHasErrors('document');
+
+        $this->assertSame(LeaveDocument::STATUS_REVOKED, $document->fresh()->status);
+    }
+
     public function test_admin_can_regenerate_document(): void
     {
         Storage::fake('local');

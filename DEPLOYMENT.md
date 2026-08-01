@@ -20,6 +20,7 @@ APP_URL=https://tools.nerecapital.com
 LOG_LEVEL=error
 LEAVE_CERTIFICATE_SIGNATORY_NAME="Monsieur ZONGO P. Job"
 LEAVE_CERTIFICATE_SIGNATORY_TITLE="Directeur Général"
+LEAVE_APPROVAL_REMINDER_HOURS=48
 ```
 
 Configurer également la base de données, Microsoft 365, Microsoft Graph Mail, la queue et une clé `APP_KEY` persistante. Vérifier que `storage/` et `bootstrap/cache/` sont accessibles en écriture par PHP.
@@ -55,7 +56,8 @@ Créer la tâche WebCron avec :
 - fréquence : toutes les 15 minutes ;
 - notifications en cas d'échec : activées.
 
-Chaque appel traite au plus un job et s'arrête lorsque la queue est vide. Avec
+Chaque appel déclenche aussi les relances des validations de congés arrivées à
+échéance, puis traite au plus un job et s'arrête lorsque la queue est vide. Avec
 l'intervalle mutualisé de 15 minutes, le débit maximal est donc de quatre lots
 d'e-mails par heure. Après toute modification des identifiants, relancer
 `php artisan config:cache`.

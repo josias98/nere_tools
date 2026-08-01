@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Jobs\SendGraphMailJob;
 use App\Models\NotificationLog;
+use App\Services\Leaves\LeaveApprovalReminderService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
@@ -23,6 +24,36 @@ class WebCronQueueWorkerTest extends TestCase
         $this->get('/webcron/queue')
             ->assertUnauthorized()
             ->assertHeader('WWW-Authenticate', 'Basic realm="Nere Tools WebCron"');
+    }
+
+    public function test_authenticated_webcron_checks_due_approval_reminders(): void
+    {
+        config([
+            'services.webcron.username' => 'infomaniak',
+            'services.webcron.password' => 'secret',
+        ]);
+        $reminders = \Mockery::mock(LeaveApprovalReminderService::class);
+        $reminders->shouldReceive('sendDue')->once()->andReturn(0);
+        app()->instance(LeaveApprovalReminderService::class, $reminders);
+
+        $this->withBasicAuth('infomaniak', 'secret')
+            ->get('/webcron/queue')
+            ->assertOk();
+    }
+
+    public function test_reminder_failure_does_not_block_the_queue_worker(): void
+    {
+        config([
+            'services.webcron.username' => 'infomaniak',
+            'services.webcron.password' => 'secret',
+        ]);
+        $reminders = \Mockery::mock(LeaveApprovalReminderService::class);
+        $reminders->shouldReceive('sendDue')->once()->andThrow(new \RuntimeException('Database unavailable'));
+        app()->instance(LeaveApprovalReminderService::class, $reminders);
+
+        $this->withBasicAuth('infomaniak', 'secret')
+            ->get('/webcron/queue')
+            ->assertOk();
     }
 
     public function test_authenticated_webcron_request_processes_queued_mail_jobs(): void
