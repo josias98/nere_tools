@@ -5,8 +5,10 @@ namespace App\Services\Leaves;
 use App\Models\LeaveRequest;
 use App\Models\LeaveSetting;
 use App\Models\NotificationLog;
+use DomainException;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\RateLimiter;
 use Throwable;
 
 class LeaveApprovalReminderService
@@ -18,6 +20,39 @@ class LeaveApprovalReminderService
         $sent = Cache::lock('leave-approval-reminders', 300)->get(fn (): int => $this->sendDueUnlocked());
 
         return is_int($sent) ? $sent : 0;
+    }
+
+    public function sendManual(LeaveRequest $request, int $approvalId, string $recipient): string
+    {
+        return Cache::lock('leave-approval-employee:'.$request->employee_id, 120)
+            ->block(10, function () use ($request, $approvalId, $recipient): string {
+                $request = $request->fresh(['employee', 'leaveType', 'currentApproval']);
+                $approval = $request->currentApproval;
+                if (! $approval || $approval->id !== $approvalId || $request->status !== 'pending_'.$approval->step_key) {
+                    throw new DomainException('Cette étape n’attend plus de validation. Rechargez la demande.');
+                }
+
+                if (! config('services.graph_mail.enabled')) {
+                    throw new DomainException('L’envoi des emails est désactivé. Contactez l’administration.');
+                }
+
+                $recipient = strtolower(trim($recipient));
+                $signatory = collect($this->notifications->currentStepRecipients($request))->firstWhere('email', $recipient);
+                if (! $signatory) {
+                    throw new DomainException('Ce signataire ne peut pas être relancé à cette étape.');
+                }
+
+                $key = 'leave-manual-reminder:'.$approval->id.':'.hash('sha256', $recipient);
+                if (RateLimiter::tooManyAttempts($key, 1)) {
+                    $minutes = (int) ceil(RateLimiter::availableIn($key) / 60);
+                    throw new DomainException("Ce signataire a déjà été relancé. Réessayez dans {$minutes} min.");
+                }
+
+                $this->notifications->notifyCurrentStepValidators($request, true, $recipient);
+                RateLimiter::hit($key, 3600);
+
+                return $signatory['name'];
+            });
     }
 
     private function sendDueUnlocked(): int

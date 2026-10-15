@@ -7,7 +7,7 @@ export const bootLeavePage = () => {
             details.querySelector('summary').focus();
         });
     });
-    document.querySelectorAll('[data-document-action]').forEach((actionForm) => {
+    document.querySelectorAll('[data-document-action], [data-leave-reminder]').forEach((actionForm) => {
         const button = actionForm.querySelector('[type="submit"]');
         const idleLabel = button.innerHTML;
         actionForm.addEventListener('submit', (event) => {

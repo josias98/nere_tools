@@ -1,10 +1,13 @@
 @extends('emails.layouts.office365', [
     'title' => 'Demande de conge a valider',
-    'heading' => 'Demande de conge a valider',
+    'heading' => ($reminder ?? false) ? 'Rappel : demande de congé à valider' : 'Demande de conge a valider',
     'preheader' => 'Une demande de conge attend votre validation.',
 ])
 
 @section('content')
+    @if ($reminder ?? false)
+        <p>Cette demande attend toujours votre validation. Merci de consulter la demande pour enregistrer votre décision.</p>
+    @endif
     <p style="margin:0 0 16px; font-size:15px; line-height:1.7;">
         Etape : <strong>{{ $approval?->step_label ?? 'Validation' }}</strong>
     </p>

@@ -321,6 +321,22 @@
     color: var(--ip-grey);
 }
 
+.leave-reminder {
+    display: grid;
+    gap: 12px;
+    border-block: 1px solid var(--ip-line);
+    margin-block: 18px;
+    padding-block: 18px;
+}
+
+.leave-reminder h3 { margin: 0 0 6px; color: var(--ip-brown); font-weight: 700; }
+.leave-reminder p { margin: 0; }
+.leave-reminder-form { display: flex; flex-wrap: wrap; gap: 12px; align-items: end; }
+.leave-reminder-form > :is(label, p) { flex: 1 1 240px; min-width: 0; }
+.leave-reminder select { width: 100%; min-width: 0; }
+.leave-reminder button { min-height: 44px; white-space: nowrap; }
+.leave-reminder button:disabled { opacity: .6; cursor: wait; }
+
 .leave-decision {
     display: grid;
     gap: 18px;

@@ -5,6 +5,7 @@ use App\Http\Controllers\Leaves\LeaveDashboardController;
 use App\Http\Controllers\Leaves\LeaveDocumentController;
 use App\Http\Controllers\Leaves\LeaveDocumentVerificationController;
 use App\Http\Controllers\Leaves\LeaveHistoryController;
+use App\Http\Controllers\Leaves\LeaveReminderController;
 use App\Http\Controllers\Leaves\LeaveRequestController;
 use App\Http\Controllers\Leaves\LeaveValidationController;
 use Illuminate\Support\Facades\Route;
@@ -26,5 +27,6 @@ Route::middleware(['auth', 'tool:conges'])->group(function (): void {
     Route::post('/conges/validations/{leaveRequest:uuid}/rejeter', [LeaveValidationController::class, 'reject'])->name('leaves.validations.reject');
     Route::get('/conges/documents/{document}/telecharger', LeaveDocumentController::class)->name('leaves.documents.download');
     Route::get('/conges/justificatifs/{attachment}/telecharger', LeaveAttachmentController::class)->name('leaves.attachments.download');
+    Route::post('/conges/{leaveRequest:uuid}/relancer', LeaveReminderController::class)->middleware('throttle:10,1')->name('leaves.remind');
     Route::get('/conges/{leaveRequest:uuid}', [LeaveRequestController::class, 'show'])->name('leaves.show');
 });

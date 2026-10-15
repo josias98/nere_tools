@@ -28,6 +28,12 @@ Les diagnostics actuels vérifient les validateurs, les types de congé actifs, 
 
 Chaque changement de paramètre Congés conserve l’ancienne et la nouvelle valeur, l’auteur, le motif, l’adresse IP, le type et l’effet temporel. Une transaction et un verrou protègent les écritures; un timestamp obsolète bloque une modification concurrente.
 
+## Relance manuelle d’un signataire
+
+Sur le détail d’une demande en attente, les utilisateurs autorisés à consulter la demande peuvent relancer un signataire de l’étape courante. S’il y en a plusieurs, un sélecteur permet de choisir un seul destinataire. L’email reprend la demande et son lien de validation ; son envoi passe par la queue `deferred` et reste tracé dans les notifications et l’audit.
+
+Une relance manuelle par signataire et par étape est permise chaque heure, tous utilisateurs confondus. Le serveur vérifie de nouveau l’étape et le destinataire au moment de l’envoi ; un ancien écran ne permet pas de relancer une étape déjà terminée.
+
 ## Révocation et retour arrière d’une attestation
 
 Le panneau « Attestation de congé » affiche séparément la validité du document et l’état de la demande. Un administrateur ouvre « Révoquer l’attestation », renseigne un motif obligatoire, puis confirme. Le document devient invalide sur sa page de vérification ; le congé approuvé et son solde ne changent pas.

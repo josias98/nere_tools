@@ -54,6 +54,10 @@
                 @endforeach
             </div>
 
+            @if ($leaveRequest->currentApproval && in_array($leaveRequest->status, ['pending_supervisor', 'pending_hr', 'pending_dg'], true))
+                @include('leaves.partials.reminder')
+            @endif
+
             <div class="nc-actions">
                 <a href="{{ route('leaves.index') }}" class="nc-ghost">
                     <i data-lucide="arrow-left" class="nc-icon" aria-hidden="true"></i>

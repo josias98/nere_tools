@@ -4,8 +4,11 @@ namespace App\Services\Leaves;
 
 use App\Jobs\SendGraphMailJob;
 use App\Models\AuditLog;
+use App\Models\Employee;
 use App\Models\LeaveRequest;
 use App\Models\NotificationLog;
+use App\Models\User;
+use DomainException;
 use Illuminate\Support\Facades\Log;
 
 class LeaveNotificationService
@@ -24,7 +27,25 @@ class LeaveNotificationService
             : $this->notifyRejectionRecipients($request);
     }
 
-    public function notifyCurrentStepValidators(LeaveRequest $request, bool $reminder = false): void
+    /** @return array<int, array{email: string, name: string}> */
+    public function currentStepRecipients(LeaveRequest $request): array
+    {
+        $approval = $request->currentApproval;
+        if (! $approval) {
+            return [];
+        }
+
+        $emails = $this->stepRecipientEmails($request, $approval->step_key);
+        $names = User::query()->whereIn('email', $emails)->pluck('name', 'email');
+        $employees = Employee::query()->whereIn('email', $emails)->get()->keyBy('email');
+
+        return array_map(fn (string $email): array => [
+            'email' => $email,
+            'name' => $employees->get($email)?->name() ?? $names->get($email) ?? $email,
+        ], $emails);
+    }
+
+    public function notifyCurrentStepValidators(LeaveRequest $request, bool $reminder = false, ?string $recipient = null): void
     {
         $request->loadMissing(['employee', 'leaveType']);
         $approval = $request->approvals()
@@ -37,6 +58,12 @@ class LeaveNotificationService
         }
 
         $recipients = $this->stepRecipientEmails($request, $approval->step_key);
+        if ($recipient !== null) {
+            if (! in_array($recipient, $recipients, true)) {
+                throw new DomainException('Ce signataire ne peut pas être relancé à cette étape.');
+            }
+            $recipients = [$recipient];
+        }
 
         $this->queue(
             action: 'leave.'.($reminder ? 'reminder_' : '').'pending_'.$approval->step_key,
@@ -46,6 +73,7 @@ class LeaveNotificationService
             html: view('emails.conges.request-submitted', [
                 'leaveRequest' => $request,
                 'approval' => $approval,
+                'reminder' => $reminder,
                 'actionUrl' => route('leaves.validations.show', $request->uuid),
             ])->render(),
             text: ($reminder ? 'Relance : ' : '')."Une demande de conge attend l'etape {$approval->step_label}. Voir: ".route('leaves.validations.show', $request->uuid),
@@ -117,6 +145,7 @@ class LeaveNotificationService
         return $validatorEmails
             ->merge($roleEmails)
             ->filter()
+            ->map(fn (string $email): string => strtolower(trim($email)))
             ->unique()
             ->values()
             ->all();

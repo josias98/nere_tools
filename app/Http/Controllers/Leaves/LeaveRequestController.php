@@ -8,6 +8,7 @@ use App\Models\LeaveRequest;
 use App\Models\LeaveType;
 use App\Services\Leaves\LeaveBalanceService;
 use App\Services\Leaves\LeaveDayCountService;
+use App\Services\Leaves\LeaveNotificationService;
 use App\Services\Leaves\LeaveRequestWorkflowService;
 use App\Services\Leaves\LeaveValidatorService;
 use DomainException;
@@ -82,7 +83,7 @@ class LeaveRequestController extends Controller
         }
     }
 
-    public function show(LeaveRequest $leaveRequest)
+    public function show(LeaveRequest $leaveRequest, LeaveNotificationService $notifications)
     {
         $user = Auth::user();
         $leaveRequest->load(['employee.department', 'leaveType', 'createdBy.employee', 'reviewer', 'document', 'documents', 'approvals.validatorUser.employee', 'currentApproval']);
@@ -91,6 +92,10 @@ class LeaveRequestController extends Controller
             abort(403);
         }
 
-        return view('leaves.show', compact('leaveRequest'));
+        $reminderRecipients = in_array($leaveRequest->status, ['pending_supervisor', 'pending_hr', 'pending_dg'], true)
+            ? $notifications->currentStepRecipients($leaveRequest)
+            : [];
+
+        return view('leaves.show', compact('leaveRequest', 'reminderRecipients'));
     }
 }
