@@ -1,5 +1,5 @@
 @if (session('success'))
-    <p class="nc-alert is-success">{{ session('success') }}</p>
+    <p class="nc-alert is-success" role="status">{{ session('success') }}</p>
 @endif
 
 @if (session('error'))
@@ -8,7 +8,7 @@
 
 @if ($errors->any())
     <div class="nc-alert" role="alert" tabindex="-1" data-validation-summary>
-        <strong>La demande n’a pas été envoyée.</strong>
+        <strong>{{ $errorTitle ?? 'La demande n’a pas été envoyée.' }}</strong>
         <ul>
             @foreach ($errors->all() as $message)
                 <li>{{ $message }}</li>

@@ -20,12 +20,12 @@ class LeaveDocumentAdminController extends Controller
     {
         $data = $request->validate([
             'reason' => ['required', 'string', 'max:2000'],
-        ]);
+        ], ['reason.required' => 'Indiquez le motif de la révocation.']);
 
         try {
             $this->pdfService->revoke($document, $request->user(), $data['reason']);
         } catch (RuntimeException $exception) {
-            return back()->withErrors([
+            return back()->withInput()->withErrors([
                 'document' => $exception->getMessage(),
             ]);
         } catch (Throwable $exception) {
@@ -34,7 +34,9 @@ class LeaveDocumentAdminController extends Controller
             return back()->withErrors(['document' => "Le document n'a pas pu être révoqué. Veuillez réessayer."]);
         }
 
-        return back()->with('success', 'Document revoque.');
+        return redirect()->route('leaves.show', $document->leaveRequest->uuid)
+            ->withFragment('attestation')
+            ->with('success', 'Attestation révoquée. Vous pouvez annuler cette révocation ci-dessous en cas d’erreur.');
     }
 
     public function regenerate(Request $request, LeaveRequest $leaveRequest): RedirectResponse
@@ -55,7 +57,9 @@ class LeaveDocumentAdminController extends Controller
             return back()->withErrors(['document' => "Le document n'a pas pu être régénéré. Veuillez réessayer."]);
         }
 
-        return back()->with('success', 'Document regenere : '.$document->document_reference.'.');
+        return redirect()->route('leaves.show', $leaveRequest->uuid)
+            ->withFragment('attestation')
+            ->with('success', 'Nouvelle attestation créée : '.$document->document_reference.'.');
     }
 
     public function restore(Request $request, LeaveDocument $document): RedirectResponse
@@ -70,6 +74,8 @@ class LeaveDocumentAdminController extends Controller
             return back()->withErrors(['document' => "La révocation n'a pas pu être annulée. Veuillez réessayer."]);
         }
 
-        return back()->with('success', 'Révocation annulée.');
+        return redirect()->route('leaves.show', $document->leaveRequest->uuid)
+            ->withFragment('attestation')
+            ->with('success', 'Révocation annulée. La même attestation est à nouveau valide, avec son PDF et son QR code d’origine.');
     }
 }

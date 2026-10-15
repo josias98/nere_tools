@@ -20,7 +20,7 @@
             </div>
         </div>
 
-        @include('leaves.partials.flash')
+        @include('leaves.partials.flash', ['errorTitle' => 'L’action n’a pas pu être effectuée.'])
 
         <section class="nc-panel">
             <div class="nc-panel-heading">
@@ -39,10 +39,6 @@
                 <div><dt>Commentaire demandeur</dt><dd>{{ $leaveRequest->requester_comment ?: '-' }}</dd></div>
                 <div><dt>Commentaire validateur</dt><dd>{{ $leaveRequest->reviewer_comment ?: '-' }}</dd></div>
                 <div><dt>Etape Actuelle de la demande</dt><dd>{{ $leaveRequest->currentApproval?->step_label ?? '-' }}</dd></div>
-                @if ($managedDocument)
-                    <div><dt>Reference document</dt><dd>{{ $managedDocument->document_reference ?: '-' }}</dd></div>
-                    <div><dt>Statut documentaire</dt><dd>{{ $managedDocument->status }}</dd></div>
-                @endif
             </dl>
 
             <div class="leave-timeline">
@@ -63,61 +59,15 @@
                     <i data-lucide="arrow-left" class="nc-icon" aria-hidden="true"></i>
                     Retour
                 </a>
-                @if ($leaveRequest->status === 'approved' && $leaveRequest->document)
-                    <a href="{{ route('leaves.documents.download', $leaveRequest->document) }}" class="nc-button">
-                        <i data-lucide="download" class="nc-icon" aria-hidden="true"></i>
-                        Telecharger le PDF
-                    </a>
-                @endif
                 @if ($leaveRequest->status === 'approved' && auth()->user()?->employee?->id === $leaveRequest->employee_id && ($leaveRequest->rule_snapshot['type']['maximum_renewals'] ?? $leaveRequest->leaveType?->maximum_renewals ?? 0) > 0)
                     <a href="{{ route('leaves.create', ['renewal_of' => $leaveRequest->id]) }}" class="nc-button is-secondary">Renouveler</a>
                 @endif
             </div>
 
-            @if ($managedDocument)
-                <div class="leave-document-admin">
-                    <p>Verification publique : <a class="nc-link" href="{{ $managedDocument->verification_url }}">{{ $managedDocument->verification_url }}</a></p>
-
-                    @if (auth()->user()?->canAccessAdmin())
-                        @if ($managedDocument->status === \App\Models\LeaveDocument::STATUS_ACTIVE)
-                            <form method="POST" action="{{ route('admin.leaves.documents.revoke', $managedDocument) }}">
-                                @csrf
-                                <label class="nc-field">
-                                    <span>Motif de revocation</span>
-                                    <textarea name="reason" rows="2" placeholder="Expliquez la révocation" required></textarea>
-                                </label>
-                                <button class="nc-ghost danger" type="submit">
-                                    <i data-lucide="shield-off" class="nc-icon" aria-hidden="true"></i>
-                                    Revoquer le document
-                                </button>
-                            </form>
-                        @elseif ($managedDocument->status === \App\Models\LeaveDocument::STATUS_REVOKED)
-                            <p>Motif de révocation : {{ $managedDocument->status_reason }}</p>
-                            <form method="POST" action="{{ route('admin.leaves.documents.restore', $managedDocument) }}">
-                                @csrf
-                                <button class="nc-button is-secondary" type="submit">
-                                    <i data-lucide="undo-2" class="nc-icon" aria-hidden="true"></i>
-                                    Annuler la révocation
-                                </button>
-                            </form>
-                        @endif
-
-                        @if ($leaveRequest->status === 'approved')
-                            <form method="POST" action="{{ route('admin.leaves.documents.regenerate', $leaveRequest->uuid) }}">
-                                @csrf
-                                <label class="nc-field">
-                                    <span>Motif de regeneration</span>
-                                    <textarea name="reason" rows="2" placeholder="Expliquez la regeneration si necessaire"></textarea>
-                                </label>
-                                <button class="nc-button is-secondary" type="submit">
-                                    <i data-lucide="refresh-cw" class="nc-icon" aria-hidden="true"></i>
-                                    Regenerer le document
-                                </button>
-                            </form>
-                        @endif
-                    @endif
-                </div>
-            @endif
         </section>
+
+        @if ($managedDocument)
+            @include('leaves.partials.certificate', ['document' => $managedDocument])
+        @endif
     </section>
 @endsection

@@ -424,17 +424,112 @@
     font-weight: 700;
 }
 
-.leave-document-admin {
+.leave-certificate {
     display: grid;
-    gap: 12px;
-    border-top: 1px solid var(--ip-line);
-    padding-top: 18px;
-    margin-top: 18px;
+    gap: 18px;
 }
 
-.leave-document-admin form {
+.leave-certificate .nc-panel-heading,
+.leave-certificate p {
+    margin: 0;
+}
+
+.leave-certificate-reference {
+    overflow-wrap: anywhere;
+}
+
+.leave-certificate :is(button, .nc-button, .nc-ghost) {
+    min-height: 44px;
+    white-space: nowrap;
+}
+
+.leave-certificate-notice {
     display: grid;
     gap: 10px;
+    border-inline-start: 3px solid var(--ip-rust);
+    padding: 16px;
+    background: var(--ip-danger-surface);
+}
+
+.leave-certificate-restore {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.leave-certificate-restore > div {
+    flex: 1 1 300px;
+}
+
+.leave-certificate h3 {
+    margin: 0 0 6px;
+    color: var(--ip-brown);
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.leave-certificate-tools {
+    border-top: 1px solid var(--ip-line);
+}
+
+.leave-certificate-action + .leave-certificate-action {
+    border-top: 1px solid var(--ip-line);
+}
+
+.leave-certificate-action summary {
+    min-height: 44px;
+    padding-block: 12px;
+    color: var(--ip-brown);
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.leave-certificate-action form {
+    display: grid;
+    gap: 16px;
+    padding-block: 4px 18px;
+}
+
+.leave-certificate .nc-field > span {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 6px;
+}
+
+.leave-certificate .nc-field small {
+    color: var(--ip-grey);
+    font-weight: 400;
+}
+
+.leave-certificate textarea {
+    resize: vertical;
+    min-height: 88px;
+}
+
+.leave-certificate [aria-invalid="true"] {
+    border-color: var(--ip-rust);
+}
+
+.leave-certificate button:active {
+    transform: translateY(1px);
+}
+
+.leave-certificate button:disabled {
+    opacity: .6;
+    cursor: wait;
+}
+
+@media (hover: hover) {
+    .leave-certificate-action summary:hover {
+        color: var(--ip-brown-dark);
+        background: var(--ip-ivory);
+    }
+    .leave-certificate textarea:hover {
+        background: var(--ip-ivory);
+    }
 }
 
 .leave-filter--notifications {

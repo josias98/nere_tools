@@ -1,4 +1,31 @@
 export const bootLeavePage = () => {
+    document.querySelector('[data-validation-summary]')?.focus();
+    document.querySelectorAll('[data-close-document-action]').forEach((button) => {
+        button.addEventListener('click', () => {
+            const details = button.closest('details');
+            details.open = false;
+            details.querySelector('summary').focus();
+        });
+    });
+    document.querySelectorAll('[data-document-action]').forEach((actionForm) => {
+        const button = actionForm.querySelector('[type="submit"]');
+        const idleLabel = button.innerHTML;
+        actionForm.addEventListener('submit', (event) => {
+            if (actionForm.getAttribute('aria-busy') === 'true') {
+                event.preventDefault();
+                return;
+            }
+            actionForm.setAttribute('aria-busy', 'true');
+            button.disabled = true;
+            button.textContent = button.dataset.pendingLabel;
+        });
+        window.addEventListener('pageshow', () => {
+            actionForm.removeAttribute('aria-busy');
+            button.disabled = false;
+            button.innerHTML = idleLabel;
+        });
+    });
+
     const startInput = document.getElementById('leave_start_date');
     const endInput = document.getElementById('leave_end_date');
     const startTimeInput = document.getElementById('leave_start_time');
@@ -90,5 +117,4 @@ export const bootLeavePage = () => {
     typeInput?.addEventListener('change', sync);
     employeeInput?.addEventListener('change', sync);
     sync();
-    document.querySelector('[data-validation-summary]')?.focus();
 };

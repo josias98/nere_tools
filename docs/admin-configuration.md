@@ -28,6 +28,12 @@ Les diagnostics actuels vérifient les validateurs, les types de congé actifs, 
 
 Chaque changement de paramètre Congés conserve l’ancienne et la nouvelle valeur, l’auteur, le motif, l’adresse IP, le type et l’effet temporel. Une transaction et un verrou protègent les écritures; un timestamp obsolète bloque une modification concurrente.
 
+## Révocation et retour arrière d’une attestation
+
+Le panneau « Attestation de congé » affiche séparément la validité du document et l’état de la demande. Un administrateur ouvre « Révoquer l’attestation », renseigne un motif obligatoire, puis confirme. Le document devient invalide sur sa page de vérification ; le congé approuvé et son solde ne changent pas.
+
+Après une erreur, « Annuler la révocation » réactive immédiatement le même PDF, sa référence et son QR code. L’action conserve le motif initial dans l’audit. La demande doit toujours être approuvée, aucune attestation ne doit déjà être active, et seule la dernière version peut être réactivée. Une nouvelle version possède au contraire une nouvelle référence et un nouveau QR code.
+
 ## Déploiement
 
 ```bash

@@ -36,26 +36,37 @@ class LeavePdfService
             throw new \RuntimeException('Le motif de revocation est obligatoire.');
         }
 
-        if ($document->status !== LeaveDocument::STATUS_ACTIVE) {
-            throw new \RuntimeException('Seul un document actif peut etre revoque.');
-        }
+        return DB::transaction(function () use ($document, $actor, $reason): LeaveDocument {
+            // Share the request lock with regeneration before changing a document's status.
+            LeaveRequest::query()->lockForUpdate()->findOrFail($document->leave_request_id);
+            $document = LeaveDocument::query()->lockForUpdate()->findOrFail($document->id);
 
-        $document->forceFill([
-            'status' => LeaveDocument::STATUS_REVOKED,
-            'status_reason' => trim($reason),
-        ])->save();
+            if ($document->status !== LeaveDocument::STATUS_ACTIVE) {
+                throw new \RuntimeException('Cette attestation n’est plus active. Rechargez la page pour consulter son état.');
+            }
 
-        $this->audit('leave_document.revoked', $document, $actor->id, [
-            'reason' => trim($reason),
-        ]);
+            $document->forceFill([
+                'status' => LeaveDocument::STATUS_REVOKED,
+                'status_reason' => trim($reason),
+            ])->save();
 
-        return $document->refresh();
+            $this->audit('leave_document.revoked', $document, $actor->id, [
+                'reason' => trim($reason),
+            ]);
+
+            return $document->refresh();
+        });
     }
 
     public function restore(LeaveDocument $document, User $actor): LeaveDocument
     {
         return DB::transaction(function () use ($document, $actor): LeaveDocument {
+            $request = LeaveRequest::query()->lockForUpdate()->findOrFail($document->leave_request_id);
             $document = LeaveDocument::query()->lockForUpdate()->findOrFail($document->id);
+
+            if ($request->status !== 'approved') {
+                throw new \RuntimeException('La demande doit être approuvée pour réactiver son attestation.');
+            }
 
             if ($document->status !== LeaveDocument::STATUS_REVOKED) {
                 throw new \RuntimeException('Seul un document révoqué peut être réactivé.');
@@ -66,6 +77,10 @@ class LeavePdfService
                 ->where('status', LeaveDocument::STATUS_ACTIVE)
                 ->exists()) {
                 throw new \RuntimeException('Un autre document actif existe déjà pour cette demande.');
+            }
+
+            if ($request->documents()->where('id', '>', $document->id)->exists()) {
+                throw new \RuntimeException('Une version plus récente existe. Réactivez la dernière attestation depuis la demande.');
             }
 
             $reason = $document->status_reason;
