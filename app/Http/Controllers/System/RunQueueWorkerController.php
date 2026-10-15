@@ -34,6 +34,11 @@ class RunQueueWorkerController extends Controller
             Log::error('Leave approval reminder check failed.', ['exception' => $exception]);
         }
 
+        $driver = config('queue.connections.'.config('queue.default').'.driver');
+        if (in_array($driver, ['deferred', 'sync'], true)) {
+            return response('Reminders checked. Mail jobs run with the request.');
+        }
+
         // ponytail: one job keeps a cold Graph send inside the shared-hosting
         // HTTP window; use a supervised worker if throughput exceeds four jobs/hour.
         $exitCode = Artisan::call('queue:work', [

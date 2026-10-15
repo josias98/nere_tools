@@ -13,6 +13,7 @@ use App\Models\User;
 use App\Services\Leaves\LeaveApprovalReminderService;
 use App\Services\Leaves\LeaveNotificationService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Defer\DeferredCallbackCollection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Queue;
@@ -117,6 +118,34 @@ class LeaveNotificationServiceTest extends TestCase
 
         $this->assertSame('failed', $notification->status);
         $this->assertNotNull($notification->failed_at);
+    }
+
+    public function test_deferred_mail_is_sent_after_the_request_without_a_database_job(): void
+    {
+        config(['queue.default' => 'deferred']);
+        Http::fake([
+            'login.microsoftonline.com/*/oauth2/v2.0/token' => Http::response([
+                'access_token' => 'token-deferred', 'expires_in' => 3600,
+            ]),
+            'graph.microsoft.com/v1.0/users/*/sendMail' => Http::response([], 202, ['request-id' => 'graph-deferred']),
+        ]);
+        [$requester, $employee] = $this->userWithEmployee('deferred@nere.test', 'Requester');
+        $leaveRequest = $this->leaveRequestFor($employee, $requester);
+        $leaveRequest->forceFill(['status' => 'approved'])->save();
+
+        app(LeaveNotificationService::class)->notifyFinalApprovalRecipients($leaveRequest);
+
+        Http::assertNothingSent();
+        $this->assertDatabaseCount('jobs', 0);
+        $this->assertDatabaseHas('notification_logs', ['related_id' => $leaveRequest->id, 'status' => 'queued']);
+
+        app(DeferredCallbackCollection::class)->invoke();
+
+        Http::assertSentCount(2);
+        $this->assertDatabaseHas('notification_logs', [
+            'related_id' => $leaveRequest->id, 'status' => 'sent', 'graph_request_id' => 'graph-deferred',
+        ]);
+        $this->assertDatabaseCount('jobs', 0);
     }
 
     public function test_pending_validation_is_reminded_after_the_configured_delay_without_duplicates(): void

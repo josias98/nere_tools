@@ -18,6 +18,7 @@ APP_ENV=production
 APP_DEBUG=false
 APP_URL=https://tools.nerecapital.com
 LOG_LEVEL=error
+QUEUE_CONNECTION=deferred
 LEAVE_CERTIFICATE_SIGNATORY_NAME="Monsieur ZONGO P. Job"
 LEAVE_CERTIFICATE_SIGNATORY_TITLE="Directeur Général"
 LEAVE_APPROVAL_REMINDER_HOURS=48
@@ -25,8 +26,15 @@ LEAVE_APPROVAL_REMINDER_HOURS=48
 
 Configurer également la base de données, Microsoft 365, Microsoft Graph Mail, la queue et une clé `APP_KEY` persistante. Vérifier que `storage/` et `bootstrap/cache/` sont accessibles en écriture par PHP.
 
-Sur un Hébergement Web Infomaniak, ajouter aussi ces identifiants dédiés dans
-le `.env` avant de mettre la configuration en cache :
+La queue `deferred` reprend le fonctionnement du serveur : les jobs sont exécutés
+après l'envoi de la réponse HTTP, dans le même processus PHP. Aucun worker
+permanent ni cron de consommation de queue n'est nécessaire pour les emails.
+Les échecs restent visibles dans les notifications de l'administration et peuvent
+y être relancés manuellement ; `deferred` ne conserve pas les jobs en base et
+n'applique pas les reprises automatiques d'un worker `database`.
+
+Pour les relances automatiques des validations, ajouter ces identifiants dédiés
+au WebCron dans le `.env` avant de mettre la configuration en cache :
 
 ```env
 WEBCRON_USERNAME=nere-tools-cron
@@ -47,7 +55,7 @@ php artisan view:cache
 Le planificateur Infomaniak appelle une URL plutôt qu'une commande shell.
 Créer la tâche WebCron avec :
 
-- nom : `Nere Tools - worker emails` ;
+- nom : `Nere Tools - relances validations` ;
 - tâche activée ;
 - protocole : `https` ;
 - URL : `tools.nerecapital.com` ;
@@ -56,14 +64,14 @@ Créer la tâche WebCron avec :
 - fréquence : toutes les 15 minutes ;
 - notifications en cas d'échec : activées.
 
-Chaque appel déclenche aussi les relances des validations de congés arrivées à
-échéance, puis traite au plus un job et s'arrête lorsque la queue est vide. Avec
-l'intervalle mutualisé de 15 minutes, le débit maximal est donc de quatre lots
-d'e-mails par heure. Après toute modification des identifiants, relancer
-`php artisan config:cache`.
+Chaque appel recherche les validations arrivées au délai de relance. Avec
+`deferred`, leurs emails sont envoyés à la fin de cette requête ; aucun worker
+n'est démarré. Après une modification de `.env`, relancer
+`php artisan config:cache` pour que le serveur charge les nouvelles valeurs.
 
-Sur un Serveur Cloud disposant d'un cron shell ou d'un superviseur de
-processus, utiliser directement `php artisan queue:work`.
+Si un environnement conserve explicitement `QUEUE_CONNECTION=database`, le même
+WebCron traite en plus un job par appel, ou un worker `php artisan queue:work`
+peut être lancé séparément. Ne pas lancer de worker avec la queue `deferred`.
 
 Ne jamais exécuter `php artisan key:generate` sur une application déjà en production : changer la clé rendrait illisibles les données chiffrées et invaliderait les sessions.
 

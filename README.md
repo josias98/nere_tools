@@ -80,8 +80,10 @@ php artisan route:cache
 php artisan view:cache
 ```
 
-Sur un Hebergement Web Infomaniak, configurer le WebCron HTTPS protege
-`/webcron/queue` comme decrit dans `DEPLOYMENT.md`.
+Les emails utilisent `QUEUE_CONNECTION=deferred`, comme sur le serveur : les jobs
+s'exécutent après la réponse HTTP, sans worker permanent. Pour les relances
+automatiques des validations, configurer le WebCron HTTPS protégé
+`/webcron/queue` comme décrit dans `DEPLOYMENT.md`.
 
 ## Modules existants
 
@@ -265,9 +267,11 @@ npm run serve:https
 Services demarres:
 
 - Laravel sur `http://127.0.0.1:8000`
-- worker de queue Laravel pour traiter les notifications et jobs
 - Vite en dev
 - proxy HTTPS local sur `https://localhost:8443`
+
+Avec la queue `deferred`, les emails sont traités après la réponse ; aucun
+worker de queue n'est lancé par les scripts de développement.
 
 ### Option simple: dev HTTP
 
@@ -360,8 +364,8 @@ compatible est:
 php artisan pulse:check
 ```
 
-Sur un Hebergement Web Infomaniak sans cron shell, la queue est traitee par
-le WebCron HTTPS protege `/webcron/queue`.
+Sur un Hébergement Web Infomaniak, les emails utilisent la queue `deferred`.
+Le WebCron HTTPS protégé `/webcron/queue` sert à déclencher les relances.
 
 `pulse:work` est utile avec un worker persistant, mais il n'est pas requis pour
 cette installation mutualisee.
@@ -430,9 +434,9 @@ php artisan view:cache
 - `storage/`
 - `bootstrap/cache/`
 
-6. Sur un Hebergement Web Infomaniak, configurer le WebCron HTTPS protege
-   `/webcron/queue` selon `DEPLOYMENT.md` si la queue `database` est utilisee
-   en production.
+6. Conserver `QUEUE_CONNECTION=deferred` en production. Configurer le WebCron
+   HTTPS protégé `/webcron/queue` selon `DEPLOYMENT.md` pour déclencher les
+   relances automatiques des validations.
 
 ## Limites et observations utiles
 

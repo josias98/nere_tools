@@ -6,6 +6,7 @@ use App\Jobs\SendGraphMailJob;
 use App\Models\NotificationLog;
 use App\Services\Leaves\LeaveApprovalReminderService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
@@ -54,6 +55,24 @@ class WebCronQueueWorkerTest extends TestCase
         $this->withBasicAuth('infomaniak', 'secret')
             ->get('/webcron/queue')
             ->assertOk();
+    }
+
+    public function test_deferred_webcron_checks_reminders_without_starting_a_worker(): void
+    {
+        config([
+            'queue.default' => 'deferred',
+            'services.webcron.username' => 'infomaniak',
+            'services.webcron.password' => 'secret',
+        ]);
+        $reminders = \Mockery::mock(LeaveApprovalReminderService::class);
+        $reminders->shouldReceive('sendDue')->once()->andReturn(0);
+        app()->instance(LeaveApprovalReminderService::class, $reminders);
+        Artisan::shouldReceive('call')->never();
+
+        $this->withBasicAuth('infomaniak', 'secret')
+            ->get('/webcron/queue')
+            ->assertOk()
+            ->assertSeeText('Reminders checked.');
     }
 
     public function test_authenticated_webcron_request_processes_queued_mail_jobs(): void

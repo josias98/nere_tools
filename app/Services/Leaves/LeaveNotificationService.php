@@ -138,9 +138,7 @@ class LeaveNotificationService
         } else {
             $notification = $this->logNotification($action, $request, $subject, $recipients, 'queued');
 
-            app()->environment('local')
-                ? SendGraphMailJob::dispatchAfterResponse($recipients, $subject, $html, [], [], $text, $action, LeaveRequest::class, $request->id, $notification->id)
-                : SendGraphMailJob::dispatch($recipients, $subject, $html, [], [], $text, $action, LeaveRequest::class, $request->id, $notification->id);
+            SendGraphMailJob::dispatch($recipients, $subject, $html, [], [], $text, $action, LeaveRequest::class, $request->id, $notification->id);
         }
 
         Log::info($action, ['leave_request_id' => $request->id, 'recipients' => $recipients]);
