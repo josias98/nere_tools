@@ -4,6 +4,7 @@
     "type": "module",
     "scripts": {
         "build": "vite build",
+        "build:pdfcraft": "node scripts/build-pdfcraft.mjs",
         "dev": "vite",
         "release:zip": "node scripts/build-release.mjs",
         "setup:ca": "powershell -ExecutionPolicy Bypass -File scripts/setup-ca-bundle.ps1",

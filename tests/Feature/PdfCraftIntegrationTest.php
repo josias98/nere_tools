@@ -27,6 +27,30 @@ class PdfCraftIntegrationTest extends TestCase
         $this->actingAs($user)->get('/pdfcraft/history')->assertForbidden();
     }
 
+    public function test_exported_pdfcraft_page_is_served_only_through_laravel(): void
+    {
+        $pages = sys_get_temp_dir().'/nere-pdfcraft-test-'.Str::random(12);
+        mkdir($pages.'/fr/tools/merge-pdf', 0777, true);
+        file_put_contents($pages.'/fr/tools/merge-pdf/index.html', '<!doctype html><title>Néré PDF</title>');
+        config()->set('pdfcraft.pages_path', $pages);
+
+        try {
+            $this->get('/pdfcraft/fr/tools/merge-pdf')->assertRedirect();
+            $user = User::factory()->create(['is_active' => true, 'role' => User::ROLE_USER]);
+            $response = $this->actingAs($user)->get('/pdfcraft/fr/tools/merge-pdf')
+                ->assertOk()
+                ->assertHeader('Cross-Origin-Opener-Policy', 'same-origin')
+                ->assertHeader('Cross-Origin-Embedder-Policy', 'require-corp');
+            $this->assertSame('<!doctype html><title>Néré PDF</title>', file_get_contents($response->baseResponse->getFile()->getPathname()));
+        } finally {
+            unlink($pages.'/fr/tools/merge-pdf/index.html');
+            rmdir($pages.'/fr/tools/merge-pdf');
+            rmdir($pages.'/fr/tools');
+            rmdir($pages.'/fr');
+            rmdir($pages);
+        }
+    }
+
     public function test_user_can_archive_and_download_only_their_own_file(): void
     {
         Storage::fake('local');
