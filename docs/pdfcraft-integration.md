@@ -1,6 +1,6 @@
 # PDFCraft dans Néré Tools
 
-L'intégration utilise l'export statique du projet [PDFCraft](https://github.com/PDFCraftTool/pdfcraft), révision `0be0f8b6a7ada15b60a42d4789238bf49283b494`. La suite d'outils et le traitement PDF restent dans le navigateur. Laravel sert les pages à `/pdfcraft`, applique l'authentification Microsoft et les droits du catalogue d'outils, puis conserve les fichiers sources et résultats dans le disque privé `local`. L'interface publiée est en français et reprend l'identité Néré Tools. Le code et la licence AGPL de PDFCraft restent accessibles dans le paquet publié.
+L'intégration utilise l'export statique du projet [PDFCraft](https://github.com/PDFCraftTool/pdfcraft), révision `0be0f8b6a7ada15b60a42d4789238bf49283b494`. La suite d'outils et le traitement PDF restent dans le navigateur. Laravel sert les pages à `/pdfcraft`, applique l'authentification Microsoft et les droits du catalogue d'outils, puis conserve les fichiers sources et résultats dans le disque privé `local`. L'interface publiée est en français et reprend l'identité Néré Tools. Le paquet contient la licence AGPL de PDFCraft et le patch des modifications Néré ; le code amont est disponible au lien indiqué.
 
 ## Construire et publier
 
@@ -11,9 +11,11 @@ npm run build:pdfcraft
 npm run release:zip
 ```
 
-`build:pdfcraft` récupère la révision figée, applique `integrations/pdfcraft/nere.patch` et `NereArchiveBridge.tsx`, exécute `npm ci` puis construit l'export Next. Les pages HTML sont installées dans `resources/pdfcraft-pages` et les ressources statiques dans `public/pdfcraft`. Ces dossiers sont générés et exclus de Git. La commande `release:zip` exige leur présence et les inclut dans l'archive. Elle conserve aussi `python_stdlib.zip`, utilisé par PyMuPDF. Aucun processus Node.js n'est nécessaire sur le serveur de production.
+`build:pdfcraft` récupère la révision figée, applique `integrations/pdfcraft/nere.patch` et `NereArchiveBridge.tsx`, exécute `npm ci` puis construit l'export Next. Définir `NEXT_PUBLIC_NERE_TOOLS_URL` à l'URL publique absolue de `/pdfcraft` sur le poste de construction pour les métadonnées HTML. Les pages HTML sont installées dans `resources/pdfcraft-pages` et les ressources statiques dans `public/pdfcraft`. Ces dossiers sont générés et exclus de Git. La commande `release:zip` exige leur présence et les inclut dans l'archive. Elle conserve aussi `python_stdlib.zip`, utilisé par PyMuPDF. Aucun processus Node.js n'est nécessaire sur le serveur de production.
 
-Sur le serveur : déployer l'archive complète, exécuter `php artisan migrate --force`, puis attribuer l'outil `pdfcraft` aux utilisateurs concernés dans les droits Néré Tools. Le disque `local` doit être inscriptible et hors de la racine publique. L'hébergement doit accepter les requêtes multipartites jusqu'à la limite configurée (`PDFCRAFT_MAX_FILE_KIB=102400` par défaut), avec `upload_max_filesize` et `post_max_size` PHP adaptés. Les fichiers dépassant la limite ne sont pas archivés ni téléchargés par le pont Néré.
+L'export complet occupe environ 522 Mio avant compression. Prévoir cet espace sur le serveur et lors du transfert de l'archive.
+
+Sur le serveur : déployer l'archive complète, exécuter `php artisan migrate --force`, puis ajuster les droits individuels de l'outil `pdfcraft` dans Néré Tools. Par défaut, le catalogue autorise tous les comptes actifs ; l'administrateur peut retirer l'accès utilisateur par utilisateur. Le disque `local` doit être inscriptible et hors de la racine publique. L'hébergement doit accepter les requêtes multipartites jusqu'à la limite configurée (`PDFCRAFT_MAX_FILE_KIB=102400` par défaut), avec `upload_max_filesize` et `post_max_size` PHP adaptés. Les fichiers dépassant la limite ne sont pas archivés ni téléchargés par le pont Néré.
 
 L'hébergement Apache utilise `public/.htaccess` pour faire passer `/pdfcraft` et les routes françaises par Laravel, même lorsque les dossiers des payloads Next existent. `public/pdfcraft/.htaccess` ajoute les en-têtes COOP/COEP/CORP et les types MIME WASM/MJS aux ressources statiques. Sur Nginx, reproduire ces en-têtes sur `/pdfcraft/`, faire passer les URL sans extension `/pdfcraft` et `/pdfcraft/fr/...` par `index.php`, et servir directement les fichiers statiques avec extension. Sans isolation croisée, certains outils LibreOffice WASM ne peuvent pas fonctionner.
 

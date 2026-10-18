@@ -106,8 +106,14 @@ export function NereArchiveBridge() {
       setMessage('Archivage du résultat dans Néré Tools…');
 
       void (async () => {
+        let result: Blob;
+        if (blob) {
+          result = blob;
+        } else {
+          const response = await fetch(link.href);
+          result = await response.blob();
+        }
         await pendingSources;
-        const result = blob ?? await fetch(link.href).then(response => response.blob());
         await archive(result, filename, 'result');
         const replayUrl = createObjectURL(result);
         const replay = document.createElement('a');
