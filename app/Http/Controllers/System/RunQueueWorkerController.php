@@ -4,6 +4,7 @@ namespace App\Http\Controllers\System;
 
 use App\Http\Controllers\Controller;
 use App\Services\Leaves\LeaveApprovalReminderService;
+use App\Services\PdfCraft\PdfCraftPruner;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Log;
@@ -12,7 +13,7 @@ use Throwable;
 
 class RunQueueWorkerController extends Controller
 {
-    public function __invoke(Request $request, LeaveApprovalReminderService $reminders): Response
+    public function __invoke(Request $request, LeaveApprovalReminderService $reminders, PdfCraftPruner $pdfCraftPruner): Response
     {
         $username = config('services.webcron.username');
         $password = config('services.webcron.password');
@@ -32,6 +33,12 @@ class RunQueueWorkerController extends Controller
             $reminders->sendDue();
         } catch (Throwable $exception) {
             Log::error('Leave approval reminder check failed.', ['exception' => $exception]);
+        }
+
+        try {
+            $pdfCraftPruner->prune();
+        } catch (Throwable $exception) {
+            Log::error('PDFCraft retention check failed.', ['exception' => $exception]);
         }
 
         $driver = config('queue.connections.'.config('queue.default').'.driver');
