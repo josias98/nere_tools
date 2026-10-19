@@ -31,15 +31,19 @@ class LeaveModuleTest extends TestCase
             ->assertSee('Demandes de congé');
     }
 
-    public function test_leave_form_has_readable_utf8_copy_and_accessible_fields(): void
+    public function test_leave_form_shows_guided_choices_and_preserves_accessible_fields(): void
     {
         [$user] = $this->userWithEmployee();
+        $this->seed(LeaveTypeSeeder::class);
 
         $this->actingAs($user)
             ->get(route('leaves.create'))
             ->assertOk()
             ->assertSee('Sélectionnez les dates pour vérifier le solde.')
-            ->assertSee('Quel type de congé souhaitez-vous prendre ?')
+            ->assertSee('De quoi s’agit-il')
+            ->assertSee('data-leave-category="health"', false)
+            ->assertSee('data-leave-kind="family_event"', false)
+            ->assertSee('data-leave-step="review"', false)
             ->assertSee('aria-live="polite"', false)
             ->assertSee('for="leave_start_date"', false)
             ->assertDontSee('SÃ©lectionnez');
@@ -61,6 +65,38 @@ class LeaveModuleTest extends TestCase
             'start_date' => '2026-08-01',
             'end_date' => '2026-08-01',
         ])->assertSessionHasErrors('reason');
+    }
+
+    public function test_invalid_request_reopens_the_details_with_the_previous_choice(): void
+    {
+        [$user] = $this->userWithEmployee();
+        $this->seed(LeaveTypeSeeder::class);
+        $type = LeaveType::query()->where('slug', 'family_event')->firstOrFail();
+
+        $this->actingAs($user)
+            ->from(route('leaves.create'))
+            ->followingRedirects()
+            ->post(route('leaves.store'), [
+                'leave_type_id' => $type->id,
+                'start_date' => '2026-11-03',
+                'end_date' => '2026-11-05',
+            ])
+            ->assertOk()
+            ->assertSee('data-has-errors="1"', false)
+            ->assertSee('value="'.$type->id.'" data-slug="family_event"', false)
+            ->assertSee('value="2026-11-03"', false);
+    }
+
+    public function test_custom_active_leave_type_stays_available_in_the_guided_form(): void
+    {
+        [$user] = $this->userWithEmployee();
+        LeaveType::query()->create(['slug' => 'special_leave', 'name' => 'Congé exceptionnel']);
+
+        $this->actingAs($user)
+            ->get(route('leaves.create'))
+            ->assertOk()
+            ->assertSee('data-leave-category="catalog"', false)
+            ->assertSee('Congé exceptionnel');
     }
 
     public function test_user_without_employee_is_redirected_from_leave_dashboard(): void
