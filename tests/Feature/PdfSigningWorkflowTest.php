@@ -51,7 +51,7 @@ class PdfSigningWorkflowTest extends TestCase
     public function test_module_is_available_to_active_staff_and_dashboard_links_to_it(): void
     {
         $this->actingAs($this->user)->get(route('dashboard'))->assertOk()->assertSee('Signature PDF');
-        $this->get(route('signatures.index'))->assertOk()->assertSee('Environnement de test')->assertSee('Préparer un PDF');
+        $this->get(route('signatures.index'))->assertOk()->assertSee('Environnement de test')->assertSee('Quel PDF souhaitez-vous signer');
         $this->assertTrue($this->user->canAccessTool('signatures'));
     }
 
@@ -93,6 +93,18 @@ class PdfSigningWorkflowTest extends TestCase
             ->assertStatus(500)->assertJsonStructure(['message']);
         $this->assertStringNotContainsString('private database', $response->getContent());
         $this->assertNull($document->fresh()->signed_at);
+    }
+
+    public function test_status_check_can_confirm_a_lost_response_without_signing_again(): void
+    {
+        $document = $this->document();
+        $this->actingAs($this->user)->getJson(route('signatures.show', $document->uuid))->assertOk()
+            ->assertJsonPath('signed', false)->assertJsonPath('integrity_ok', true);
+        $this->postJson(route('signatures.sign', $document->uuid), $this->consent($document))->assertOk();
+        $this->getJson(route('signatures.show', $document->uuid))->assertOk()
+            ->assertJsonPath('signed', true)->assertJsonPath('integrity_ok', true);
+        $this->assertSame(1, AuditLog::query()->where('action', 'pdf_signature.signed')->count());
+        $this->actingAs(User::factory()->create(['is_active' => true]))->getJson(route('signatures.show', $document->uuid))->assertForbidden();
     }
 
     public function test_guest_inactive_and_explicitly_denied_accounts_cannot_use_the_tool(): void
@@ -185,7 +197,8 @@ class PdfSigningWorkflowTest extends TestCase
         $this->actingAs($this->user)->post(route('signatures.sign', $document->uuid), $this->consent($document))->assertSessionHasNoErrors();
         $document->refresh();
         Storage::disk('local')->put($document->signed_path, Storage::disk('local')->get($document->signed_path)."\n% tampered");
-        $this->get(route('signatures.show', $document->uuid))->assertOk()->assertSee('Contrôle d’intégrité impossible')->assertDontSee('Intégrité cryptographique vérifiée');
+        $this->get(route('signatures.show', $document->uuid))->assertOk()->assertSee('Ce document demande une vérification')
+            ->assertDontSee('Intégrité cryptographique vérifiée')->assertDontSee('data-signature-flash', false);
         $this->get(route('signatures.file', [$document->uuid, 'signe']))->assertStatus(409);
         $this->get(route('signatures.evidence', $document->uuid))->assertStatus(409);
     }

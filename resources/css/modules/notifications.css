@@ -1,0 +1,18 @@
+.nc-toast-stack { position: fixed; z-index: 80; inset: 92px 20px auto auto; width: min(400px, calc(100% - 32px)); display: grid; gap: 10px; pointer-events: none; }
+.nc-toast { display: grid; grid-template-columns: 24px minmax(0, 1fr) 32px; align-items: start; gap: 12px; padding: 16px 12px 16px 16px; border: 1px solid var(--ip-line-strong); border-left: 4px solid var(--ip-blue); background: var(--ip-white); color: var(--ip-brown-dark); box-shadow: var(--ip-shadow); pointer-events: auto; animation: nc-toast-enter 180ms var(--ease-out); }
+.nc-toast[data-type="error"] { border-left-color: var(--ip-rust); }
+.nc-toast[data-type="success"] { border-left-color: var(--ip-success-text); }
+.nc-toast-symbol { display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; background: var(--ip-panel); color: var(--ip-blue); font-weight: 800; font-size: 13px; }
+.nc-toast[data-type="error"] .nc-toast-symbol { background: var(--ip-warning-surface); color: var(--ip-rust); }
+.nc-toast[data-type="success"] .nc-toast-symbol { background: var(--ip-success-surface); color: var(--ip-success-text); }
+.nc-toast-content { min-width: 0; }
+.nc-toast strong { display: block; font-size: 13px; line-height: 1.5; }
+.nc-toast p { font-size: 12px; line-height: 1.6; margin: 4px 0 0; color: var(--ip-grey); overflow-wrap: anywhere; }
+.nc-toast-close { width: 44px; height: 44px; margin: -10px -6px 0 0; display: grid; place-items: center; background: transparent; border: 0; color: var(--ip-grey); cursor: pointer; }
+.nc-toast-action { display: block; min-height: 44px; border: 0; border-bottom: 1px solid var(--ip-line); background: transparent; color: var(--ip-brown); font-size: 12px; font-weight: 700; cursor: pointer; margin-top: 4px; }
+.nc-toast-action[hidden] { display: none; }
+.nc-toast-close:active, .nc-toast-action:active { transform: translateY(1px); }
+@media (hover: hover) { .nc-toast-close:hover, .nc-toast-action:hover { background: var(--ip-ivory); color: var(--ip-brown); } }
+@keyframes nc-toast-enter { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+@media (max-width: 600px) { .nc-toast-stack { inset: auto 16px 20px; width: auto; } }
+@media (prefers-reduced-motion: reduce) { .nc-toast { animation: none; } }

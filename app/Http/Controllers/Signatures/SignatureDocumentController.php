@@ -60,6 +60,14 @@ class SignatureDocumentController extends Controller
             $integrityError = $exception->getMessage();
         }
 
+        if ($request->expectsJson()) {
+            return response()->json([
+                'signed' => $document->signed_at !== null,
+                'integrity_ok' => $integrityError === null,
+                'redirect_url' => route('signatures.show', $document->uuid),
+            ])->withHeaders(['Cache-Control' => 'private, no-store']);
+        }
+
         return response()->view('signatures.show', [
             'document' => $document, 'certificate' => $certificates->status(), 'integrityError' => $integrityError,
         ])->withHeaders(['Cache-Control' => 'private, no-store']);

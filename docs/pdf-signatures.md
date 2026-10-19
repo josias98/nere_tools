@@ -107,6 +107,45 @@ accès, certificat et document inchangés depuis la relecture, double soumission
 échec d’enregistrement, intégrité au téléchargement et export de preuve JSON.
 L’aperçu utilise PDF.js 6.4.299 en rendu canvas, sans exécuter de script PDF.
 
+## Assistant interactif
+
+L’outil reprend les couleurs, les typographies et la structure des assistants
+Congés et Feuilles de temps. Le parcours comporte quatre étapes :
+
+1. **Ajouter** : choix ou dépôt d’un seul PDF, nom et taille visibles, retrait ou
+   remplacement du fichier, contrôle du format et de la taille avant transfert.
+2. **Relire** : aperçu paginé et téléchargement de l’original. Le bouton
+   « J’ai relu le PDF » ouvre l’étape d’accord ; il ne signe pas le document.
+3. **Confirmer** : identité, motifs courants ou texte libre, certificat consultable
+   et accord explicite. Revenir à la relecture conserve le motif et décoche l’accord.
+4. **Récupérer** : affichage après confirmation du serveur, contrôle d’intégrité,
+   téléchargement du PDF et des éléments de preuve.
+
+Les envois utilisent les routes existantes avec `Accept: application/json`. Sans
+JavaScript, les formulaires conservent leur fonctionnement POST/redirect classique.
+Les erreurs apparaissent près des champs et dans des toasts fermables. Les erreurs
+ne disparaissent pas automatiquement ; les notifications de réussite expirent après
+sept secondes, avec pause au survol ou au focus. Un message résolu est retiré.
+
+Une coupure pendant la signature ne déclenche **aucune nouvelle tentative automatique**.
+Le bouton « Vérifier le document » effectue une lecture authentifiée de son état.
+Si la signature est enregistrée, l’outil ouvre le résultat confirmé ; sinon le motif
+reste saisi et un nouvel accord est demandé. Ni le PDF ni le consentement ne sont
+copiés dans le stockage local du navigateur. Les sessions expirées, accès refusés,
+fichiers trop volumineux et limites de tentatives ont leurs propres messages.
+
+Les changements d’étape placent le focus sur le titre. Les champs invalides sont
+associés à leurs erreurs ; les boutons de traitement empêchent la double soumission.
+Les animations respectent la préférence de réduction du mouvement.
+
+Contrôles du parcours :
+
+```console
+php artisan test --compact tests/Feature/PdfSigningWorkflowTest.php
+node --test tests/Frontend/signature-interactions.test.mjs
+npm run build
+```
+
 Au 19 octobre 2026, les audits Composer/npm ne signalent aucun avis pour ces
 nouvelles dépendances. L’audit global signale toutefois 24 avis sur 7 dépendances
 PHP existantes et 5 paquets JavaScript existants ; leur mise à jour reste à traiter.

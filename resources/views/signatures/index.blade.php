@@ -1,18 +1,20 @@
 @extends('layouts.app', [
     'title' => 'Signature PDF · Néré Tools',
+    'lang' => 'fr',
     'breadcrumbs' => [['label' => 'Accueil', 'url' => route('dashboard')], ['label' => 'Signature PDF']],
 ])
 
 @section('content')
-    <section class="nc-page sig-page">
+    <section class="nc-page sig-page" data-signature-wizard data-current-step="1">
         <div class="nc-title-row">
             <div>
-                <p class="nc-kicker">Mes documents</p>
-                <h1 class="nc-title">Signature PDF</h1>
-                <p class="nc-lead">Relisez votre document, confirmez votre accord et téléchargez le PDF signé.</p>
+                <p class="nc-kicker">Néré Tools · Signature PDF</p>
+                <h1 class="nc-title">Signer un document</h1>
+                <p class="nc-lead">Un PDF, votre accord et un document signé à conserver.</p>
             </div>
+            <a class="nc-ghost" href="#mes-documents"><i data-lucide="history" class="nc-icon" aria-hidden="true"></i> Mes documents</a>
         </div>
-
+        @include('signatures.partials.notifications')
         @if (! $certificate['ready'])
             <div class="nc-alert sig-notice" role="status">
                 <strong>Signature indisponible pour le moment</strong>
@@ -25,35 +27,41 @@
             </div>
         @endif
 
-        <div class="nc-panel sig-import">
-            <div>
-                <h2 class="nc-section-title">Préparer un PDF</h2>
-                <p class="nc-muted">Un document à signer par vous-même. Son original et sa version signée restent privés.</p>
-                <ol class="sig-steps" aria-label="Étapes de signature">
-                    <li aria-current="step"><span>1</span> Importer</li>
-                    <li><span>2</span> Relire et signer</li>
-                    <li><span>3</span> Télécharger</li>
-                </ol>
-            </div>
-            <form action="{{ route('signatures.store') }}" method="POST" enctype="multipart/form-data" data-signature-form>
+        <div class="sig-wizard-shell">
+            @include('signatures.partials.wizard-nav', ['step' => 1])
+            <div class="sig-wizard-body">
+                <div class="sig-progress" role="progressbar" aria-label="Progression de la signature" aria-valuemin="1" aria-valuemax="4" aria-valuenow="1"><span data-signature-progress style="width:25%"></span></div>
+                <section class="sig-stage" data-signature-step="1" aria-labelledby="import-title">
+                    <p class="sig-stage-kicker" data-signature-counter>Étape 1 sur 4</p>
+                    <h2 id="import-title" tabindex="-1">Quel PDF souhaitez-vous signer ?</h2>
+                    <p class="sig-stage-intro">Commencez par choisir votre document. Vous pourrez le relire avant de signer.</p>
+            <form action="{{ route('signatures.store') }}" method="POST" enctype="multipart/form-data" data-signature-form="import" data-login-url="{{ route('login') }}">
                 @csrf
-                <label class="sig-label" for="pdf">Document PDF</label>
-                <input class="nc-input sig-file" type="file" name="pdf" id="pdf" accept="application/pdf,.pdf" required aria-describedby="pdf-help @error('pdf') pdf-error @enderror" @error('pdf') aria-invalid="true" @enderror>
-                <p class="nc-muted sig-help" id="pdf-help">10 Mo et 100 pages maximum. PDF simple, sans signature existante, mot de passe ni formulaire.</p>
-                @error('pdf') <p class="sig-error" id="pdf-error" role="alert">{{ $message }}</p> @enderror
-                <button class="nc-button" type="submit" data-pending-label="Import du PDF…">
-                    <i data-lucide="arrow-right" class="nc-icon" aria-hidden="true"></i> Relire ce PDF
-                </button>
+                <div class="sig-dropzone" data-signature-dropzone>
+                    <i data-lucide="file-up" class="sig-upload-icon" aria-hidden="true"></i>
+                    <strong>Déposez votre PDF ici</strong>
+                    <span class="nc-muted">ou choisissez-le sur votre appareil</span>
+                    <label class="sig-file-picker" for="pdf"><i data-lucide="folder-open" class="nc-icon" aria-hidden="true"></i><span data-file-picker-label>Choisir un PDF</span><input type="file" name="pdf" id="pdf" accept="application/pdf,.pdf" required aria-describedby="pdf-help pdf-error" @error('pdf') aria-invalid="true" @enderror></label>
+                    <small>PDF · 10 Mo maximum · 100 pages</small>
+                </div>
+                <div class="sig-selected-file" data-signature-selected hidden><span class="sig-selected-icon"><i data-lucide="file-text" class="nc-icon" aria-hidden="true"></i></span><div><strong data-selected-name></strong><small data-selected-size></small></div><button class="nc-ghost sig-icon-button" type="button" data-signature-clear aria-label="Retirer ce fichier"><i data-lucide="x" class="nc-icon" aria-hidden="true"></i></button></div>
+                <p class="sig-field-error" id="pdf-error" data-field-error="pdf" @if (! $errors->has('pdf')) hidden @endif>{{ $errors->first('pdf') }}</p>
+                <p class="nc-muted sig-help" id="pdf-help">Un PDF simple, sans mot de passe, formulaire ni signature existante.</p>
+                <p class="sig-form-error" data-form-error @if (! $errors->any()) hidden @endif>{{ $errors->first() }}</p>
+                <div class="sig-busy" data-signature-busy hidden role="status"><span class="sig-spinner" aria-hidden="true"></span><span>Import et contrôle du PDF…</span></div>
+                <footer class="sig-stage-actions"><span class="sig-action-hint">La signature sera confirmée à l’étape 3.</span><button class="nc-button" type="submit" data-pending-label="Import en cours…">Continuer <i data-lucide="arrow-right" class="nc-icon" aria-hidden="true"></i></button></footer>
             </form>
+                </section>
+            </div>
         </div>
 
-        <section class="sig-history" aria-labelledby="history-title">
+        <section class="sig-history" id="mes-documents" aria-labelledby="history-title">
             <h2 class="nc-section-title" id="history-title">Mes documents</h2>
             @if ($documents->isEmpty())
                 <div class="nc-panel sig-empty">
                     <i data-lucide="file-signature" class="nc-icon" aria-hidden="true"></i>
-                    <h3>Votre premier PDF signé commence ici</h3>
-                    <p class="nc-muted">Importez un document pour le relire avant de donner votre accord.</p>
+                    <h3>Votre espace documentaire est prêt</h3>
+                    <p class="nc-muted">Retrouvez ici vos PDF à signer et vos documents déjà signés.</p>
                 </div>
             @else
                 <div class="sig-table-wrap">
