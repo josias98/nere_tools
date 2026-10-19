@@ -10,7 +10,6 @@
         $toolIcons = [
             'timesheets' => 'file-text',
             'conges' => 'calendar-range',
-            'pdfcraft' => 'files',
         ];
     @endphp
 
