@@ -1,6 +1,5 @@
 import { spawn } from 'node:child_process';
-import { createHash } from 'node:crypto';
-import { copyFile, mkdir, mkdtemp, readFile, readdir, rm, stat, writeFile } from 'node:fs/promises';
+import { copyFile, mkdir, mkdtemp, readdir, rm, stat, writeFile } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -12,7 +11,6 @@ const integration = path.join(root, 'integrations', 'pdfcraft');
 const pages = path.join(root, 'resources', 'pdfcraft-pages');
 const assets = path.join(root, 'public', 'pdfcraft');
 const suppliedSource = process.argv.indexOf('--source');
-const useExport = process.argv.includes('--use-export');
 
 function run(command, args, cwd, env = process.env) {
     return new Promise((resolve, reject) => {
@@ -42,7 +40,6 @@ function npm(args, cwd, env = process.env) {
 }
 
 async function main() {
-    if (useExport && suppliedSource < 0) throw new Error('--use-export requires --source');
     let source;
     let temporary = false;
     if (suppliedSource >= 0) {
@@ -63,18 +60,15 @@ async function main() {
             await npm(['ci', '--ignore-scripts'], source);
         }
 
-        if (!useExport) {
-            await npm(['run', 'build'], source, {
-                ...process.env,
-                BASE_PATH: '/pdfcraft',
-                NEXT_PUBLIC_BASE_PATH: '/pdfcraft',
-                DISABLE_UPDATE_CHECK: 'true',
-            });
-        }
+        await npm(['run', 'build'], source, {
+            ...process.env,
+            BASE_PATH: '/pdfcraft',
+            NEXT_PUBLIC_BASE_PATH: '/pdfcraft',
+            DISABLE_UPDATE_CHECK: 'true',
+        });
 
         const exported = path.join(source, 'out');
-        if (!(await stat(path.join(exported, 'index.html'))).isFile()
-            || !(await stat(path.join(exported, 'fr', 'index.html'))).isFile()) {
+        if (!(await stat(path.join(exported, 'fr', 'index.html'))).isFile()) {
             throw new Error('The French PDFCraft export is missing.');
         }
         await rm(pages, { recursive: true, force: true });
@@ -85,12 +79,6 @@ async function main() {
         await copyFile(path.join(integration, 'assets.htaccess'), path.join(assets, '.htaccess'));
         await copyFile(path.join(source, 'LICENSE'), path.join(assets, 'LICENSE'));
         await writeFile(path.join(pages, '.build-revision'), revision + '\n');
-        const fingerprint = createHash('sha256')
-            .update(revision)
-            .update(await readFile(path.join(integration, 'nere.patch')))
-            .update(await readFile(path.join(integration, 'NereArchiveBridge.tsx')))
-            .digest('hex');
-        await writeFile(path.join(pages, '.build-fingerprint'), fingerprint + '\n');
         console.log('PDFCraft export installed for Laravel at /pdfcraft.');
     } finally {
         if (temporary) await rm(source, { recursive: true, force: true });

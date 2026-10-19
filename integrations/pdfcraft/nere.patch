@@ -1,5 +1,5 @@
 diff --git a/messages/fr.json b/messages/fr.json
-index 5cdde2e..7654392 100644
+index 5cdde2e..90de078 100644
 --- a/messages/fr.json
 +++ b/messages/fr.json
 @@ -1,8 +1,8 @@
@@ -13,15 +13,6 @@ index 5cdde2e..7654392 100644
      },
      "tools": {
        "title": "Tous les Outils PDF",
-@@ -10,7 +10,7 @@
-     },
-     "about": {
-       "title": "À Propos",
--      "description": "Découvrez PDFCraft - votre boîte à outils PDF gratuite, privée et puissante. Tout le traitement se fait dans votre navigateur."
-+      "description": "Découvrez les outils PDF de Néré Tools : traitement dans le navigateur et historique privé pendant 90 jours."
-     },
-     "faq": {
-       "title": "Questions Fréquentes",
 @@ -18,7 +18,7 @@
      },
      "privacy": {
@@ -59,9 +50,8 @@ index 5cdde2e..7654392 100644
 +          "answer": "Néré Tools PDF propose plus de {count} outils pour éditer, convertir, fusionner, diviser et protéger des PDF. Le traitement se fait dans le navigateur ; les sources et résultats sont archivés dans Néré Tools pendant 90 jours."
          },
          "isFree": {
--          "question": "PDFCraft est-il vraiment gratuit ?",
+           "question": "PDFCraft est-il vraiment gratuit ?",
 -          "answer": "Oui, l’utilisation de PDFCraft est entièrement gratuite. Il n'y a pas de coûts cachés, pas de niveaux premium et aucune inscription requise. Toutes les fonctionnalités sont accessibles à tous."
-+          "question": "Les outils PDF de Néré Tools sont-ils gratuits ?",
 +          "answer": "L'outil est inclus dans Néré Tools pour les collaborateurs autorisés."
          },
          "account": {
@@ -110,16 +100,7 @@ index 5cdde2e..7654392 100644
        },
        "fast": {
          "title": "Rapide et efficace",
-@@ -1088,7 +1088,7 @@
-       },
-       "free": {
-         "title": "Gratuit pour toujours",
--        "description": "PDFCraft est entièrement gratuit, sans frais cachés, sans inscription requise et sans limite d'utilisation."
-+        "description": "Les outils PDF sont accessibles aux utilisateurs autorisés de Néré Tools. Les fichiers archivés sont soumis à la limite de taille configurée."
-       },
-       "openSource": {
-         "title": "Source ouverte",
-@@ -1220,11 +1220,11 @@
+@@ -1220,7 +1220,7 @@
      "features": {
        "privacy": {
          "title": "100% Privé",
@@ -128,11 +109,6 @@ index 5cdde2e..7654392 100644
        },
        "free": {
          "title": "Complètement Gratuit",
--        "description": "Pas d'inscription, pas de limites, pas de frais cachés."
-+        "description": "Accessible avec votre compte Néré Tools, selon les droits définis par l'administrateur."
-       },
-       "powerful": {
-         "title": "Outils Puissants",
 diff --git a/src/app/[locale]/about/page.tsx b/src/app/[locale]/about/page.tsx
 index 2726561..b85c6b3 100644
 --- a/src/app/[locale]/about/page.tsx
@@ -173,7 +149,7 @@ index e421122..ecbbfb7 100644
  
    return generateFaqMetadata(validLocale, {
 diff --git a/src/app/[locale]/layout.tsx b/src/app/[locale]/layout.tsx
-index 2b765a0..817fb9a 100644
+index 2b765a0..f2250a5 100644
 --- a/src/app/[locale]/layout.tsx
 +++ b/src/app/[locale]/layout.tsx
 @@ -5,6 +5,7 @@ import { notFound } from 'next/navigation';
@@ -184,12 +160,10 @@ index 2b765a0..817fb9a 100644
  import '@/app/globals.css';
  
  export function generateStaticParams() {
-@@ -51,7 +52,8 @@ export default async function LocaleLayout({
-   return (
+@@ -52,6 +53,7 @@ export default async function LocaleLayout({
      <NextIntlClientProvider messages={messages}>
        <div lang={locale} dir={direction} className={`${fontVariables} min-h-screen bg-background text-foreground antialiased font-sans`}>
--        <SkipLink targetId="main-content">Skip to main content</SkipLink>
-+        <SkipLink targetId="main-content">Aller au contenu principal</SkipLink>
+         <SkipLink targetId="main-content">Skip to main content</SkipLink>
 +        <NereArchiveBridge />
          {children}
        </div>
@@ -940,10 +914,10 @@ index 9938017..ced1e37 100644
              {showSearch && (
                <div className="relative" ref={searchContainerRef}>
 diff --git a/src/config/site.ts b/src/config/site.ts
-index ab77a80..edbc383 100644
+index ab77a80..3400e24 100644
 --- a/src/config/site.ts
 +++ b/src/config/site.ts
-@@ -2,13 +2,13 @@
+@@ -2,9 +2,9 @@
   * Site configuration
   */
  export const siteConfig = {
@@ -952,48 +926,21 @@ index ab77a80..edbc383 100644
 -  url: 'https://pdfcraft.devtoolcafe.com',
 +  name: 'Néré Tools PDF',
 +  description: 'Suite PDF de Néré Tools. Traitement dans le navigateur et historique privé conservé 90 jours.',
-+  url: process.env.NEXT_PUBLIC_NERE_TOOLS_URL || 'http://localhost/pdfcraft',
++  url: 'https://tools.nerecapital.com/pdfcraft',
    ogImage: '/images/og-image.png',
    links: {
      github: 'https://github.com/PDFCraftTool/pdfcraft',
--    twitter: 'https://twitter.com/pdfcraft',
-+    twitter: '',
-   },
-   creator: 'PDFCraft Team',
-   keywords: [
-@@ -25,10 +25,10 @@ export const siteConfig = {
+@@ -25,8 +25,8 @@ export const siteConfig = {
    ],
    // SEO-related settings
    seo: {
 -    titleTemplate: '%s | PDFCraft',
 -    defaultTitle: 'PDFCraft - Professional PDF Tools',
--    twitterHandle: '@pdfcraft',
--    locale: 'en_US',
 +    titleTemplate: '%s | Néré Tools PDF',
 +    defaultTitle: 'Outils PDF - Néré Tools',
-+    twitterHandle: '',
-+    locale: 'fr_FR',
+     twitterHandle: '@pdfcraft',
+     locale: 'en_US',
    },
- };
- 
-@@ -37,13 +37,13 @@ export const siteConfig = {
-  */
- export const navConfig = {
-   mainNav: [
--    { title: 'Home', href: '/' },
--    { title: 'Tools', href: '/tools' },
--    { title: 'About', href: '/about' },
-+    { title: 'Accueil', href: '/' },
-+    { title: 'Outils', href: '/tools' },
-+    { title: 'À propos', href: '/about' },
-     { title: 'FAQ', href: '/faq' },
-   ],
-   footerNav: [
--    { title: 'Privacy', href: '/privacy' },
-+    { title: 'Confidentialité', href: '/privacy' },
-     { title: 'Contact', href: '/contact' },
-   ],
- };
 diff --git a/src/lib/fonts.ts b/src/lib/fonts.ts
 index 036d0a9..4ab1933 100644
 --- a/src/lib/fonts.ts
@@ -1140,60 +1087,3 @@ index daba5d4..113ba92 100644
              );
          }
  
-diff --git a/src/lib/pdf/processors/form-filler.ts b/src/lib/pdf/processors/form-filler.ts
-index 2d0ce4e..f21722e 100644
---- a/src/lib/pdf/processors/form-filler.ts
-+++ b/src/lib/pdf/processors/form-filler.ts
-@@ -7,6 +7,7 @@ import type { ProcessInput, ProcessOutput, ProgressCallback } from '@/types/pdf'
- import { PDFErrorCode } from '@/types/pdf';
- import { BasePDFProcessor } from '../processor';
- import { loadPdfLib } from '../loader';
-+import type { PDFTextField, PDFCheckBox, PDFDropdown, PDFRadioGroup, PDFOptionList } from 'pdf-lib';
- 
- export type FormFieldType =
-   | 'text'
-@@ -263,7 +264,7 @@ export async function getFormFields(file: File): Promise<FormFieldInfo[]> {
-       (pdfLib.PDFTextField && field instanceof pdfLib.PDFTextField) ||
-       ctorName === 'PDFTextField'
-     ) {
--      const textField = field as InstanceType<typeof pdfLib.PDFTextField>;
-+      const textField = field as PDFTextField;
-       let value = '';
-       let multiline = false;
-       try {
-@@ -283,7 +284,7 @@ export async function getFormFields(file: File): Promise<FormFieldInfo[]> {
-       (pdfLib.PDFCheckBox && field instanceof pdfLib.PDFCheckBox) ||
-       ctorName === 'PDFCheckBox'
-     ) {
--      const checkBox = field as InstanceType<typeof pdfLib.PDFCheckBox>;
-+      const checkBox = field as PDFCheckBox;
-       let value = false;
-       try {
-         value = Boolean(checkBox.isChecked());
-@@ -297,7 +298,7 @@ export async function getFormFields(file: File): Promise<FormFieldInfo[]> {
-       (pdfLib.PDFDropdown && field instanceof pdfLib.PDFDropdown) ||
-       ctorName === 'PDFDropdown'
-     ) {
--      const dropdown = field as InstanceType<typeof pdfLib.PDFDropdown>;
-+      const dropdown = field as PDFDropdown;
-       let options: string[] = [];
-       let value = '';
-       try {
-@@ -318,7 +319,7 @@ export async function getFormFields(file: File): Promise<FormFieldInfo[]> {
-       (pdfLib.PDFRadioGroup && field instanceof pdfLib.PDFRadioGroup) ||
-       ctorName === 'PDFRadioGroup'
-     ) {
--      const radioGroup = field as InstanceType<typeof pdfLib.PDFRadioGroup>;
-+      const radioGroup = field as PDFRadioGroup;
-       let options: string[] = [];
-       let value = '';
-       try {
-@@ -338,7 +339,7 @@ export async function getFormFields(file: File): Promise<FormFieldInfo[]> {
-       (pdfLib.PDFOptionList && field instanceof pdfLib.PDFOptionList) ||
-       ctorName === 'PDFOptionList'
-     ) {
--      const optionList = field as InstanceType<typeof pdfLib.PDFOptionList>;
-+      const optionList = field as PDFOptionList;
-       let options: string[] = [];
-       let value = '';
-       try {

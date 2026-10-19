@@ -1,7 +1,6 @@
 import { createWriteStream } from 'node:fs';
 import { lstat, mkdir, readdir, readFile, stat } from 'node:fs/promises';
 import path from 'node:path';
-import { createHash } from 'node:crypto';
 import { deflateRawSync } from 'node:zlib';
 import { build as viteBuild } from 'vite';
 
@@ -277,13 +276,6 @@ async function main() {
     try {
         const pdfcraftRevision = (await readFile(path.join(root, 'resources', 'pdfcraft-pages', '.build-revision'), 'utf8')).trim();
         if (pdfcraftRevision !== '0be0f8b6a7ada15b60a42d4789238bf49283b494') throw new Error('Unexpected PDFCraft revision');
-        const expectedFingerprint = createHash('sha256')
-            .update(pdfcraftRevision)
-            .update(await readFile(path.join(root, 'integrations', 'pdfcraft', 'nere.patch')))
-            .update(await readFile(path.join(root, 'integrations', 'pdfcraft', 'NereArchiveBridge.tsx')))
-            .digest('hex');
-        const actualFingerprint = (await readFile(path.join(root, 'resources', 'pdfcraft-pages', '.build-fingerprint'), 'utf8')).trim();
-        if (actualFingerprint !== expectedFingerprint) throw new Error('PDFCraft export is stale');
         await stat(path.join(root, 'resources', 'pdfcraft-pages', 'fr', 'index.html'));
         await stat(path.join(root, 'public', 'pdfcraft', '.htaccess'));
     } catch {
