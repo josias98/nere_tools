@@ -101,3 +101,16 @@ et d’un autre certificat. La preuve initiale a aussi été vérifiée par l’
 OpenSSL externe avec `cms -verify -binary -inform DER -content ... -noverify`.
 `-noverify` dispense uniquement de la confiance dans le certificat auto-signé ;
 la signature et le digest sont bien contrôlés.
+
+Le parcours est couvert par `PdfSigningWorkflowTest` : consentement, contrôle des
+accès, certificat et document inchangés depuis la relecture, double soumission,
+échec d’enregistrement, intégrité au téléchargement et export de preuve JSON.
+L’aperçu utilise PDF.js 6.4.299 en rendu canvas, sans exécuter de script PDF.
+
+Au 19 octobre 2026, les audits Composer/npm ne signalent aucun avis pour ces
+nouvelles dépendances. L’audit global signale toutefois 24 avis sur 7 dépendances
+PHP existantes et 5 paquets JavaScript existants ; leur mise à jour reste à traiter.
+
+Références techniques : [SignerPHP](https://github.com/SignerPHP/pdf-signer),
+[PDF.js](https://github.com/mozilla/pdf.js),
+[OpenSSL CMS dans PHP](https://www.php.net/manual/en/function.openssl-cms-verify.php).

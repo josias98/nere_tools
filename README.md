@@ -2,10 +2,16 @@
 
 Portail interne Laravel pour NERE Capital.
 
-L'application couvre aujourd'hui deux usages metier:
+L'application couvre aujourd'hui trois usages metier:
 
 - generation de feuilles de temps PDF puis archivage ZIP ;
-- gestion des conges avec demande, validation, solde et historique.
+- gestion des conges avec demande, validation, solde et historique ;
+- signature cryptographique de PDF par les collaborateurs connectés, avec
+  certificat serveur, original conservé et historique privé.
+
+Le nouvel outil est accessible depuis l’accueil après migration. Consulter le
+[guide Signature PDF](docs/pdf-signatures.md) pour le certificat de développement,
+la configuration en production et les limites de cette première version.
 
 ## Analyse rapide du code
 

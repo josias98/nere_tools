@@ -10,6 +10,7 @@
         $toolIcons = [
             'timesheets' => 'file-text',
             'conges' => 'calendar-range',
+            'signatures' => 'file-signature',
         ];
     @endphp
 

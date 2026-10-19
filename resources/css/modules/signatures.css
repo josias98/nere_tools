@@ -1,0 +1,71 @@
+.sig-page { padding-bottom: 48px; }
+.sig-page .nc-alert { margin-bottom: 20px; }
+.sig-page .nc-section-title { margin-bottom: 12px; }
+.sig-page .nc-button, .sig-page .nc-ghost { min-height: 44px; white-space: normal; }
+.sig-page .nc-title-row { grid-template-columns: 6px minmax(0, 1fr) auto; }
+.sig-notice { padding: 14px 16px; border-left: 3px solid var(--ip-ochre); background: var(--ip-warning-surface); color: var(--ip-brown-dark); }
+.sig-notice p { margin: 6px 0 0; }
+.sig-import { display: grid; grid-template-columns: 1fr 1.2fr; gap: 36px; align-items: start; }
+.sig-label { display: block; font-weight: 600; margin-bottom: 8px; }
+.sig-file { max-width: 100%; padding: 10px; }
+.sig-file::file-selector-button { background: var(--ip-panel); border: 1px solid var(--ip-line-strong); min-height: 44px; margin-right: 12px; padding: 8px 12px; color: var(--ip-brown-dark); cursor: pointer; }
+.sig-help { font-size: .83rem; line-height: 1.6; margin: 10px 0 18px; }
+.sig-error { color: var(--ip-rust); }
+.sig-steps { display: flex; flex-wrap: wrap; gap: 16px; list-style: none; padding: 0; margin: 24px 0 0; font-size: .85rem; }
+.sig-steps li { display: flex; gap: 8px; align-items: center; color: var(--ip-grey); }
+.sig-steps span { display: grid; place-items: center; width: 26px; height: 26px; border: 1px solid var(--ip-line-strong); border-radius: 50%; }
+.sig-steps [aria-current] { font-weight: 600; color: var(--ip-brown); }
+.sig-steps [aria-current] span { background: var(--ip-brown); color: var(--ip-white); border-color: var(--ip-brown); }
+.sig-history { margin-top: 36px; }
+.sig-empty { text-align: center; padding: 36px 20px; }
+.sig-empty > .nc-icon { width: 28px; height: 28px; color: var(--ip-grey); margin: 0 auto 12px; }
+.sig-empty h3 { font-size: 1rem; font-weight: 600; }
+.sig-table-wrap { position: relative; overflow-x: auto; background: var(--ip-white); border: 1px solid var(--ip-line); }
+.sig-table { min-width: 580px; width: 100%; }
+.sig-table th[scope="row"] { text-align: left; max-width: 380px; overflow-wrap: anywhere; font-weight: 500; }
+.sig-table a { color: var(--ip-brown); }
+.sig-table small, .sig-facts small { display: block; color: var(--ip-grey); font-size: .8rem; font-weight: 400; margin-top: 4px; }
+.sig-status { display: inline-flex; gap: 6px; align-items: center; padding: 5px 9px; background: var(--ip-panel); font-size: .78rem; font-weight: 600; color: var(--ip-grey); }
+.sig-status.is-signed { background: var(--ip-success-surface); color: var(--ip-success-text); }
+.sig-page .sig-filename { overflow-wrap: anywhere; font-size: 1.8rem; }
+.sig-workspace { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(300px, 1fr); gap: 24px; align-items: start; }
+.sig-workspace > * { min-width: 0; }
+.sig-page .sig-preview { padding: 0; overflow: hidden; }
+.sig-preview-heading { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; padding: 16px 20px; }
+.sig-page .sig-preview-heading .nc-section-title { margin: 0; }
+.sig-preview-heading a { font-size: .8rem; }
+.sig-preview-controls { display: flex; align-items: center; justify-content: center; gap: 18px; border-top: 1px solid var(--ip-line); border-bottom: 1px solid var(--ip-line); padding: 4px; font-size: .85rem; }
+.sig-preview-controls button { padding-inline: 10px; }
+.sig-canvas-wrap { min-height: 260px; display: grid; place-items: start center; background: var(--ip-panel); padding: 16px; overflow: hidden; }
+.sig-canvas-wrap canvas { display: block; width: 100%; height: auto; background: var(--ip-white); }
+.sig-preview > .sig-help, .sig-preview noscript { padding-inline: 20px; margin: 12px 0; }
+.sig-decision > .sig-status { margin-bottom: 16px; }
+.sig-facts { margin: 20px 0; }
+.sig-facts > div { margin-bottom: 16px; }
+.sig-facts dt { color: var(--ip-grey); font-size: .78rem; margin-bottom: 4px; }
+.sig-facts dd { margin: 0; font-size: .9rem; overflow-wrap: anywhere; }
+.sig-consent { display: flex; gap: 12px; align-items: start; margin: 20px 0; padding-block: 8px; cursor: pointer; line-height: 1.6; font-size: .85rem; }
+.sig-consent input { flex: 0 0 auto; width: 20px; height: 20px; margin-top: 3px; accent-color: var(--ip-brown); }
+.sig-decision textarea { width: 100%; resize: vertical; min-height: 70px; }
+.sig-decision .nc-button { width: 100%; justify-content: center; }
+.sig-decision button:disabled { opacity: .55; cursor: wait; }
+.sig-details { margin-top: 24px; border-top: 1px solid var(--ip-line); padding-top: 10px; font-size: .8rem; line-height: 1.6; }
+.sig-details summary { padding-block: 10px; cursor: pointer; min-height: 44px; color: var(--ip-brown); font-weight: 600; }
+.sig-details p { color: var(--ip-grey); margin: 12px 0; }
+.sig-hash { font-family: monospace; font-size: .75rem !important; }
+.sig-verified { color: var(--ip-success-text); font-size: .85rem; }
+.sig-downloads { display: grid; gap: 12px; margin: 20px 0; }
+.sig-downloads .nc-ghost { text-align: center; justify-content: center; font-size: .8rem; }
+@media (max-width: 900px) {
+    .sig-workspace { grid-template-columns: minmax(0, 1fr); }
+    .sig-import { grid-template-columns: minmax(0, 1fr); gap: 24px; }
+    .sig-preview { max-width: 650px; width: 100%; justify-self: center; }
+}
+@media (max-width: 480px) {
+    .sig-page .nc-title-row { grid-template-columns: 6px minmax(0, 1fr); }
+    .sig-page .nc-title-row > a { grid-column: 2; justify-self: start; }
+    .sig-page .nc-panel:not(.sig-preview) { padding: 18px; }
+    .sig-page .sig-filename { font-size: 1.5rem; }
+    .sig-canvas-wrap { padding: 8px; }
+    .sig-file::file-selector-button { display: block; margin-bottom: 10px; }
+}

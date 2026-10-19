@@ -2,7 +2,7 @@
 
 namespace App\Services\Signatures;
 
-use RuntimeException;
+use App\Exceptions\PdfSignatureException;
 use SignerPHP\PdfCore\PdfValue\PDFValue;
 use SignerPHP\PdfCore\Service\PdfDocumentPreparer;
 use SignerPHP\PdfSigner\Application\DTO\SignatureActorDto;
@@ -15,18 +15,18 @@ class PdfSignatureEngine
     public function inspect(string $pdf): int
     {
         if (strlen($pdf) > config('pdf_signatures.max_upload_kb') * 1024 || ! str_starts_with($pdf, '%PDF-')) {
-            throw new RuntimeException('Importez un fichier PDF de 10 Mo maximum.');
+            throw new PdfSignatureException('Importez un fichier PDF de 10 Mo maximum.');
         }
 
         try {
             $document = (new PdfDocumentPreparer)->prepare($pdf);
             if (isset($document->getTrailerObject()['Encrypt'])) {
-                throw new RuntimeException('Les PDF protégés par mot de passe ne sont pas acceptés.');
+                throw new PdfSignatureException('Les PDF protégés par mot de passe ne sont pas acceptés.');
             }
             $this->inspectValue($document->getTrailerObject());
             $xref = $document->getXrefTable();
             if (count($xref) > 20000) {
-                throw new RuntimeException('Ce PDF est trop complexe. Exportez une copie PDF simplifiée.');
+                throw new PdfSignatureException('Ce PDF est trop complexe. Exportez une copie PDF simplifiée.');
             }
             foreach ($xref as $id => $entry) {
                 if ((int) $id === 0 || $entry === null) {
@@ -36,7 +36,7 @@ class PdfSignatureEngine
                 if ($object) {
                     $this->inspectValue($object->getValue());
                     if ($object->getGeneration() !== 0) {
-                        throw new RuntimeException('La structure de ce PDF n’est pas prise en charge. Exportez une nouvelle copie PDF.');
+                        throw new PdfSignatureException('La structure de ce PDF n’est pas prise en charge. Exportez une nouvelle copie PDF.');
                     }
                 }
             }
@@ -45,30 +45,32 @@ class PdfSignatureEngine
                 $pages++;
             }
             if ($pages < 1 || $pages > config('pdf_signatures.max_pages')) {
-                throw new RuntimeException('Le PDF doit contenir entre 1 et 100 pages.');
+                throw new PdfSignatureException('Le PDF doit contenir entre 1 et 100 pages.');
             }
 
             return $pages;
-        } catch (RuntimeException $exception) {
+        } catch (PdfSignatureException $exception) {
             throw $exception;
         } catch (Throwable) {
-            throw new RuntimeException('Ce PDF ne peut pas être lu. Exportez une nouvelle copie PDF puis réessayez.');
+            throw new PdfSignatureException('Ce PDF ne peut pas être lu. Exportez une nouvelle copie PDF puis réessayez.');
         }
     }
 
     private function inspectValue(PDFValue $value, int $depth = 0): void
     {
         if ($depth > 40) {
-            throw new RuntimeException('Ce PDF est trop complexe pour être signé.');
+            throw new PdfSignatureException('Ce PDF est trop complexe pour être signé.');
         }
         $data = $value->val();
         if (! is_array($data)) {
             return;
         }
         foreach ($data as $name => $child) {
-            if (in_array($name, ['ByteRange', 'AcroForm', 'Perms', 'XFA', 'JavaScript', 'JS', 'AA', 'OpenAction', 'EmbeddedFiles', 'EF', 'RichMedia', 'Launch'], true)
-                || ($name === 'Type' && in_array($child->val(), ['Sig', 'DocTimeStamp', 'EmbeddedFile'], true))) {
-                throw new RuntimeException('Ce PDF contient déjà une signature, un formulaire ou du contenu actif. Utilisez un PDF simple non signé.');
+            $name = preg_replace_callback('/#([a-f0-9]{2})/i', fn (array $m): string => chr(hexdec($m[1])), (string) $name);
+            $type = is_string($child->val()) ? preg_replace_callback('/#([a-f0-9]{2})/i', fn (array $m): string => chr(hexdec($m[1])), $child->val()) : null;
+            if (in_array($name, ['Encrypt', 'ByteRange', 'AcroForm', 'Perms', 'XFA', 'JavaScript', 'JS', 'A', 'AA', 'OpenAction', 'EmbeddedFiles', 'EF', 'RichMedia', 'Launch'], true)
+                || ($name === 'Type' && in_array($type, ['Sig', 'DocTimeStamp', 'EmbeddedFile'], true))) {
+                throw new PdfSignatureException('Ce PDF contient déjà une signature, un formulaire ou du contenu actif. Utilisez un PDF simple non signé.');
             }
             $this->inspectValue($child, $depth + 1);
         }
@@ -90,7 +92,7 @@ class PdfSignatureEngine
             ->sign();
 
         if (! str_starts_with($signed, $pdf) || ! $this->verify($signed, $certificate['fingerprint'])) {
-            throw new RuntimeException('La signature n’a pas pu être vérifiée. Le document original est conservé.');
+            throw new PdfSignatureException('La signature n’a pas pu être vérifiée. Le document original est conservé.');
         }
 
         return $signed;
@@ -133,7 +135,7 @@ class PdfSignatureEngine
             foreach (['content', 'cms', 'signer'] as $part) {
                 $path = tempnam(sys_get_temp_dir(), 'nere-signature-');
                 if ($path === false) {
-                    throw new RuntimeException('Espace temporaire indisponible.');
+                    throw new PdfSignatureException('Espace temporaire indisponible.');
                 }
                 $files[$part] = $path;
                 chmod($path, 0600);

@@ -56,7 +56,7 @@ class PdfSignatureEngineTest extends TestCase
     public function test_javascript_is_rejected_even_with_escaped_pdf_names(): void
     {
         $this->expectException(RuntimeException::class);
-        app(PdfSignatureEngine::class)->inspect(PdfSigningFixture::pdf('/Open#41ction << /S /JavaScript /JS (app.alert) >>'));
+        app(PdfSignatureEngine::class)->inspect(PdfSigningFixture::pdf('/Open#41ction << /S /Java#53cript /J#53 (app.alert) >>'));
     }
 
     public function test_encrypted_pdfs_are_rejected(): void
@@ -89,6 +89,14 @@ class PdfSignatureEngineTest extends TestCase
     public function test_self_signed_certificate_is_rejected_in_production_mode(): void
     {
         config(['pdf_signatures.mode' => 'production']);
+        $this->assertFalse(app(SigningCertificate::class)->status()['ready']);
+    }
+
+    public function test_certificate_in_public_directory_is_rejected(): void
+    {
+        app()->usePublicPath(Storage::disk('local')->path('public'));
+        Storage::disk('local')->put('public/exposed.p12', PdfSigningFixture::certificate());
+        config(['pdf_signatures.certificate_path' => Storage::disk('local')->path('public/exposed.p12')]);
         $this->assertFalse(app(SigningCertificate::class)->status()['ready']);
     }
 }

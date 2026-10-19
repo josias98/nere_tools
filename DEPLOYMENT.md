@@ -2,6 +2,11 @@
 
 Le serveur web doit pointer vers `public/`. Construire les assets et l'archive sur une machine disposant de Node.js ; aucun appel à Node.js ou npm n'est requis sur le serveur.
 
+Pour le nouvel outil Signature PDF, appliquer les migrations et suivre la
+[configuration du certificat](docs/pdf-signatures.md). Le mode est désactivé par
+défaut ; les certificats de développement sont interdits en production. Conserver
+le PKCS#12 et son secret hors de l’archive de livraison.
+
 ## Avant l'envoi
 
 - Exécuter `npm ci && npm run build` localement et vérifier que `public/build/manifest.json` existe.

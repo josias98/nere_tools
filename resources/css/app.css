@@ -5,6 +5,7 @@
 @import 'tailwindcss';
 @import './modules/leaves.css';
 @import './modules/timesheets.css';
+@import './modules/signatures.css';
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
