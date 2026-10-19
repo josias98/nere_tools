@@ -61,9 +61,12 @@ export const bootLeavePage = () => {
         const requiredContext = { family_event: 'relationship', other_absence: 'reason' }[option?.dataset.slug];
         document.querySelectorAll('[data-leave-context]').forEach((field) => {
             const required = field.dataset.leaveContext === requiredContext;
-            if (form.classList.contains('is-enhanced')) field.hidden = !required;
-            field.querySelector('input').required = required;
-            field.querySelector('input').disabled = !required;
+            const input = field.querySelector('input');
+            if (form.classList.contains('is-enhanced')) {
+                field.hidden = !required;
+                input.disabled = !required;
+            }
+            input.required = required;
         });
         const unit = configuration.unit ?? option?.dataset.unit ?? 'calendar_day';
         const isHourly = unit === 'hour';

@@ -326,7 +326,7 @@
     letter-spacing: .06em;
 }
 
-.leave-wizard-view > h2 {
+.leave-wizard .leave-wizard-view > h2 {
     margin: 0 0 24px;
     color: var(--ip-brown);
     font-family: var(--font-title);
@@ -376,7 +376,7 @@
 .leave-wizard-option.is-selected { transform: scale(.99); border-color: var(--ip-orange); background: var(--ip-ivory); }
 .leave-wizard-list .leave-wizard-option { min-height: 70px; align-items: center; padding: 16px 20px; }
 .leave-wizard-list .leave-wizard-option strong { margin: 0; font-family: var(--font-body); font-size: 15px; font-weight: 700; }
-.leave-wizard-picked {
+.leave-wizard .leave-wizard-picked {
     width: fit-content;
     margin: 0 0 24px;
     border-left: 3px solid var(--ip-ochre);
@@ -398,7 +398,7 @@
 .leave-wizard-more summary span { margin-left: 8px; color: var(--ip-grey); font-size: 11px; font-weight: 500; }
 .leave-wizard-more-fields { display: grid; gap: 16px; padding-top: 18px; }
 .leave-wizard-more-fields [data-leave-optional-upload]:empty { display: none; }
-.leave-wizard-error { margin: 18px 0 0; color: var(--ip-rust); font-size: 13px; font-weight: 700; }
+.leave-wizard .leave-wizard-error { margin: 18px 0 0; color: var(--ip-rust); font-size: 13px; font-weight: 700; }
 .leave-wizard-actions {
     display: flex;
     justify-content: space-between;

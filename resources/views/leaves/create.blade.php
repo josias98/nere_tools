@@ -62,6 +62,9 @@
                 <section class="leave-wizard-view leave-wizard-choice" data-leave-step="choice" aria-labelledby="leave_choice_title">
                     <span class="leave-wizard-kicker">Votre absence</span>
                     <h2 id="leave_choice_title">De quoi s’agit-il&nbsp;?</h2>
+                    @if ($leaveTypes->isEmpty())
+                        <p class="nc-alert is-warning" role="alert">Aucun type de congé n’est disponible pour le moment.</p>
+                    @endif
                     <div class="leave-wizard-grid">
                         @if ($leaveTypes->contains('slug', 'annual_leave'))
                             <button type="button" class="leave-wizard-option" data-leave-category="annual"><span><strong>Mes congés</strong><small>Congé administratif</small></span><span aria-hidden="true">→</span></button>
