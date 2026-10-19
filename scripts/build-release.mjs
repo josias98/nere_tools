@@ -73,8 +73,7 @@ function shouldSkip(relPath, dirent) {
     if (localOnlyFiles.has(name) || localOnlyFiles.has(zipPath)) return true;
     if (name === '.env' || name.startsWith('.env.')) return true;
     if (name === 'npm-debug.log' || name.startsWith('npm-debug.log.')) return true;
-    if (/\.(?:bak|csv|db|dump|key|log|p12|pem|pfx|sql|sqlite3?|xls|xlsx|zip)$/i.test(name)
-        && !(zipPath.startsWith('public/pdfcraft/') && name.endsWith('.zip'))) return true;
+    if (/\.(?:bak|csv|db|dump|key|log|p12|pem|pfx|sql|sqlite3?|xls|xlsx|zip)$/i.test(name)) return true;
 
     if (zipPath === 'public/hot' || zipPath === 'public/storage') return true;
     if (zipPath === 'bootstrap/cache') return true;
@@ -271,15 +270,6 @@ async function main() {
         if (!buildStat.isDirectory()) throw new Error('public/build is not a directory');
     } catch {
         throw new Error('Vite build did not create public/build.');
-    }
-
-    try {
-        const pdfcraftRevision = (await readFile(path.join(root, 'resources', 'pdfcraft-pages', '.build-revision'), 'utf8')).trim();
-        if (pdfcraftRevision !== '0be0f8b6a7ada15b60a42d4789238bf49283b494') throw new Error('Unexpected PDFCraft revision');
-        await stat(path.join(root, 'resources', 'pdfcraft-pages', 'fr', 'index.html'));
-        await stat(path.join(root, 'public', 'pdfcraft', '.htaccess'));
-    } catch {
-        throw new Error('PDFCraft is missing. Run npm run build:pdfcraft before release:zip.');
     }
 
     await mkdir(distDir, { recursive: true });

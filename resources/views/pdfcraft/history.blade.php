@@ -13,7 +13,7 @@
             <div>
                 <p class="nc-kicker">Outils PDF</p>
                 <h1 class="nc-title">Mes documents</h1>
-                <p class="nc-lead">Fichiers sources et résultats conservés dans votre espace privé pendant {{ config('pdfcraft.retention_days') }} jours.</p>
+                <p class="nc-lead">Fichiers sources et résultats conservés dans votre espace privé pendant 90 jours.</p>
             </div>
             <a class="nc-button" href="{{ route('pdfcraft.index') }}">Ouvrir les outils PDF</a>
         </div>
