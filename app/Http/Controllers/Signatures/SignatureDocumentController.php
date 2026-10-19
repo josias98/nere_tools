@@ -8,16 +8,18 @@ use App\Models\SignatureDocument;
 use App\Services\Signatures\PdfSigningService;
 use App\Services\Signatures\SigningCertificate;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 use SignerPHP\PdfSigner\Domain\Exception\SignerException;
+use Throwable;
 
 class SignatureDocumentController extends Controller
 {
     public function index(Request $request, SigningCertificate $certificates)
     {
-        return view('signatures.index', [
+        return response()->view('signatures.index', [
             'documents' => SignatureDocument::query()->where('user_id', $request->user()->id)->latest('id')->paginate(12),
             'certificate' => $certificates->status(),
-        ]);
+        ])->withHeaders(['Cache-Control' => 'private, no-store']);
     }
 
     public function store(Request $request, PdfSigningService $signing)
@@ -25,15 +27,27 @@ class SignatureDocumentController extends Controller
         $request->validate(['pdf' => ['required', 'file', 'mimes:pdf', 'extensions:pdf', 'max:'.config('pdf_signatures.max_upload_kb')]], [
             'pdf.required' => 'Sélectionnez le PDF à signer.',
             'pdf.mimes' => 'Le fichier doit être un PDF.', 'pdf.extensions' => 'Le fichier doit porter l’extension .pdf.',
-            'pdf.max' => 'Le PDF ne doit pas dépasser 10 Mo.',
+            'pdf.max' => 'Ce PDF dépasse 10 Mo. Exportez une version plus légère, puis réessayez.',
+            'pdf.uploaded' => 'Le transfert du PDF a été interrompu. Sélectionnez à nouveau le fichier et réessayez.',
         ]);
         try {
             $document = $signing->import($request->file('pdf'), $request->user());
         } catch (PdfSignatureException $exception) {
-            return back()->withErrors(['pdf' => $exception->getMessage()]);
+            throw ValidationException::withMessages(['pdf' => $exception->getMessage()]);
+        } catch (Throwable $exception) {
+            if (! $request->expectsJson()) {
+                throw $exception;
+            }
+            report($exception);
+
+            return response()->json(['message' => 'L’import est momentanément indisponible. Votre fichier reste sélectionné ; réessayez dans un instant.'], 500);
         }
 
-        return redirect()->route('signatures.show', $document->uuid);
+        $request->session()->flash('success', 'Votre PDF est prêt. Relisez-le avant de donner votre accord.');
+
+        return $request->expectsJson()
+            ? response()->json(['redirect_url' => route('signatures.show', $document->uuid)], 201)
+            : redirect()->route('signatures.show', $document->uuid);
     }
 
     public function show(Request $request, SignatureDocument $document, SigningCertificate $certificates, PdfSigningService $signing)
@@ -46,9 +60,9 @@ class SignatureDocumentController extends Controller
             $integrityError = $exception->getMessage();
         }
 
-        return view('signatures.show', [
+        return response()->view('signatures.show', [
             'document' => $document, 'certificate' => $certificates->status(), 'integrityError' => $integrityError,
-        ]);
+        ])->withHeaders(['Cache-Control' => 'private, no-store']);
     }
 
     public function sign(Request $request, SignatureDocument $document, PdfSigningService $signing)
@@ -57,18 +71,35 @@ class SignatureDocumentController extends Controller
         $data = $request->validate([
             'consent' => ['accepted'], 'original_sha256' => ['required', 'regex:/\A[a-f0-9]{64}\z/'],
             'certificate_sha256' => ['required', 'regex:/\A[a-f0-9]{64}\z/'], 'reason' => ['required', 'string', 'max:500'],
-        ], ['consent.accepted' => 'Confirmez votre accord avant de signer.', 'reason.required' => 'Précisez le motif de votre signature.']);
+        ], [
+            'consent.accepted' => 'Cochez la confirmation pour autoriser la signature de ce PDF.',
+            'reason.required' => 'Indiquez le motif de votre signature, par exemple « Bon pour accord ».',
+            'reason.max' => 'Le motif est trop long. Limitez-le à 500 caractères.',
+            'original_sha256.*' => 'La relecture du document a expiré. Actualisez la page avant de signer.',
+            'certificate_sha256.*' => 'Le certificat doit être vérifié à nouveau. Actualisez la page avant de signer.',
+        ]);
         try {
             $signing->sign($document, $request->user(), $data['original_sha256'], $data['certificate_sha256'], trim($data['reason']), [
                 'ip' => $request->ip(), 'user_agent' => $request->userAgent(),
             ]);
         } catch (SignerException) {
-            return back()->withErrors(['signature' => 'La signature a échoué. Le PDF original est conservé. Contactez un administrateur.'])->withInput();
+            throw ValidationException::withMessages(['signature' => 'La signature n’a pas abouti. Votre PDF original est conservé. Réessayez ; si cela persiste, contactez un administrateur.']);
         } catch (PdfSignatureException $exception) {
-            return back()->withErrors(['signature' => $exception->getMessage()])->withInput();
+            throw ValidationException::withMessages(['signature' => $exception->getMessage()]);
+        } catch (Throwable $exception) {
+            if (! $request->expectsJson()) {
+                throw $exception;
+            }
+            report($exception);
+
+            return response()->json(['message' => 'Le résultat de la signature ne peut pas être confirmé. Vérifiez l’état du document avant de réessayer.'], 500);
         }
 
-        return redirect()->route('signatures.show', $document->uuid)->with('success', 'Le PDF a été signé. Vous pouvez le télécharger.');
+        $request->session()->flash('success', 'Votre PDF est signé. Il est prêt à être téléchargé.');
+
+        return $request->expectsJson()
+            ? response()->json(['redirect_url' => route('signatures.show', $document->uuid)])
+            : redirect()->route('signatures.show', $document->uuid);
     }
 
     public function file(Request $request, SignatureDocument $document, string $version, PdfSigningService $signing)

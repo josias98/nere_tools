@@ -55,6 +55,46 @@ class PdfSigningWorkflowTest extends TestCase
         $this->assertTrue($this->user->canAccessTool('signatures'));
     }
 
+    public function test_async_import_and_sign_return_confirmed_document_urls(): void
+    {
+        $this->actingAs($this->user)->postJson(route('signatures.store'), [
+            'pdf' => UploadedFile::fake()->createWithContent('Contrat.pdf', PdfSigningFixture::pdf()),
+        ])->assertCreated()->assertJsonPath('redirect_url', route('signatures.show', SignatureDocument::query()->sole()->uuid));
+        $document = SignatureDocument::query()->sole();
+        $this->postJson(route('signatures.sign', $document->uuid), $this->consent($document))->assertOk()
+            ->assertExactJson(['redirect_url' => route('signatures.show', $document->uuid)]);
+        $this->assertNotNull($document->fresh()->signed_at);
+    }
+
+    public function test_async_validation_reports_fields_without_redirect_or_technical_details(): void
+    {
+        $this->actingAs($this->user)->postJson(route('signatures.store'), [
+            'pdf' => UploadedFile::fake()->createWithContent('invalid.pdf', "%PDF-1.7\ninvalid"),
+        ])->assertUnprocessable()->assertJsonValidationErrors('pdf');
+        $document = $this->document();
+        $this->postJson(route('signatures.sign', $document->uuid), array_replace($this->consent($document), ['consent' => '0', 'reason' => '']))
+            ->assertUnprocessable()->assertJsonValidationErrors(['consent', 'reason']);
+        $this->assertNull($document->fresh()->signed_at);
+    }
+
+    public function test_expired_async_session_returns_unauthorized_and_does_not_start_a_document(): void
+    {
+        $this->postJson(route('signatures.store'), [])->assertUnauthorized();
+        $this->assertDatabaseCount('signature_documents', 0);
+    }
+
+    public function test_async_server_failure_is_safe_and_does_not_claim_a_signature_succeeded(): void
+    {
+        $document = $this->document();
+        $signing = Mockery::mock(PdfSigningService::class);
+        $signing->shouldReceive('sign')->once()->andThrow(new \RuntimeException('private database connection details'));
+        $this->app->instance(PdfSigningService::class, $signing);
+        $response = $this->actingAs($this->user)->postJson(route('signatures.sign', $document->uuid), $this->consent($document))
+            ->assertStatus(500)->assertJsonStructure(['message']);
+        $this->assertStringNotContainsString('private database', $response->getContent());
+        $this->assertNull($document->fresh()->signed_at);
+    }
+
     public function test_guest_inactive_and_explicitly_denied_accounts_cannot_use_the_tool(): void
     {
         $this->get(route('signatures.index'))->assertRedirect(route('login'));
