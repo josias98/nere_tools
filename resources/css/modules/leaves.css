@@ -171,6 +171,82 @@
     gap: 16px;
 }
 
+.leave-date-field { min-width: 0; }
+.leave-date-trigger { display: none; }
+.leave-wizard.is-enhanced .leave-date-field .nc-field input[type="date"] {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    min-height: 0;
+    padding: 0;
+    border: 0;
+    opacity: 0;
+    pointer-events: none;
+}
+.leave-wizard.is-enhanced .leave-date-trigger {
+    display: flex;
+    width: 100%;
+    min-height: 58px;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    border: 1px solid var(--ip-line-strong);
+    background: var(--ip-white);
+    padding: 12px 16px;
+    color: var(--ip-grey);
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+    transition: border-color 200ms, background-color 200ms, box-shadow 200ms, transform 200ms cubic-bezier(.16,1,.3,1);
+}
+.leave-date-trigger i { width: 19px; height: 19px; flex: none; color: var(--ip-orange); }
+.leave-date-trigger.has-date { color: var(--ip-brown-dark) !important; font-weight: 700; }
+.leave-date-trigger:hover,
+.leave-date-trigger.is-active { border-color: var(--ip-orange) !important; background: var(--ip-ivory) !important; box-shadow: 0 6px 20px rgb(52 22 4 / 8%); }
+.leave-date-trigger:active { transform: scale(.99); }
+.leave-date-trigger:focus-visible,
+.leave-date-calendar button:focus-visible { outline: 2px solid var(--ip-orange); outline-offset: 2px; }
+.leave-date-trigger[aria-invalid="true"] { border-color: var(--ip-rust) !important; }
+
+.leave-date-calendar {
+    width: min(100%, 444px);
+    border: 1px solid var(--ip-line-strong);
+    border-top: 3px solid var(--ip-brown);
+    background: var(--ip-white);
+    box-shadow: 0 20px 42px rgb(52 22 4 / 13%);
+    padding: 18px;
+    transform-origin: top left;
+}
+.leave-date-calendar-top,
+.leave-date-calendar-nav,
+.leave-date-calendar-footer { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.leave-date-calendar-top { margin-bottom: 11px; color: var(--ip-grey); font-size: 12px; font-weight: 700; }
+.leave-date-calendar button { font: inherit; cursor: pointer; }
+.leave-date-calendar-close,
+.leave-date-calendar-nav button { display: grid; width: 36px; height: 36px; place-items: center; border: 0; background: transparent; color: var(--ip-brown); font-size: 20px; }
+.leave-date-calendar-close:hover,
+.leave-date-calendar-nav button:hover { background: var(--ip-ivory); }
+.leave-date-calendar-nav { margin-bottom: 14px; }
+.leave-date-calendar-nav strong { color: var(--ip-brown); font-family: var(--font-title); font-size: 19px; font-weight: 600; text-transform: capitalize; }
+.leave-date-calendar-weekdays,
+.leave-date-calendar-days { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); }
+.leave-date-calendar-weekdays { margin-bottom: 6px; color: var(--ip-grey); text-align: center; font-size: 11px; font-weight: 800; }
+.leave-date-calendar-days { row-gap: 3px; }
+.leave-date-calendar-days button { position: relative; display: grid; height: 42px; place-items: center; border: 0; background: transparent; color: var(--ip-brown-dark); font-size: 13px; font-weight: 600; }
+.leave-date-calendar-days button:hover:not(:disabled) { background: var(--ip-ivory); color: var(--ip-brown); }
+.leave-date-calendar-days .is-outside { color: var(--ip-grey); opacity: .55; }
+.leave-date-calendar-days .is-in-range { background: #f8e8dc; }
+.leave-date-calendar-days .is-start,
+.leave-date-calendar-days .is-end { background: var(--ip-orange); color: var(--ip-orange-ink); font-weight: 800; }
+.leave-date-calendar-days .is-start:hover:not(:disabled),
+.leave-date-calendar-days .is-end:hover:not(:disabled) { background: var(--ip-orange); color: var(--ip-orange-ink); }
+.leave-date-calendar-days [aria-current="date"]::after { content: ''; position: absolute; bottom: 4px; width: 4px; height: 4px; border-radius: 50%; background: currentColor; }
+.leave-date-calendar-days button:disabled { color: var(--ip-grey); opacity: .38; cursor: not-allowed; }
+.leave-date-calendar-footer { margin-top: 12px; border-top: 1px solid var(--ip-line); padding-top: 12px; }
+.leave-date-calendar-footer button { border: 0; background: transparent; padding: 7px 2px; color: var(--ip-brown); font-size: 12px; font-weight: 700; }
+.leave-date-calendar-footer button:hover:not(:disabled) { color: var(--ip-orange); text-decoration: underline; }
+.leave-date-calendar-footer button:disabled { opacity: .4; cursor: not-allowed; }
+
 .leave-fieldset .nc-field > span {
     display: flex;
     justify-content: space-between;

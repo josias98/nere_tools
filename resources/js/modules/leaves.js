@@ -1,3 +1,5 @@
+import { bootLeaveDatePicker } from './leave-date-picker';
+
 export const bootLeavePage = () => {
     document.querySelector('[data-validation-summary]')?.focus();
     document.querySelectorAll('[data-close-document-action]').forEach((button) => {
@@ -144,6 +146,7 @@ export const bootLeavePage = () => {
     const views = Object.fromEntries([...form.querySelectorAll('[data-leave-step]')].map((view) => [view.dataset.leaveStep, view]));
     if (!stage || Object.keys(views).length !== 4) return;
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    let datePicker = { close: () => {}, open: () => {} };
     const slugToOption = Object.fromEntries([...typeInput.options].filter((option) => option.dataset.slug).map((option) => [option.dataset.slug, option]));
     const categoryFor = (slug) => {
         if (slug === 'annual_leave') return 'annual';
@@ -215,6 +218,7 @@ export const bootLeavePage = () => {
 
     const showStep = async (next, animated = true) => {
         if (moving || !views[next] || next === current) return;
+        if (current === 'details') datePicker.close();
         if (next === 'clarify' || next === 'details') updateChoice();
         if (next === 'review') updateReview();
         const previous = views[current];
@@ -256,16 +260,20 @@ export const bootLeavePage = () => {
     const error = form.querySelector('[data-leave-error]');
     const validateDetails = () => {
         error.hidden = true;
-        if (!form.checkValidity()) {
-            const invalid = form.querySelector(':invalid');
-            if (invalid?.closest('[data-leave-more]')) form.querySelector('[data-leave-more]').open = true;
-            invalid?.reportValidity();
+        if (!startInput.value || !endInput.value) {
+            datePicker.open(!startInput.value ? 'start' : 'end');
             return false;
         }
         if (endInput.value < startInput.value) {
             error.textContent = 'La date de fin doit être postérieure ou égale à la date de début.';
             error.hidden = false;
-            endInput.focus();
+            datePicker.open('end');
+            return false;
+        }
+        if (!form.checkValidity()) {
+            const invalid = form.querySelector(':invalid');
+            if (invalid?.closest('[data-leave-more]')) form.querySelector('[data-leave-more]').open = true;
+            invalid?.reportValidity();
             return false;
         }
         return true;
@@ -273,6 +281,7 @@ export const bootLeavePage = () => {
 
     form.classList.add('is-enhanced');
     form.noValidate = true;
+    datePicker = bootLeaveDatePicker({ form, startInput, endInput, reducedMotion });
     form.querySelectorAll('.leave-wizard-view').forEach((view) => { view.hidden = view.dataset.leaveStep !== current; });
     form.querySelectorAll('.leave-wizard-view h2').forEach((heading) => { heading.tabIndex = -1; });
     updateChoice();

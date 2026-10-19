@@ -142,17 +142,30 @@
                         <fieldset class="leave-fieldset leave-wizard-date-fields">
                             <legend class="leave-wizard-visually-hidden">Période</legend>
                         <div class="leave-date-grid">
-                            <label class="nc-field" for="leave_start_date">
-                                <span>Du <small>Requis</small></span>
-                                <input type="date" name="start_date" id="leave_start_date" value="{{ old('start_date') }}" required aria-required="true" @error('start_date') aria-invalid="true" aria-describedby="start_date_error" @enderror>
-                                @error('start_date') <small id="start_date_error" class="nc-error">{{ $message }}</small> @enderror
-                            </label>
+                            <div class="leave-date-field">
+                                <label class="nc-field" for="leave_start_date">
+                                    <span>Du <small>Requis</small></span>
+                                    <input type="date" name="start_date" id="leave_start_date" value="{{ old('start_date') }}" required aria-required="true" @error('start_date') aria-invalid="true" aria-describedby="start_date_error" @enderror>
+                                    @error('start_date') <small id="start_date_error" class="nc-error">{{ $message }}</small> @enderror
+                                </label>
+                                <button type="button" class="leave-date-trigger" id="leave_start_trigger" data-leave-date-trigger="start" aria-label="Choisir la date de début" aria-controls="leave_date_calendar" aria-expanded="false" hidden><span data-leave-date-value>Choisir une date</span><i data-lucide="calendar-days" aria-hidden="true"></i></button>
+                            </div>
 
-                            <label class="nc-field" for="leave_end_date">
-                                <span>Au <small>Requis</small></span>
-                                <input type="date" name="end_date" id="leave_end_date" value="{{ old('end_date') }}" required aria-required="true" @error('end_date') aria-invalid="true" aria-describedby="end_date_error" @enderror>
-                                @error('end_date') <small id="end_date_error" class="nc-error">{{ $message }}</small> @enderror
-                            </label>
+                            <div class="leave-date-field">
+                                <label class="nc-field" for="leave_end_date">
+                                    <span>Au <small>Requis</small></span>
+                                    <input type="date" name="end_date" id="leave_end_date" value="{{ old('end_date') }}" required aria-required="true" @error('end_date') aria-invalid="true" aria-describedby="end_date_error" @enderror>
+                                    @error('end_date') <small id="end_date_error" class="nc-error">{{ $message }}</small> @enderror
+                                </label>
+                                <button type="button" class="leave-date-trigger" id="leave_end_trigger" data-leave-date-trigger="end" aria-label="Choisir la date de fin" aria-controls="leave_date_calendar" aria-expanded="false" hidden><span data-leave-date-value>Choisir une date</span><i data-lucide="calendar-days" aria-hidden="true"></i></button>
+                            </div>
+                        </div>
+                        <div class="leave-date-calendar" id="leave_date_calendar" data-leave-date-calendar hidden>
+                            <div class="leave-date-calendar-top"><span data-leave-date-prompt>Choisissez le début</span><button type="button" class="leave-date-calendar-close" data-leave-calendar-close aria-label="Fermer le calendrier">×</button></div>
+                            <div class="leave-date-calendar-nav"><button type="button" data-leave-calendar-prev aria-label="Mois précédent">←</button><strong data-leave-calendar-month aria-live="polite"></strong><button type="button" data-leave-calendar-next aria-label="Mois suivant">→</button></div>
+                            <div class="leave-date-calendar-weekdays" aria-hidden="true"><span>Lu</span><span>Ma</span><span>Me</span><span>Je</span><span>Ve</span><span>Sa</span><span>Di</span></div>
+                            <div class="leave-date-calendar-days" data-leave-calendar-days role="group" aria-label="Jours du mois"></div>
+                            <div class="leave-date-calendar-footer"><button type="button" data-leave-calendar-today>Aujourd’hui</button><button type="button" data-leave-calendar-clear>Effacer les dates</button></div>
                         </div>
                         <div class="leave-date-grid" data-hour-fields hidden>
                             <label class="nc-field" for="leave_start_time">
