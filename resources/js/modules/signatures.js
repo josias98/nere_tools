@@ -53,8 +53,13 @@ export function bootSignaturePage() {
     const preview = root.querySelector('[data-pdf-preview]');
     let previewStarted = false;
     const showStep = (step, focus = true) => {
+        if (root.getAttribute('aria-busy') === 'true') return;
         const stage = root.querySelector(`[data-signature-step="${step}"]`);
         if (!stage) return;
+        if (Number(root.dataset.currentStep) === 3 && step !== 3) {
+            const consent = root.querySelector('[name="consent"]');
+            if (consent) consent.checked = false;
+        }
         root.dataset.currentStep = String(step);
         root.querySelectorAll('[data-signature-step]').forEach((item) => { item.hidden = item !== stage; });
         root.querySelectorAll('[data-signature-indicator]').forEach((item) => {
@@ -80,6 +85,10 @@ export function bootSignaturePage() {
         const consent = root.querySelector('[name="consent"]');
         if (consent) consent.checked = false;
         showStep(2);
+    }));
+    root.querySelectorAll('[data-signature-go]').forEach((link) => link.addEventListener('click', (event) => {
+        event.preventDefault();
+        showStep(Number(link.dataset.signatureGo));
     }));
     root.querySelectorAll('[data-signature-reload]').forEach((button) => button.addEventListener('click', () => window.location.reload()));
     showStep(Number(root.dataset.currentStep), false);
@@ -122,6 +131,11 @@ function bootForm(form, root, notify, showStep) {
     let controls = [];
     recovery.addEventListener('click', () => recover?.());
     const busy = (value) => {
+        root.setAttribute('aria-busy', String(value));
+        root.querySelectorAll('[data-signature-go]').forEach((link) => {
+            if (value) link.setAttribute('aria-disabled', 'true');
+            else link.removeAttribute('aria-disabled');
+        });
         form.querySelector('[data-signature-busy]').hidden = !value;
         if (value) {
             controls = [...form.querySelectorAll('button, input:not([type="hidden"]), textarea')].map((control) => [control, control.disabled]);

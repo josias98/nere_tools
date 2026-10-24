@@ -46,7 +46,7 @@ class SignatureDocumentController extends Controller
         $request->session()->flash('success', 'Votre PDF est prêt. Relisez-le avant de donner votre accord.');
 
         return $request->expectsJson()
-            ? response()->json(['redirect_url' => route('signatures.show', $document->uuid)], 201)
+            ? response()->json(['redirect_url' => route('signatures.show', $document->uuid, false)], 201)
             : redirect()->route('signatures.show', $document->uuid);
     }
 
@@ -64,7 +64,7 @@ class SignatureDocumentController extends Controller
             return response()->json([
                 'signed' => $document->signed_at !== null,
                 'integrity_ok' => $integrityError === null,
-                'redirect_url' => route('signatures.show', $document->uuid),
+                'redirect_url' => route('signatures.show', $document->uuid, false),
             ])->withHeaders(['Cache-Control' => 'private, no-store']);
         }
 
@@ -106,7 +106,7 @@ class SignatureDocumentController extends Controller
         $request->session()->flash('success', 'Votre PDF est signé. Il est prêt à être téléchargé.');
 
         return $request->expectsJson()
-            ? response()->json(['redirect_url' => route('signatures.show', $document->uuid)])
+            ? response()->json(['redirect_url' => route('signatures.show', $document->uuid, false)])
             : redirect()->route('signatures.show', $document->uuid);
     }
 

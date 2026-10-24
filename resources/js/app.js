@@ -4,7 +4,7 @@ import { bootTooltips } from './modules/tooltips';
 import { bootSignaturePage } from './modules/signatures';
 import { createIcons, icons } from 'lucide';
 
-document.addEventListener('DOMContentLoaded', () => {
+const bootPage = () => {
     createIcons({ icons });
 
     bootTimesheetPage();
@@ -26,6 +26,9 @@ document.addEventListener('DOMContentLoaded', () => {
         form.addEventListener('input', () => form.querySelector('[data-unsaved-indicator]')?.toggleAttribute('hidden', !changed()));
         window.addEventListener('beforeunload', (event) => { if (changed()) event.preventDefault(); });
     });
-});
+};
+
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', bootPage, { once: true });
+else bootPage();
 
 document.addEventListener('nere:icons-refresh', () => createIcons({ icons }));

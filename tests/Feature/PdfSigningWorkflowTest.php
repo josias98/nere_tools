@@ -13,6 +13,7 @@ use App\Services\Signatures\SigningCertificate;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\URL;
 use Mockery;
 use Tests\Support\PdfSigningFixture;
 use Tests\TestCase;
@@ -59,11 +60,19 @@ class PdfSigningWorkflowTest extends TestCase
     {
         $this->actingAs($this->user)->postJson(route('signatures.store'), [
             'pdf' => UploadedFile::fake()->createWithContent('Contrat.pdf', PdfSigningFixture::pdf()),
-        ])->assertCreated()->assertJsonPath('redirect_url', route('signatures.show', SignatureDocument::query()->sole()->uuid));
+        ])->assertCreated()->assertJsonPath('redirect_url', route('signatures.show', SignatureDocument::query()->sole()->uuid, false));
         $document = SignatureDocument::query()->sole();
         $this->postJson(route('signatures.sign', $document->uuid), $this->consent($document))->assertOk()
-            ->assertExactJson(['redirect_url' => route('signatures.show', $document->uuid)]);
+            ->assertExactJson(['redirect_url' => route('signatures.show', $document->uuid, false)]);
         $this->assertNotNull($document->fresh()->signed_at);
+    }
+
+    public function test_async_destinations_stay_on_the_browser_origin_behind_an_https_proxy(): void
+    {
+        URL::forceRootUrl('http://internal.example.test');
+        $this->actingAs($this->user)->postJson('/signatures', [
+            'pdf' => UploadedFile::fake()->createWithContent('Test.pdf', PdfSigningFixture::pdf()),
+        ])->assertCreated()->assertJsonPath('redirect_url', fn ($url) => str_starts_with($url, '/signatures/') && ! str_starts_with($url, '//'));
     }
 
     public function test_async_validation_reports_fields_without_redirect_or_technical_details(): void
