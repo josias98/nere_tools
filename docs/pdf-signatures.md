@@ -116,16 +116,19 @@ Congés et Feuilles de temps. Le parcours comporte quatre étapes :
    remplacement du fichier, contrôle du format et de la taille avant transfert.
 2. **Relire** : aperçu paginé et téléchargement de l’original. Le bouton
    « J’ai relu le PDF » ouvre l’étape d’accord ; il ne signe pas le document.
-3. **Confirmer** : identité, motifs courants ou texte libre, certificat consultable
+3. **Signer** : identité, motifs courants ou texte libre, certificat consultable
    et accord explicite. Revenir à la relecture conserve le motif et décoche l’accord.
-4. **Récupérer** : affichage après confirmation du serveur, contrôle d’intégrité,
+4. **Télécharger** : affichage après confirmation du serveur, contrôle d’intégrité,
    téléchargement du PDF et des éléments de preuve.
 
 Les envois utilisent les routes existantes avec `Accept: application/json`. Sans
 JavaScript, les formulaires conservent leur fonctionnement POST/redirect classique.
+Les liens de relecture et de signature permettent de revenir sur les étapes
+disponibles. Changer d’étape ne signe jamais un PDF. Les actions restent accessibles
+en bas du document et les détails techniques sont dépliables.
 Les erreurs apparaissent près des champs et dans des toasts fermables. Les erreurs
-ne disparaissent pas automatiquement ; les notifications de réussite expirent après
-sept secondes, avec pause au survol ou au focus. Un message résolu est retiré.
+ne disparaissent pas automatiquement. Un message résolu est retiré. La réussite
+affichée dans le parcours ne produit pas de toast redondant.
 
 Une coupure pendant la signature ne déclenche **aucune nouvelle tentative automatique**.
 Le bouton « Vérifier le document » effectue une lecture authentifiée de son état.
@@ -138,13 +141,22 @@ Les changements d’étape placent le focus sur le titre. Les champs invalides s
 associés à leurs erreurs ; les boutons de traitement empêchent la double soumission.
 Les animations respectent la préférence de réduction du mouvement.
 
+Le démarrage du JavaScript fonctionne avant ou après `DOMContentLoaded`. Les
+destinations JSON sont relatives à l’origine du navigateur, y compris lorsque
+l’application est derrière un proxy HTTPS.
+
 Contrôles du parcours :
 
 ```console
 php artisan test --compact tests/Feature/PdfSigningWorkflowTest.php
-node --test tests/Frontend/signature-interactions.test.mjs
+npm run test:frontend
 npm run build
 ```
+
+Les tests du DOM rendent les vraies vues Blade avec des données fictives et une
+base SQLite en mémoire. Ils couvrent le chargement tardif du script, les liens
+d’étapes, les corrections d’import, l’accord obligatoire et la reprise après une
+réponse perdue. PHP vérifie la signature, les droits et les téléchargements.
 
 Au 19 octobre 2026, les audits Composer/npm ne signalent aucun avis pour ces
 nouvelles dépendances. L’audit global signale toutefois 24 avis sur 7 dépendances

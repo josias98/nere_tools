@@ -1,5 +1,13 @@
 [
   {
+    "date": "2026-10-25",
+    "scope": "app",
+    "macrostructure": "Workbench",
+    "theme": "design.md",
+    "enrichment": "none",
+    "brief": "Navigation commune, accès directs et assistant Signature PDF allégé ; contrôle visuel navigateur à reprendre"
+  },
+  {
     "date": "2026-07-12",
     "scope": "app",
     "macrostructure": "Workbench",

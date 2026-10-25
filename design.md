@@ -111,6 +111,24 @@ Sur mobile:
 - Les grilles passent en une colonne.
 - Les textes restent de taille stable; ne pas scaler la typo au viewport.
 
+## Révision de l’interface — octobre 2026
+
+- Navigation commune vers les outils autorisés, avec page courante visible.
+- Compte dans un menu natif, accessible au clavier et fermable avec Échap.
+- Accueil composé de liens directs vers les outils, sans description ni bouton
+  « Ouvrir » répété dans chaque entrée.
+- Titres compacts. Pas de surtitre qui répète le titre, de description qui
+  reformule le bouton, ni de compte d’étapes redondant avec le chemin affiché.
+- Dans Signature PDF, navigation horizontale et actions en bas du document.
+  Les étapes disponibles sont des liens ; les étapes futures restent passives.
+- Conserver les informations qui changent la décision : limites de fichier,
+  consentement, identité du signataire, confiance du certificat et erreurs.
+- Afficher les détails techniques à la demande. Une réussite visible dans le
+  document ne déclenche pas de toast supplémentaire.
+
+Les tokens de `resources/css/app.css` restent la source de vérité. La révision
+utilise les couleurs et typographies existantes.
+
 ## Pages attendues
 
 - Authentification Microsoft 365.

@@ -34,6 +34,17 @@ test('the app binds the wizard even when its script arrives after DOMContentLoad
     assert.equal(document.querySelector('[data-signature-step="3"]').hidden, false);
 });
 
+test('the account menu closes with Escape and restores focus', async () => {
+    page('dashboard');
+    await tick();
+    await server.ssrLoadModule(`/resources/js/app.js?dom-test=${++sequence}`);
+    const account = document.querySelector('.nc-account');
+    account.open = true;
+    account.querySelector('button').dispatchEvent(new active.window.KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+    assert.equal(account.open, false);
+    assert.equal(document.activeElement, account.querySelector('summary'));
+});
+
 test('review and confirmation steps are real navigation controls and back clears consent only', () => {
     page('signatureReview');
     bootSignaturePage();

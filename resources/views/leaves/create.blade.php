@@ -60,7 +60,6 @@
             <ol class="leave-wizard-path" data-leave-path aria-label="Étapes de la demande"></ol>
             <div class="leave-wizard-stage" data-leave-stage>
                 <section class="leave-wizard-view leave-wizard-choice" data-leave-step="choice" aria-labelledby="leave_choice_title">
-                    <span class="leave-wizard-kicker">Votre absence</span>
                     <h2 id="leave_choice_title">De quoi s’agit-il&nbsp;?</h2>
                     @if ($leaveTypes->isEmpty())
                         <p class="nc-alert is-warning" role="alert">Aucun type de congé n’est disponible pour le moment.</p>
@@ -102,7 +101,6 @@
                     <div class="leave-wizard-actions"><button type="button" class="nc-ghost" data-leave-back="choice">← Revenir aux choix</button></div>
                 </section>
                 <section class="leave-wizard-view leave-wizard-details" data-leave-step="details" aria-labelledby="leave_details_title">
-                    <span class="leave-wizard-kicker">Votre absence</span>
                     <h2 id="leave_details_title">Quand souhaitez-vous vous absenter&nbsp;?</h2>
                     <p class="leave-wizard-picked" data-leave-picked></p>
             <div class="leave-split">
@@ -224,7 +222,6 @@
                     <div class="leave-wizard-actions"><button type="button" class="nc-ghost" data-leave-back="choice">← Retour</button><button type="button" class="nc-button" data-leave-next="review">Vérifier <span aria-hidden="true">→</span></button></div>
                 </section>
                 <section class="leave-wizard-view leave-wizard-review" data-leave-step="review" aria-labelledby="leave_review_title">
-                    <span class="leave-wizard-kicker">Dernière étape</span>
                     <h2 id="leave_review_title">Vérifiez votre demande</h2>
                     <dl class="leave-wizard-review-list">
                         <div><dt>Type</dt><dd data-review-type>–</dd></div>

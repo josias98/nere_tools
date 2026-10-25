@@ -1,5 +1,5 @@
 /* Hallmark · genre: modern-minimal · macrostructure: Workbench · design-system: design.md · designed-as-app
- * pre-emit critique: P5 H5 E4 S5 R5 V4 · contrast: pass · mobile: pass
+ * pre-emit critique: P5 H5 E3 S5 R5 V4 · browser review pending for the revised shell
  */
 @import url('https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700;800&display=swap');
 @import 'tailwindcss';
@@ -329,7 +329,7 @@ legend{
 
 .nc-title-row {
     display: grid;
-    grid-template-columns: 6px minmax(0, 1fr);
+    grid-template-columns: 4px minmax(0, 1fr);
     gap: 18px;
     align-items: start;
     margin-bottom: 28px;
@@ -337,8 +337,8 @@ legend{
 
 .nc-title-row::before {
     content: '';
-    width: 6px;
-    min-height: 72px;
+    width: 4px;
+    min-height: 44px;
     height: 100%;
     background: var(--ip-brown);
 }
@@ -357,7 +357,7 @@ legend{
     margin: 4px 0 8px;
     color: var(--ip-brown);
     font-family: var(--font-title);
-    font-size: clamp(32px, 4vw, 48px);
+    font-size: clamp(30px, 3vw, 38px);
     line-height: 1.08;
     overflow-wrap: anywhere;
 }
@@ -963,3 +963,51 @@ label.nc-field span {
 @media (max-width: 620px) { .admin-content { width: 100%; }.admin-topbar,.admin-section-heading { display: grid; }.admin-health-card,.risk-warning { grid-template-columns: auto 1fr; }.admin-health-card .configuration-health,.risk-warning .nc-ghost { grid-column: 2; justify-self: start; }.admin-filters { display: grid; }.admin-filters > * { width: 100%; } }
 @media (prefers-reduced-motion: no-preference) { .admin-health-card,.risk-warning { transition: transform var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out), opacity var(--dur-fast) var(--ease-out); }.risk-warning { animation: admin-enter 220ms var(--ease-out); } @keyframes admin-enter { from { opacity: 0; transform: translateY(5px); } } }
 @media (prefers-reduced-motion: reduce) { .nc-tooltip { transition: none; } }
+
+/* Néré app shell · design.md · compact navigation and direct tool access. */
+.nc-app-header .nc-header-inner { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 24px; min-height: 76px; align-items: center; padding-block: 0; }
+.nc-app-header .nc-logo { width: 100px; padding-block: 12px; }
+.nc-app-header .nc-brand { width: auto; justify-content: start; }
+.nc-app-header .nc-nav-links { justify-content: flex-start; gap: 4px; padding-left: 12px; }
+.nc-app-header .nc-nav-links a { min-height: 44px; padding: 10px 12px; border: 0; border-bottom: 2px solid transparent; color: var(--ip-grey); font-size: 12px; font-weight: 550; text-transform: none; letter-spacing: 0; white-space: nowrap; }
+.nc-app-header .nc-nav-links a.is-active { color: var(--ip-brown); border-bottom-color: var(--ip-orange); background: transparent; }
+.nc-app-header .nc-nav-links a:active { background: var(--ip-panel); }
+.nc-account { position: relative; min-width: 0; color: var(--ip-brown); font-size: 12px; }
+.nc-account > summary { display: flex; align-items: center; gap: 8px; min-height: 44px; cursor: pointer; list-style: none; }
+.nc-account > summary::-webkit-details-marker { display: none; }
+.nc-account-avatar { display: grid; place-items: center; width: 32px; height: 32px; flex: 0 0 auto; background: var(--ip-panel); font-family: var(--font-title); font-size: 18px; }
+.nc-account-name { max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.nc-account > summary > .nc-icon { width: 14px; height: 14px; }
+.nc-account[open] > summary > .nc-icon { transform: rotate(180deg); }
+.nc-account-menu { position: absolute; top: calc(100% + 10px); right: 0; z-index: 40; display: grid; gap: 6px; width: min(280px, calc(100vw - 32px)); padding: 18px; border: 1px solid var(--ip-line); background: var(--ip-white); box-shadow: var(--ip-shadow-soft); overflow-wrap: anywhere; }
+.nc-account:not([open]) .nc-account-menu { display: none; }
+.nc-account-menu > span { color: var(--ip-grey); font-size: 11px; }
+.nc-account-menu form { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--ip-line); }
+.nc-account-menu .nc-ghost { width: 100%; justify-content: start; min-height: 44px; }
+.nc-account summary:focus-visible, .nc-tool-entry:focus-visible, .nc-home-admin:focus-visible { outline: 2px solid var(--ip-brown); outline-offset: 3px; }
+.nc-home { padding-top: 36px; }
+.nc-home .nc-title-row { margin-bottom: 32px; }
+.nc-tool-list { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px; border: 1px solid var(--ip-line); background: var(--ip-line); }
+.nc-tool-entry { display: grid; grid-template-columns: 44px minmax(0, 1fr) 20px; align-items: center; gap: 16px; min-height: 160px; padding: 24px; color: var(--ip-brown); background: var(--ip-white); text-decoration: none; }
+.nc-tool-entry h2 { margin: 0; font-family: var(--font-title); font-size: 24px; font-weight: 400; line-height: 1.2; }
+.nc-tool-symbol { display: grid; place-items: center; width: 44px; height: 44px; background: var(--ip-ivory); color: var(--ip-brown); }
+.nc-tool-symbol .nc-icon { width: 24px; height: 24px; }
+.nc-tool-arrow { justify-self: end; color: var(--ip-ochre); }
+.nc-tool-entry:active { background: var(--ip-panel); }
+.nc-tool-entry.is-unavailable { color: var(--ip-grey); }
+.nc-tool-state { grid-column: 2 / -1; margin-top: -20px; font-size: 12px; color: var(--ip-grey); }
+.nc-home-admin { display: inline-flex; align-items: center; gap: 12px; min-height: 44px; margin-top: 28px; color: var(--ip-brown); font-size: 13px; text-decoration: none; }
+@media (hover: hover) { .nc-app-header .nc-nav-links a:hover, .nc-account > summary:hover { background: var(--ip-ivory); }.nc-tool-entry[href]:hover { background: var(--ip-ivory); }.nc-home-admin:hover { text-decoration: underline; } }
+@media (max-width: 1000px) { .nc-app-header .nc-header-inner { gap: 16px; }.nc-account-name { display: none; }.nc-app-header .nc-nav-links { padding-left: 0; }.nc-tool-entry { padding: 20px 16px; gap: 12px; }.nc-tool-entry h2 { font-size: 22px; } }
+@media (max-width: 760px) {
+    .nc-app-header .nc-header-inner { grid-template-columns: minmax(0, 1fr) auto; gap: 0 16px; }
+    .nc-app-header .nc-brand { grid-column: 1; }
+    .nc-account { grid-column: 2; grid-row: 1; }
+    .nc-app-header .nc-nav-links { grid-column: 1 / -1; grid-row: 2; display: flex; flex-wrap: nowrap; overflow-x: auto; width: 100%; justify-content: start; border-top: 1px solid var(--ip-line); }
+    .nc-app-header .nc-nav-links a { flex: 0 0 auto; padding-inline: 10px; }
+    .nc-app-header .nc-nav-links .nc-icon { display: none; }
+    .nc-home { padding-top: 28px; }
+    .nc-tool-list { grid-template-columns: minmax(0, 1fr); }
+    .nc-tool-entry { min-height: 100px; padding: 20px; }
+    .nc-tool-entry h2 { font-size: 24px; }
+}

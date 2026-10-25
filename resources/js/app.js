@@ -12,6 +12,13 @@ const bootPage = () => {
     bootTooltips();
     bootSignaturePage();
 
+    document.querySelectorAll('.nc-account').forEach((account) => {
+        account.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') { account.open = false; account.querySelector('summary').focus(); }
+        });
+        document.addEventListener('click', (event) => { if (!account.contains(event.target)) account.open = false; });
+    });
+
     const search = document.querySelector('[data-admin-search]');
     search?.addEventListener('input', ({ target }) => {
         const query = target.value.trim().toLocaleLowerCase('fr');

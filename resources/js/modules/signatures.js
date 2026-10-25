@@ -93,8 +93,6 @@ export function bootSignaturePage() {
     root.querySelectorAll('[data-signature-reload]').forEach((button) => button.addEventListener('click', () => window.location.reload()));
     showStep(Number(root.dataset.currentStep), false);
     root.querySelectorAll('[data-signature-form]').forEach((form) => bootForm(form, root, notify, showStep));
-    const flash = root.querySelector('[data-signature-flash]');
-    if (flash) notify({ title: Number(root.dataset.currentStep) === 4 ? 'PDF signé' : 'PDF importé', message: flash.textContent.trim(), type: 'success' });
     const error = root.querySelector('[data-form-error]:not([hidden])');
     if (error?.textContent.trim()) notify({ title: 'Une correction est nécessaire', message: error.textContent.trim(), type: 'error' });
 }
@@ -338,7 +336,7 @@ async function loadPreview(preview, notify) {
                 await page.render({ canvasContext: canvas.getContext('2d'), viewport, transform: [ratio, 0, 0, ratio, 0, 0] }).promise;
                 canvas.setAttribute('aria-label', `Aperçu du PDF, page ${current} sur ${pdf.numPages}. Le texte complet est accessible en téléchargeant le document.`);
                 label.textContent = `Page ${current} sur ${pdf.numPages}`;
-                status.textContent = 'Aperçu de lecture. Vous pouvez aussi télécharger le PDF pour le consulter dans votre lecteur.';
+                status.hidden = true;
             } finally {
                 rendering = false;
                 surface.setAttribute('aria-busy', 'false');
@@ -353,6 +351,7 @@ async function loadPreview(preview, notify) {
         fail();
     }
     function fail() {
+        status.hidden = false;
         surface.setAttribute('aria-busy', 'false');
         label.textContent = 'Aperçu indisponible';
         status.textContent = 'L’aperçu ne peut pas être affiché. Téléchargez l’original pour le relire avant de signer.';

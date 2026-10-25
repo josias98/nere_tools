@@ -1,9 +1,7 @@
 <section class="nc-page ts-assistant ts-workbench" x-data="timesheetWizard" data-timesheet-wizard wire:key="timesheet-wizard">
     <header class="ts-wizard-header">
         <div>
-            <p class="nc-kicker">Finance · Feuilles de temps</p>
             <h1 class="nc-title">Créer des feuilles de temps</h1>
-            <p class="nc-lead">Préparez le lot, contrôlez les répartitions, puis générez les documents.</p>
         </div>
         <a class="nc-ghost" href="{{ route('timesheets.history') }}">Voir l’historique</a>
     </header>
@@ -20,7 +18,6 @@
                 <span>{{ str_pad($number + 1, 2, '0', STR_PAD_LEFT) }}</span><small>{{ $label }}</small>
             </div>
         @endforeach
-        <p class="ts-stepper-status"><span>Étape {{ $step }} / 6</span><strong>{{ ['Choisir le point de départ', 'Cadre du lot', 'Constituer les données', 'Contrôler les répartitions', 'Confirmer le traitement', 'Récupérer les fichiers'][$step - 1] }}</strong></p>
     </nav>
 
     <div class="ts-stage" wire:loading.class="is-loading" aria-busy="{{ $this->getErrorBag()->isNotEmpty() ? 'false' : 'false' }}">

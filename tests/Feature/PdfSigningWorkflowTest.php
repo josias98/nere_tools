@@ -52,7 +52,7 @@ class PdfSigningWorkflowTest extends TestCase
     public function test_module_is_available_to_active_staff_and_dashboard_links_to_it(): void
     {
         $this->actingAs($this->user)->get(route('dashboard'))->assertOk()->assertSee('Signature PDF');
-        $this->get(route('signatures.index'))->assertOk()->assertSee('Environnement de test')->assertSee('Quel PDF souhaitez-vous signer');
+        $this->get(route('signatures.index'))->assertOk()->assertSee('Environnement de test')->assertSee('Ajouter un PDF');
         $this->assertTrue($this->user->canAccessTool('signatures'));
     }
 
